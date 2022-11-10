@@ -33,7 +33,7 @@ def detect_edges(filename,thres1=150,thres2=220):
     return img,edge_image,edge_image_simple
 
 def simplify_image(input_image):
-    standard_length=400 #increase if results not right amount of plants, decrease for performance
+    standard_length=450 #increase if results not right amount of plants, decrease for performance
     dimensions = input_image.shape
     #print(dimensions)
     ratio=dimensions[0]/dimensions[1]

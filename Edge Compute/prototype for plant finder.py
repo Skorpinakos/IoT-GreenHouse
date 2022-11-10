@@ -2,7 +2,7 @@
 import time
 from clustering_utils import check_cluster_multitudes,find_elbow,find_centroids,plot_cluster_graph,plot_image_with_centers
 from image_utils import detect_edges,edge_image_to_edge_points_np_list
-from matplotlib import pyplot as plt
+
 
 
 filename='Capture1.png' #set image to test
