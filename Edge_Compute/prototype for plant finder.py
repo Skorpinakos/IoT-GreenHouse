@@ -11,7 +11,7 @@ img,edge_image_good,edge_image_simple=detect_edges(filename,path,thres1=150,thre
 t2=time.time()
 edge_point_list_good=edge_image_to_edge_points_np_list(edge_image_good)
 edge_point_list_simple=edge_image_to_edge_points_np_list(edge_image_simple) #takes filtered image and returns a list of all the white pixels (so any coordinate where part of an edge is present)
-test_cases=range(16,20) #set the possible cases for plant multitude (the algorithm will check for each number and find the best match, use as smaller range as possible and preferably weighted to the left to improve performance)
+test_cases=range(2,20) #set the possible cases for plant multitude (the algorithm will check for each number and find the best match, use as smaller range as possible and preferably weighted to the left to improve performance)
 t3=time.time()
 wcss=check_cluster_multitudes(test_cases,edge_point_list_simple) #gets error list from trying all possible test cases
 #plot_cluster_graph(test_cases, wcss) #plots error list to get idea of elbo graph
