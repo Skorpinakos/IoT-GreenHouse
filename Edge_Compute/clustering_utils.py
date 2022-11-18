@@ -63,7 +63,7 @@ def find_lines(test_cases,_,centroids_y): #better use https://stackoverflow.com/
         point_list.append([centroids_x[point],centroids_y[point]])
     wcss=check_cluster_multitudes(test_cases,point_list)
     lines_multitude=find_elbow(wcss,test_cases)
-    print(lines_multitude)
+    #print(lines_multitude)
     _,results_y=find_centroids(point_list,lines_multitude)
     return _,results_y
 
