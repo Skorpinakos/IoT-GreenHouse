@@ -41,7 +41,7 @@ def find_centroids(edge_point_list,n):
     return centers_x,centers_y
 
 
-def plot_image_with_centers_lines(img,path,centers_x,centers_y,_,lines_y):
+def plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,_,lines_y):
     image_x_length=img.shape[1]
     plt.imshow(img)
     plt.plot(centers_x,centers_y,'o',color='yellow')
@@ -51,7 +51,7 @@ def plot_image_with_centers_lines(img,path,centers_x,centers_y,_,lines_y):
         plt.plot(p1, p2, color="red", linewidth=3)
 
  
-    plt.savefig(path+'original image with centroids drawn.png')
+    plt.savefig(out_path+'original image with centroids drawn.png')
     plt.show()
 
 
