@@ -3,10 +3,10 @@ import time
 from clustering_utils import check_cluster_multitudes,find_elbow,find_centroids,plot_cluster_graph,plot_image_with_centers_lines,find_lines
 from image_utils import detect_edges,edge_image_to_edge_points_np_list
 
-
 path="Edge_Compute/images/"
 out_path="Edge_Compute/diagnostics/"
 filename='Capture1.png' #set image to test
+
 def process_image(filename,path,out_path,diagnostics_mode='full'):
 
     t1=time.time()
@@ -34,5 +34,6 @@ def process_image(filename,path,out_path,diagnostics_mode='full'):
         print('time to find errors for test cases:',t4-t3)
         print('time to find final centroids:      ',t6-t5)
         print('time for total run:                ',t6-t1)
+    return lines_y,centers_x,centers_y
 
 process_image(filename,path,out_path,"time+final")
