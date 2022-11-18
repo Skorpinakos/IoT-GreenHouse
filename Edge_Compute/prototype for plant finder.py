@@ -4,10 +4,10 @@ from clustering_utils import check_cluster_multitudes,find_elbow,find_centroids,
 from image_utils import detect_edges,edge_image_to_edge_points_np_list
 
 
-
+path="Edge_Compute/images/"
 filename='Capture1.png' #set image to test
 t1=time.time()
-img,edge_image_good,edge_image_simple=detect_edges(filename,thres1=150,thres2=220) #takes image and 2 thresholding parameters for the edge filter, gives back the original image and the filtered image as cv2 img objects (basically numpy arrays, original image has color, filtered is B&W (no  rgb))
+img,edge_image_good,edge_image_simple=detect_edges(filename,path,thres1=150,thres2=220) #takes image and 2 thresholding parameters for the edge filter, gives back the original image and the filtered image as cv2 img objects (basically numpy arrays, original image has color, filtered is B&W (no  rgb))
 t2=time.time()
 edge_point_list_good=edge_image_to_edge_points_np_list(edge_image_good)
 edge_point_list_simple=edge_image_to_edge_points_np_list(edge_image_simple) #takes filtered image and returns a list of all the white pixels (so any coordinate where part of an edge is present)
@@ -23,7 +23,7 @@ t6=time.time()
 test_cases=range(1,6)
 lines_y,_=find_lines(test_cases,centers_x,centers_y)
 #print(_)
-plot_image_with_centers_lines(img,centers_x,centers_y,_,lines_y) #show image
+plot_image_with_centers_lines(img,path,centers_x,centers_y,_,lines_y) #show image
 
 print('time for edge filter:              ',t2-t1)
 print('time to find errors for test cases:',t4-t3)

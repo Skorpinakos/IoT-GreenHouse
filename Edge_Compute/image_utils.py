@@ -11,9 +11,9 @@ def edge_image_to_edge_points_np_list(edge_image):
     edge_point_list=np.array(edge_point_list)
     return edge_point_list
 
-def detect_edges(filename,thres1=150,thres2=220): 
+def detect_edges(filename,path,thres1=150,thres2=220): 
     # Read the original image
-    img = cv2.imread(filename) 
+    img = cv2.imread(path+filename) 
     # Convert to graycsale
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Blur the image for better edge detection
@@ -28,7 +28,7 @@ def detect_edges(filename,thres1=150,thres2=220):
     edge_image_simple=simplify_image(edge_image)
     #img=simplify_image(img)
     # Save filtered result
-    cv2.imwrite('edge_detection_result.png', edge_image)
+    cv2.imwrite(path+'edge_detection_result.png', edge_image)
     cv2.destroyAllWindows() 
     return img,edge_image,edge_image_simple
 
