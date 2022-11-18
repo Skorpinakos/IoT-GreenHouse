@@ -14,6 +14,6 @@ default_distance=0.20
 dx=default_distance
 while True:
     make_move(dx)
-    filename,path=take_photo(path,filename)
+    path,filename=take_photo(path,filename)
     lines_y,centers_x,centers_y=process_image(filename,path,out_path,diagnostics_mode='none')
     #find focus lane and focus plants centers
