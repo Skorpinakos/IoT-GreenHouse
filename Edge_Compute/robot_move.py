@@ -1,0 +1,1 @@
+from prototype_for_plant_finder import process_image
