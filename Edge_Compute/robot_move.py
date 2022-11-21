@@ -51,6 +51,7 @@ while True:
         break
     focus_line_pixel=lines_y[focus_line_index]
     if flag_changed_line==True:
+        pass
         #MAKE FUNC TO GET CENTERS BELONGING TO FOCUS LINE AND THEIR RESPECTIVE ELEMENTS
 
     #find focus lane and focus plants centers
