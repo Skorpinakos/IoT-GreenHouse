@@ -5,7 +5,7 @@ from image_utils import detect_edges,edge_image_to_edge_points_np_list
 
 path="Edge_Compute/images/"
 out_path="Edge_Compute/diagnostics/"
-filename='Capture1.png' #set image to test
+filename='Capture2.png' #set image to test
 
 def process_image(filename,path,out_path,diagnostics_mode='none'):
 
@@ -78,4 +78,4 @@ def process_image(filename,path,out_path,diagnostics_mode='none'):
 
 
     return sorted(list(lines.keys())),lines,centroids #returns the sorted y coordinate of lines and the lines and centroids dicts 
-#process_image(filename,path,out_path,"time+final")
+process_image(filename,path,out_path,"full")
