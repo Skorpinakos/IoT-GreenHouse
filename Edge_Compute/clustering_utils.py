@@ -7,7 +7,7 @@ import math
 def check_cluster_multitudes(test_cases,edge_point_list):
     wcss = []
     for i in test_cases:
-        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=60, n_init=6, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
+        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=30, n_init=3, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
         kmeans.fit(edge_point_list)
         wcss.append(kmeans.inertia_)
     return wcss
@@ -38,7 +38,11 @@ def find_centroids(edge_point_list,n):
 
     centers_y=kmeans.cluster_centers_[:,0]
     centers_x=kmeans.cluster_centers_[:,1]
-    return centers_x,centers_y
+    labels=kmeans.labels_
+    #for i in range(len(labels)):
+        #print(labels[i])
+        #print(edge_point_list[i])
+    return centers_x,centers_y,labels
 
 
 def plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,_,lines_y):
@@ -60,10 +64,12 @@ def find_lines(test_cases,_,centroids_y): #better use https://stackoverflow.com/
     point_list=[]
     centroids_x=[0]*len(centroids_y) 
     for point in range(len(centroids_y)):
+        #print(centroids_y[point])
         point_list.append([centroids_x[point],centroids_y[point]])
     wcss=check_cluster_multitudes(test_cases,point_list)
     lines_multitude=find_elbow(wcss,test_cases)
     #print(lines_multitude)
-    _,results_y=find_centroids(point_list,lines_multitude)
-    return _,results_y
+    results_y,results_x,labels=find_centroids(point_list,lines_multitude)
+    #print(results_y,j,i)
+    return results_x,results_y,labels
 
