@@ -1,0 +1,128 @@
+<div class="container-fluid">   
+    <div class="my-5 d-flex justify-content-center">
+        <img id='load_it'  class='load_it' style='display:none' src="images/map_screenshot.png"></img>
+        <canvas id="myCanvas" width="1100" height="600"></canvas>
+    </div> 
+    <div class="row">
+        <div class="col-2 my-3"></div>
+        {{#with failure_info}}
+        <div class="col-8 my-3">
+            <form method="POST" action="/contractor_update?failure_id={{id}}&locale_id={{locale}}&key={{key}}" enctype="multipart/form-data">
+            
+                <div hidden>
+                    <input type="text" class="form-control" size="30"  id="random" name="random" placeholder=id>
+                </div>
+                <h3 class="my-1">Τοποθεσία</h3>
+                <div class="row">
+                    <legend class='mt-3' for="coords"> Συντεταγμένες (px) </legend>
+                    <em class="mb-1"> Εισάγετε την ακριβή τοποθεσία της βλάβης κάνοντας click στον παραπάνω χάρτη.</em>
+                    <div class="col-6 my-1">
+                        <label for="coords"> Δυτικά </label>
+                        <input type="text" class="form-control" size="30"  id="West" name="West" placeholder="{{coordinates_x}}">
+                        <p id = "x" style="display: none ;">{{coordinates_x}}</p>
+                    </div>
+                    <div class="col-6 my-1">
+                        <label for="coords"> Βόρεια </label>
+                        <input type="text" class="form-control" size="30"  id="North" name="North" placeholder="{{coordinates_y}}">
+                        <p id = "y" style="display: none ;">{{coordinates_y}}</p>
+                        <p id = "f_id" style="display: none ;">{{id}}</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 my-2">
+                        <legend for="building"> Κτίριο </legend>
+                        <select class="form-control" id = "building" name="building">
+                            <option value="{{building}}">{{building}}</option>
+                        {{/with}}
+                            {{#each buildings}}
+                                <option value="{{{name}}}"> {{name}} </option>
+                            {{/each}}
+                        {{#with failure_info}}
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="my-2"> Ημερομηνία δημιουργίας </h3>
+                <div class="row">
+                    <div class="col-12 my-2">
+                        <input class="form-control" type="text" size="30"  id="creation_date" name="creation_date" placeholder="{{creation_date}}">
+                    </div>
+                </div>
+
+                <h3 class="my-2"> Ημερομηνία αρχειοθέτησης </h3>
+                <div class="row">
+                    <div class="col-12 my-2">
+                        <input class="form-control" type="text" size="30"  id="closure_date" name="closure_date" placeholder="{{closure_date}}">
+                    </div>
+                </div>
+                
+                <h3 class="my-2"> Κατηγορία </h3>
+                    <div class="row">
+                        <div class="col-12 my-2">
+                        <select class="form-control" id = "category" name="category">
+                            <option value="{{category}}">{{category}}</option>
+                        {{/with}}
+                            {{#each categories }}
+                                <option value={{name}}> {{name}} </option>
+                            {{/each}}
+                        {{#with failure_info}}
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="my-2"> Στοιχεία επικοινωνίας </h3>
+                    <div class="row">
+                        <div class="col-6 my-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <legend>Τηλέφωνο:</legend>
+                                </div>
+                                <div class="col-4 text-start">
+                                    <p class="fs-4">{{contact_phone}}</p>
+                                </div>
+                            
+                            </div>
+                        </div>
+                        <div class="col-6 my-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <legend>E-mail:</legend>
+                                </div>
+                                <div class="col-4 text-start">
+                                    <p class="fs-4">{{contact_email}}</p>
+                                </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+
+                <h3 class="my-2"> Λεπτομέρειες αναφοράς </h3>
+                    <div class="row my-2">
+                        <legend for="title"> Τίτλος </legend>
+                        <input class="form-control" type="text" size="30"  id="title" name="title" placeholder="{{title}}">
+                    </div>
+                    <div class="row my-2">
+                        <legend for="description"> Περιγραφή </legend>
+                        <textarea rows="10" class="form-control" type="text" size="200" id="description" name="description" placeholder="">{{description}}</textarea>
+                    </div>
+
+                <div class="row my-4">
+                    <div class="col-3"></div>
+                    <div class="col-6 recent justify-content-center d-flex rounded"> 
+                        <img class='rounded img-fluid' src={{image_path}}>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+                {{/with}} 
+
+                <div class="row my-4">
+                    <div class="col-11"></div>
+                    <div class="col-1 mt-4">
+                        <button type="submit" class="btn btn-primary"> Ενημέρωση </button>
+                    </div>
+                </div>          
+            </form>
+        </div>
+</div>
+<script src="scripts/admin.js"></script>

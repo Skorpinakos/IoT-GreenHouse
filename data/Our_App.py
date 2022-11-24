@@ -11,7 +11,7 @@ entities_properties = {
                "JOIN_DATE": ['date', False]},
 
     'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "WIDTH": ['float', False],
-                   "HEIGHT": ['float', False], "LENGTH": ['float', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
+                   "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
 
     'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
                                "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "SOIL_PH": ['float', False], "CO2": ['float', False],
@@ -20,8 +20,8 @@ entities_properties = {
     'PLANT': {"ID": ['integer', True], "TYPE": ['string', False], "LINE": ['integer', False], "ROW": ['integer', False],
               "LIFESPAN": ['integer', False], "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
-    'PLANT_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
-                          "GROWTH": ['float', False], "HEALTH": ['float', False], "PHOTO": ['string', False]},
+    'PLANT_MEASUREMENT': {"ID": ['integer', True], "PLANT_ID": ['integer', False, 'PLANT', 'ID'], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
+                          "GROWTH": ['float', False], "HEALTH": ['float', False], "MEASUREMENT_PHOTO": ['string', False]},
 }
 # make a programm to scan the database and fill the dictionary based on the entities on the database
 
@@ -40,6 +40,6 @@ except IOError:
             f = open('{}.csv'.format(i), 'w')
             f.close()
 
-d = datas.DataModel('Our_App', entities_properties)
+d = datas.DataModel('data/Our_App', entities_properties)
 d.close()
 ###################

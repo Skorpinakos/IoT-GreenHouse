@@ -18,7 +18,7 @@ def create_all():
                    "JOIN_DATE": ['date', False]},
 
         'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "WIDTH": ['float', False],
-                       "HEIGHT": ['float', False], "LENGTH": ['float', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
+                       "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
 
         'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
                                    "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "SOIL_PH": ['float', False], "CO2": ['float', False],
@@ -27,8 +27,8 @@ def create_all():
         'PLANT': {"ID": ['integer', True], "TYPE": ['string', False], "LINE": ['integer', False], "ROW": ['integer', False],
                   "LIFESPAN": ['integer', False], "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
-        'PLANT_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
-                              "GROWTH": ['float', False], "HEALTH": ['float', False], "PHOTO": ['string', False]},
+        'PLANT_MEASUREMENT': {"ID": ['integer', True], "PLANT_ID": ['integer', False, 'PLANT', 'ID'], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
+                              "GROWTH": ['float', False], "HEALTH": ['float', False], "MEASUREMENT_PHOTO": ['string', False]},
     }
 
     def get_relevant(entity, attribute):
@@ -118,7 +118,7 @@ def create_all():
                                 type = random.choice(
                                     list(type_info.keys()))
                                 temp_dict[name] = type
-                            elif name == 'PHOTO':
+                            elif name == 'MEASUREMENT_PHOTO' or name == 'GREENHOUSE_PHOTO':
                                 temp_dict[name] = str(temp_dict['ID']) + '.jpg'
                         elif typos == 'float':
                             if name == 'COORDS_X':

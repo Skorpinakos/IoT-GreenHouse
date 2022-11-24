@@ -1,0 +1,48 @@
+<div class="container-fluid">   
+    <div class="my-5 d-flex justify-content-center">
+        {{!<img class='rounded img-fluid' src="images/map_screenshot.png"></img>}}
+        <img id='load_it'  class='load_it' style='display:none' src="images/map_screenshot.png"></img>
+        <canvas id="myCanvas" width="1100" height="600"></canvas>
+    </div> 
+    <div class="row my-5" >
+        <div class = "col-2"></div>
+        <div class="col-8"> 
+            {{#with failure_info}}
+            <div class="row recent rounded mb-3">
+                <div class="col-4"> 
+                    <img class='image_failure rounded img-fluid' src={{image_path}}>
+                </div>
+                <div class="col-8"> 
+                    
+                    <h3 class='text-center mt-2 mb-4'>{{title}}</a></h3>
+                    <p><strong>Ημερομηνία δημιουργίας:</strong> {{creation_date}}</p>
+                    <p><strong>Σειριακός αναφοράς:</strong> {{id}}</p>
+                    {{#if closure_date}}
+                    <p><strong>Ημερομηνία αρχειοθέτησης:</strong> {{closure_date}}</p>
+                    {{/if}}
+                    {{#unless closure_date}}
+                    <p><strong> Κατάσταση:</strong> {{state}}</p>
+                    {{/unless}}
+                    <p><strong>Περιγραφή:</strong> {{description}}</p>
+
+                    <legend> Τοποθεσία </legend>
+                    <p><strong id="'test">Κτίριο:</strong> {{building}}</p>
+                    <div class="row">
+                        <div class="col-3">
+                            <p id="x_coords"><strong>Δυτικά: </strong> {{coords_to_show_x}} </p>
+                            <p id = "x" style="display: none ;">{{coordinates_x}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <p id="y_coords"><strong>Βόρεια: </strong>{{coords_to_show_y}}</p>
+                            <p id = "y" style="display: none ;">{{coordinates_y}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/with}}
+        </div>
+    </div>
+</div>
+<script src="scripts/draw_map_failure_page.js"></script>
