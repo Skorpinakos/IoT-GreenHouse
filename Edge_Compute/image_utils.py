@@ -14,6 +14,7 @@ def edge_image_to_edge_points_np_list(edge_image):
 def detect_edges(filename,path,out_path, thres1=150,thres2=220): 
     # Read the original image
     img = cv2.imread(path+filename) 
+    #print(img)
     # Convert to graycsale
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Blur the image for better edge detection

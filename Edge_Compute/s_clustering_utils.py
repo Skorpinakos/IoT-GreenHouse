@@ -5,9 +5,11 @@ import math
 
 
 def check_cluster_multitudes(test_cases,edge_point_list):
+    #print(edge_point_list)
     wcss = []
     for i in test_cases:
         kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=30, n_init=3, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
+        #print(edge_point_list)
         kmeans.fit(edge_point_list)
         wcss.append(kmeans.inertia_)
     return wcss
