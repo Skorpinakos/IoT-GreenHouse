@@ -5,7 +5,7 @@ from image_utils import detect_edges,edge_image_to_edge_points_np_list
 
 path="Edge_Compute/images/"
 out_path="Edge_Compute/diagnostics/"
-filename='Capture2.png' #set image to test
+filename='Capture1.png' #set image to test
 
 def process_image(filename,path,out_path,diagnostics_mode='none'):
 
