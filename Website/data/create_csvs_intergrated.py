@@ -17,14 +17,14 @@ def create_all():
         'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "BIRTH_DATE": ['date', False],
                    "JOIN_DATE": ['date', False]},
 
-        'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "WIDTH": ['float', False],
+        'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
                        "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
 
         'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
                                    "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "SOIL_PH": ['float', False], "CO2": ['float', False],
                                    "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
-        'PLANT': {"ID": ['integer', True], "TYPE": ['string', False], "LINE": ['integer', False], "ROW": ['integer', False],
+        'PLANT': {"ID": ['integer', True], "TYPE": ['string', False], "COLUMN": ['integer', False], "ROW": ['integer', False],
                   "LIFESPAN": ['integer', False], "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
         'PLANT_MEASUREMENT': {"ID": ['integer', True], "PLANT_ID": ['integer', False, 'PLANT', 'ID'], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
@@ -32,9 +32,19 @@ def create_all():
     }
 
     def get_relevant(entity, attribute):
-        df = pd.read_csv("{}.csv".format(entity))
+        df = pd.read_csv("data\\temp\\{}.csv".format(entity))
         saved_column = df[attribute]
         return list(saved_column)
+
+    def loadNonForeign(entity, attribute):
+        type = entities_properties[entity][attribute][0]
+        if type == 'text':
+            type = 'str'
+        elif type == 'integer':
+            type = 'int'
+        df = pd.read_csv(
+            "data\\temp\\{}.csv".format(entity), dtype={attribute: type})
+        return list(df[attribute])
 
     def make_without_foreign(leksiko, entity):
         primaryKey = 1
@@ -69,10 +79,8 @@ def create_all():
                         elif attribute == 'JOIN_DATE':
                             temp_dict[name] = fake.date_between(
                                 start_date='-15y')
-
                     else:
                         print('error   ', typos, entity)
-
                 if primary == True:
                     while True:
                         temp = primaryKey
@@ -82,15 +90,14 @@ def create_all():
                             primaries.append(temp)
                             break
             list_of_dicts.append(temp_dict)
-        with open('{}.csv'.format(entity), 'w', encoding='utf8') as csvfile:
+        with open('data\\temp\\{}.csv'.format(entity), 'w', encoding='utf8') as csvfile:
             writer = csv.DictWriter(
                 csvfile, fieldnames=entity_diction.keys())
             writer.writeheader()
             writer.writerows(list_of_dicts)
         return primaries
 
-    def make_with_foreign(leksiko, entity, primars):
-        type_info = {'Lettuce': 12}
+    def make_with_foreign(leksiko, entity):
         avg_size = 0.3
         primaryKey = 1
         entity_diction = leksiko[entity]
@@ -107,18 +114,12 @@ def create_all():
                 if len(entity_diction[attribute]) < 4:
                     if primary == False:
                         if typos == 'integer':
-                            if name == 'LINE':
-                                temp_dict[name] = random.randint(5, 15)
-                            if name == 'ROW':
+                            if name == 'ROWS':
                                 temp_dict[name] = random.randint(5, 10)
-                            elif name == 'LIFESPAN':
-                                temp_dict[name] = type_info[type]
+                            elif name == 'COLUMNS':
+                                temp_dict[name] = random.randint(5, 15)
                         if typos == 'string':
-                            if name == 'TYPE':
-                                type = random.choice(
-                                    list(type_info.keys()))
-                                temp_dict[name] = type
-                            elif name == 'MEASUREMENT_PHOTO' or name == 'GREENHOUSE_PHOTO':
+                            if name == 'MEASUREMENT_PHOTO' or name == 'GREENHOUSE_PHOTO':
                                 temp_dict[name] = str(temp_dict['ID']) + '.jpg'
                         elif typos == 'float':
                             if name == 'COORDS_X':
@@ -187,7 +188,7 @@ def create_all():
                             entity_diction[attribute][2], entity_diction[attribute][3]))
 
             list_of_dicts.append(temp_dict)
-        with open("{}.csv".format(entity), 'w', encoding='utf8') as csvfile:
+        with open("data\\temp\\{}.csv".format(entity), 'w', encoding='utf8') as csvfile:
             writer = csv.DictWriter(
                 csvfile, fieldnames=entity_diction.keys())
             writer.writeheader()
@@ -195,15 +196,66 @@ def create_all():
 
         return primaries
 
-    prims = {}
+    def make_plant(leksiko):
+        type_info = {'Lettuce': 12}
+        primaryKey = 1
+        entity_diction = leksiko['PLANT']
+        list_of_dicts = []
+        primaries = []
+        end = random.randint(100, 200)
+        greenhouses = loadNonForeign(
+            'GREENHOUSE', 'ID')
+        rows = loadNonForeign('GREENHOUSE', 'ROWS')
+        columns = loadNonForeign('GREENHOUSE', 'COLUMNS')
+        for i in range(len(greenhouses)):
+            greenhouse = greenhouses.pop()
+            r = rows.pop()
+            c = columns.pop()
+            for j in range(r):
+                for k in range(c):
+                    temp_dict = {}
+                    for attribute in entity_diction.keys():
+                        typos = entity_diction[attribute][0]
+                        primary = entity_diction[attribute][1]
+                        name = attribute
+                        if len(entity_diction[attribute]) < 4:
+                            if primary == False:
+                                if typos == 'integer':
+                                    if name == 'COLUMN':
+                                        temp_dict[name] = k
+                                    elif name == 'ROW':
+                                        temp_dict[name] = j
+                                    elif name == 'LIFESPAN':
+                                        temp_dict[name] = type_info[type]
+                                if typos == 'string':
+                                    if name == 'TYPE':
+                                        type = random.choice(
+                                            list(type_info.keys()))
+                                        temp_dict[name] = type
 
-    prims['CLIENT'] = make_without_foreign(entities_properties, 'CLIENT')
-    prims['GREENHOUSE'] = make_with_foreign(
-        entities_properties, 'GREENHOUSE', prims)
-    prims['GREENHOUSE_MEASUREMENT'] = make_with_foreign(
-        entities_properties, 'GREENHOUSE_MEASUREMENT', prims)
-    prims['PLANT'] = make_with_foreign(
-        entities_properties, 'PLANT', prims)
-    prims['PLANT_MEASUREMENT'] = make_with_foreign(
-        entities_properties, 'PLANT_MEASUREMENT', prims)
+                            else:
+                                while True:
+                                    temp = primaryKey
+                                    primaryKey += 1
+                                    if temp not in primaries:
+                                        temp_dict[name] = temp
+                                        primaries.append(temp)
+                                        break
+                        elif attribute == 'GREENHOUSE_ID':
+                            temp_dict[name] = greenhouse
+
+                    list_of_dicts.append(temp_dict)
+        with open("data\\temp\\{}.csv".format('PLANT'), 'w', encoding='utf8') as csvfile:
+            writer = csv.DictWriter(
+                csvfile, fieldnames=entity_diction.keys())
+            writer.writeheader()
+            writer.writerows(list_of_dicts)
+
+        return primaries
+
+    make_without_foreign(entities_properties, 'CLIENT')
+    make_with_foreign(entities_properties, 'GREENHOUSE')
+    make_with_foreign(entities_properties, 'GREENHOUSE_MEASUREMENT')
+    make_plant(entities_properties)
+    make_with_foreign(entities_properties, 'PLANT_MEASUREMENT')
     return

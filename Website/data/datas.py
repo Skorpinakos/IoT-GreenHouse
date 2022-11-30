@@ -265,7 +265,7 @@ class DataModel():
 
     def loadTable(self, tableName, tableDict):
         try:
-            csvFile = tableName + '.csv'
+            csvFile = 'data\\temp\\{}'.format(tableName) + '.csv'
             query = self.createTable(tableName, tableDict)
             with open(csvFile, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f, delimiter=",", quotechar='"')
