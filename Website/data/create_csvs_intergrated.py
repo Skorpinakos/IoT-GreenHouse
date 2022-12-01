@@ -1,11 +1,11 @@
 import pandas as pd
 import csv
-import string
+import glob
 import random
-import pathlib
+import shutil
 from faker import Faker
 from unidecode import unidecode
-import datetime
+import os
 
 
 def create_all():
@@ -51,7 +51,10 @@ def create_all():
         entity_diction = leksiko[entity]
         list_of_dicts = []
         primaries = []
-        end = random.randint(60, 90)
+        if entity == 'CLIENT':
+            end = random.randint(30, 50)
+        if entity == 'GREENHOUSE':
+            end = random.randint(10, 20)
         for i in range(1, end):
             temp_dict = {}
             for attribute in entity_diction.keys():
@@ -103,6 +106,11 @@ def create_all():
         entity_diction = leksiko[entity]
         list_of_dicts = []
         primaries = []
+        if entity == 'PLANT_MEASUREMENT':
+            measurement_paths = glob.glob("public\\images\\Lettuce\\*")
+        elif entity == 'GREENHOUSE':
+            greenhouse_paths = glob.glob("public\\images\\House\\*")
+            print(greenhouse_paths)
         end = random.randint(100, 200)
 
         for i in range(1, end):
@@ -119,8 +127,22 @@ def create_all():
                             elif name == 'COLUMNS':
                                 temp_dict[name] = random.randint(5, 15)
                         if typos == 'string':
-                            if name == 'MEASUREMENT_PHOTO' or name == 'GREENHOUSE_PHOTO':
+                            if name == 'MEASUREMENT_PHOTO':
                                 temp_dict[name] = str(temp_dict['ID']) + '.jpg'
+                                image_path = random.choice(measurement_paths)
+                                cwd = os.path.abspath(os.getcwd())
+                                print(image_path)
+                                shutil.copyfile(
+                                    cwd + '\\' + image_path, cwd + "\\public\\images\\measurements\\" +
+                                    str(temp_dict['ID']) + '.jpg')
+                            elif name == 'GREENHOUSE_PHOTO':
+                                temp_dict[name] = str(
+                                    temp_dict['ID']) + '.jpg'
+                                image_path = random.choice(greenhouse_paths)
+                                cwd = os.path.abspath(os.getcwd())
+                                shutil.copyfile(
+                                    cwd + '\\' + image_path, cwd + "\\public\\images\\greenhouses\\" +
+                                    str(temp_dict['ID']) + '.jpg')
                         elif typos == 'float':
                             if name == 'COORDS_X':
                                 temp_dict[name] = random.uniform(200, 700)
@@ -203,8 +225,7 @@ def create_all():
         list_of_dicts = []
         primaries = []
         end = random.randint(100, 200)
-        greenhouses = loadNonForeign(
-            'GREENHOUSE', 'ID')
+        greenhouses = loadNonForeign('GREENHOUSE', 'ID')
         rows = loadNonForeign('GREENHOUSE', 'ROWS')
         columns = loadNonForeign('GREENHOUSE', 'COLUMNS')
         for i in range(len(greenhouses)):
