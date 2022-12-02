@@ -1,0 +1,88 @@
+<div class="container-fluid">   
+
+    <div class="row my-5" >
+        <div class = "col-2"></div>
+        <div class="col-8"> 
+            {{#with plant_measurement_info}}
+            <div class="row recent rounded mb-3">
+                <div class="row rounded mb-3">
+                    <h4 class='text-center   mt-1 mb-3'>Plant Info</h4>
+                </div>
+                <div class="row text-center">  
+                    <p class='plant_id'>ID : {{P_ID}}</p>
+                    <p class='greenhouse_id'>Greenhouse : {{GREENHOUSE_ID}}</p>
+                    <p class='type'>Type : {{TYPE}}</p>
+                    <p class='x'>Row : {{ROW}}</p>
+                    <p class='y'>Column : {{COLUMN}}</p>
+              </div>
+                              <div class="row">
+                    <div class = "col-1"></div>
+                    <div class = "col-10">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">First</th>
+                            <th scope="col">Last</th>
+                            <th scope="col">Handle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">3</th>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class = "col-1"></div>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <div class="row my-5" >
+        <div class = "col-2"></div>
+        <div class="col-8"> 
+            <div class="row recent rounded mb-3">
+                <dir class="row">
+                    <h4 class='text-center mt-1 mb-3'>Last Measurement</h4>
+                </dir>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8"> 
+                        <img class='plant_measurement_image rounded' src={{MEASUREMENT_PHOTO}}>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+                <div class="row text-center mt-1 mb-3">
+                    <div class="col-2"></div>
+                    <div class="col-8"> 
+                        <p class='greenhouse_id'>ID : {{PM_ID}}</p>
+                        <p class='health'>Health : {{HEALTH}}</p>
+                        <p class='size'>Size : {{SIZE}}</p>
+                        <p class='growth'>Growth : {{GROWTH}}</p>
+                        <p class='measurement_date'>Date : {{MEASUREMENT_DATE}}</p>
+                        <p class='measurement_time'>Time : {{MEASUREMENT_TIME}}</p>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div>
+            {{/with}}
+        </div>
+    </div>
+</div>

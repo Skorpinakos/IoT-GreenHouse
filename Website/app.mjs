@@ -47,89 +47,71 @@ app.use(express.static('public')); //make the 'public' directory public (users c
 app.engine('hbs', engine({ extname: 'hbs' })); //for using 'hbs' file extension instead of 'handlebars'
 app.set('view engine', 'hbs'); //set rendering engine the handlebars
 
-
-// entities_properties = {
-
-//     'Location': {"id": ['integer', True], "building": ['string', False], "coordinates_x": ['integer', False], "coordinates_y": ['integer', False]},
-
-//     'Category': {"id": ['integer', True], "category_name": ['string', False, True], "urgency": ['integer', False], "mean_repair_time": ['time', False]},
-
-//     'Technician': {"id": ['integer', True], "firstname": ['string', False], "lastname": ['string', False], "phone_number": ['string', False],
-//                    "email": ['string', False], "specialization": ['string', False], "repairs": ['integer', False], "mean_repair_time": ['time', False]},
-
-//     'Ticket': {"id": ['integer', True], "title": ['string', False], "description": ['text', False], "creation_date": ['date', False],
-//                "closure_date": ['date', False], "state": ['string', False], "image_path": ['string', False], "contact_phone": ['string', False], "contact_email": ['string', False],
-//                "locale": ['integer', False, 'Location', 'id'], "type": ['integer', False, 'Category', 'id']},
-
-//     'Contract': {"id": ['integer', True], "key": ['string', False, True], "details": ['text', False], "date": ['date', False],
-//                  "cost": ['float', False], "damage": ['integer', False, 'Ticket', 'id'], "repairman": ['integer', False, 'Technician', 'id']}
-
-// }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////// temp data before implementation of db
 let x0=21.783835;
 let x_ratio=(21.795379-x0)/1100;
 let y0=38.292066;
 let y_ratio=(y0-38.286980)/600;
 let ips={};
 let last_clear_time=Date.now();
-let buildings = [
-   {'name' :'Κτίριο Τμήματος Ηλεκτρολόγων Μηχανικών και Τεχνολογίας Υπολογιστών'},
-    {'name' : 'Τρία συγκροτήματα αμφιθεάτρων της Σχολής Θετικών Επιστημών (ΑΘΕ)'},
-    {'name' :'Κτίριο Τμήματος Φυσικής'},
-    {'name' :'Κτίριο Τμήματος Χημείας'},
-    {'name' :'Κτίριο Μηχανικών Ηλεκτρονικών Υπολογιστών και Πληροφορικής'},
-    {'name' :'Κτίριο Τμήματος Ηλεκτρολόγων Μηχανικών και Τεχνολογίας Υπολογιστών'},
-    {'name' :'Κτίριο Τμήματος Μηχανολόγων και Αεροναυπηγών Μηχανικών'},
-    {'name' :'Κτίριο Τμήματος Πολιτικών Μηχανικών'},
-    {'name' :'Κτίριο Επιστημών της Εκπαίδευσης και Κοινωνικής Εργασίας'},
-    {'name' :'Κτίριο Τμήματος Χημικών Μηχανικών'},
-    {'name' :'Κτίριο Τμήματος Βιολογίας'},
-    {'name' :'Κτίριο Τμήματος Γεωλογίας'},
-    {'name' :'Κτίριο Τμήματος Μαθηματικών'},
-    {'name' :'Κτίριο Κεντρικής Βιβλιοθήκης και Κέντρου Πληροφόρησης'},
-    {'name' :'Κτίριο Συνεδριακού και Πολιτιστικού Κέντρου του Πανεπιστημίου'},
-    {'name' :'Μουσείο Επιστημών και Τεχνολογίας'},
-    {'name' :'Ραδιοφωνικός Σταθμός “UPfm”'},
-    {'name' :'Τμήμα Διοίκησης Επιχειρήσεων'},
-]
-
-let categories = [
-    {'name' : 'Ηλεκτρολογικά'},
-    {'name' : 'Μηχανολογικά'},
-    {'name' : 'Υδραυλικά'},
-    {'name' : 'Οικοδομικά'}
-
-]
-
-let states =[
-    {'name':'Υπό επεξεργασία'},
-    {'name':'Ανοιχτή'},
-    {'name':'Υπό επισκευή'},
-    {'name':'Κλειστή'}
-]
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// backend functions
 let give_home_page = function(req,res){
     //Serves the main page
-    let displayedRecents = 6;
-    model.getRecents(displayedRecents, (err, rows) => {   /////QUERY DONE//////////////////////////////////////////////////
+    let displayedRecents = 3;
+    model.getPlantRecents(displayedRecents, (err, plant_rows) => {  
+      model.getGreenhouseRecents(displayedRecents, (err, greenhouse_rows) => { 
         if (err){
           console.log(err.message);
         } 
-        console.log('Recents', rows)
-        for (let i in rows){
-          rows[i].MEASUREMENT_PHOTO = 'images/measurements/' + rows[i].MEASUREMENT_PHOTO
-          rows[i].GREENHOUSE_PHOTO = 'images/greenhouses/' + rows[i].GREENHOUSE_PHOTO
-          rows[i].HEALTH = (rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
+        for (let i in plant_rows){
+          plant_rows[i].MEASUREMENT_PHOTO = 'images/measurements/' + plant_rows[i].MEASUREMENT_PHOTO
+          plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
         }
-        for (let measurement of rows){
-          console.log(measurement)
+        for(let i in greenhouse_rows){
+          greenhouse_rows[i].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouse_rows[i].GREENHOUSE_PHOTO
+          greenhouse_rows[i].TEMPERATURE = (greenhouse_rows[i].TEMPERATURE.toFixed(2)) + ' C'
+          greenhouse_rows[i].HUMIDITY = (greenhouse_rows[i].HUMIDITY.toFixed(2) * 100).toFixed(2) + '%'
         }
-        
-        //res.render('home_page', {layout : 'layout', recent_highlights:rows });
-        res.render('home_page', {layout : 'layout', recent_highlights:rows });
-      });
+
+        res.render('home_page', {layout : 'layout', plant_recents:plant_rows, greenhouse_recents:greenhouse_rows });
+      })});
+};
+
+let give_plant_page = function(req,res){
+  let measurement_id=req.query['ID'];
+  console.log(measurement_id)
+  model.get_plant_info(measurement_id, (err, rows) => {   
+      if (err){
+        console.log(err.message);
+      } 
+      rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' + rows[0].MEASUREMENT_PHOTO
+      rows[0].HEALTH = (rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
+      if (rows.length  == 1){
+        rows[0].GROWTH = 0 + ' cm'
+      }
+      else if (rows.length  == 2){
+        rows[0].GROWTH = (rows[0].GROWTH - rows[1].GROWTH).toFixed(2) + ' cm'
+      }
+      rows[0].SIZE = rows[0].SIZE.toFixed(2) + ' cm'
+      console.log(rows)
+      res.render('plant', {layout : 'layout',plant_measurement_info:rows[0]});
+    });
+};
+
+let give_greenhouse_page = function(req,res){
+let greenhouse_id=req.query['ID'];
+model.get_greenhouse_info(greenhouse_id, (err, rows) => {   
+    if (err){
+      console.log(err.message);
+    } 
+    rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + rows[0].GREENHOUSE_PHOTO;
+    rows[0].TEMPERATURE = rows[0].TEMPERATURE.toFixed(2) + ' C'
+    rows[0].HUMIDITY = rows[0].HUMIDITY.toFixed(2) + ' %'
+    rows[0].SUNLIGHT = rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
+    rows[0].CO2 = rows[0].CO2.toFixed(2) + ' ppm'
+
+    res.render('greenhouse', {layout : 'layout', greenhouse_measurement_info:rows[0]});
+  });
 };
 
 
@@ -267,9 +249,6 @@ let give_admin_page = function(req,res){
         }
         let info_to_pass={};
         Object.assign(info_to_pass,rows[0]);
-     
-        info_to_pass['coords_to_show_x']=Math.round((info_to_pass['coordinates_x']*x_ratio+x0)*100000000)/100000000;
-        info_to_pass['coords_to_show_y']=Math.round((y0-info_to_pass['coordinates_y']*y_ratio)*100000000)/100000000;
         
         //console.log(rows)
         res.render('admin_page', {layout : 'layout', failure_info:info_to_pass, buildings : buildings, categories : categories, states:states});
@@ -277,30 +256,6 @@ let give_admin_page = function(req,res){
       
 };
 
-
-let give_failure_page = function(req,res){
-    let failure_id=req.query['failure_id'];
-    model.get_failure_info(failure_id, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        //console.log(rows)
-        let info_to_pass={};
-        Object.assign(info_to_pass,rows[0]);
-       
-        info_to_pass['coords_to_show_x']=Math.round((info_to_pass['coordinates_x']*x_ratio+x0)*100000000)/100000000;
-        info_to_pass['coords_to_show_y']=Math.round((y0-info_to_pass['coordinates_y']*y_ratio)*100000000)/100000000;
-
-        
-        //console.log(info_to_pass);
-        res.render('failure', {layout : 'layout',failure_info:info_to_pass});
-      });
-    // Παίρνω όλα τα πεδία και κάνω δυναμικό plot με handlebars, δες στο αρχείο του failure
-    //console.log(failure_id);
-    //check if serial number (the id) exists in failure table and insert the coresponding failure info into the failure_info bellow
-    // fed ton an #each helper), we can use #with if we end up using just 1 item but each works pretty much the same and leaves the possibility for more than one )
-
-};
 
 let give_report_page = function(req,res){
 
@@ -427,10 +382,7 @@ let submit_report = function(req,res){
             });
         });
     }); 
-        //console.log(info);
-        //console.log(image_path);
-        //// add query to push new report_type entry in db using report info
-        //// also add code to save image in disc and set a path that will be inputed in the db
+
     }
     else{
         let error={'e_type':'failed application','message':'Η υποβολή ήταν ανεπιτυχής'};
@@ -574,7 +526,8 @@ router.route('/failure_coordinates_by_id').get(return_failure_coords);
 router.route('/report').get(give_report_page);
 router.route('/history').get(give_history_page);
 router.route('/search').get(give_result_page);
-router.route('/failure').get(give_failure_page);
+router.route('/plant').get(give_plant_page);
+router.route('/greenhouse').get(give_greenhouse_page);
 router.route('/report_complete').post(upload.any(), submit_report);
 router.route('/contractor_login').get(give_contractor_login_page);
 router.route('/contractor_page').get(give_contractor_page);

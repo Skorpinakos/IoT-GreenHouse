@@ -5,63 +5,48 @@
 
     <div class="row">
       
-      <div class="col-8"> 
-          <h2 class = "fs-3 text-center my-4">  Facilities </h2>
-        <div class="d-flex justify-content-center">
-          <img class='rounded img-fluid' src="images/farmland.jpg" width="1100" height="600"></img>
-        </div>
-      </div>
-        {{!-- <h2 class = "fs-3 text-center my-5">  Λίγα λόγια για την υπηρεσία </h2>
-        <p class = "text-start text-wrap fs-5"> 
-          Η υπηρεσία αυτή αναπτύχθηκε στα πλαίσια του μαθήματος <strong> Προγραμματισμός Διαδικτύου ECE_ΓΚ802</strong>
-          από τους φοιτητές Ιωάννη Τσάμπρα και Σταύρο Κάνια. Στόχος της εφαρμογής είναι να δοθεί η ευκαιρία 
-          στα μέλη της Πανεπιστημιακής κοινότητας να αναφέρουν εύκολα και γρήγορα οποιαδήποτε βλάβη συναντήσουν στις
-          εγκαταστάσεις του Πανεπιστημίου. Με τον τρόπο αυτό προλαμβάνονται μεγάλης κλίμακας ζημιές στις εγκαταστάσεις του Πανεπιστημίου
-          και δημιουργείται ένα ασφαλές και φιλόξενο περιβάλλον για κάθε μέλος της κοινότητας.</p>
-          <p class = "fs-5">
-            Μέσα από αυτή την υπηρεσία ο χρήστης μπορεί:
-          </p>
-          <ul class = "fs-5">
-            <li>Να ανεβάσει φωτογραφία της βλάβης.</li>
-            <li>Να εισάγει την τοποθεσία της βλάβης πατώντας πάνω στο χάρτη της Πανεπιστημιούπολης.</li>
-            <li>Να επιλέξει σε ποιο κτίριο βρίσκεται η βλάβη.</li>
-            <li>Να δηλώσει τον τύπο της βλάβης.</li>
-            <li>Να ενημερώνεται μέσω e-mail για την βλάβη.</li>
-            <li>Να λάβει πληροφορίες για κάποια βλάβη είτε μπαίνοντας στο ιστορικό και πατώντας τη στο χάρτη 
-              είτε αναζητώντας τη στη μπάρα αναζήτησης.</li>
-          </ul>
-
-          <ul class="list-unstyled fs-5">
-            <li> Χρησιμοποίησε κι εσύ την υπηρεσία.</li>
-            <li> Χάρισε στον εαυτό σου και στους γύρω σου ένα καλύτερο Πανεπιστήμιο.</li>
-            <li> Γιατί το Πανεπιστήμιο είναι το δεύτερο σπίτι μας.</li>
-          </ul>
-
-          <blockquote class="blockquote lead">
-            <p class="fst-italic">Παιδεία είναι αυτό που επιβιώνει όταν όλα όσα έχουν μαθευτεί ξεχνιούνται.</p>
-          </blockquote>
-          <figcaption class="blockquote-footer fst-italic">
-            B.F. Skinner
-          </figcaption>
-      </div> --}}
-
-      <div class="col-4"> 
-        <div class="col-11"> 
-          <h2 class="fs-3 text-center my-4">Recents</h2>
-            {{#each recent_highlights}}
+      <div class="col-3"> 
+        <div class="col-11" style="margin-left: 10%"> 
+          <h2 class="fs-3 text-center my-4">Greenhouse Recents</h2>
+            {{#each greenhouse_recents}}
             <div class="row recent rounded mb-3">
-              <div class="col-4"> 
+              <div class="col-6"> 
                 <img class='image_recent rounded img-fluid' src={{GREENHOUSE_PHOTO}}>
               </div>
-              <div class="col-4 text-center"> 
-                <h5 class='text-center mt-1 mb-3'> <a href="/measurement?measurement_id={{ID}}">{{ID}}</a></h4>
+              <div class="col-6 text-center"> 
+                <h5 class='text-center mt-1 mb-3'> <a href="/greenhouse?ID={{GREENHOUSE_ID}}"> Greenhouse {{GREENHOUSE_ID}}</a></h4>
+                <p class='greenhouse_id'>Measurement ID : {{ID}}</p>
+                <p class='tempreature'>Tempreature : {{TEMPERATURE}}</p>
+                <p class='humidity'>Humidity : {{HUMIDITY}}</p>
+                <p class='measurement_date'>Date : {{MEASUREMENT_DATE}}</p>
+                <p class='measurement_time'>Time : {{MEASUREMENT_TIME}}</p>
+              </div>
+            </div>
+            {{/each}}
+        </div>
+      </div>
+
+      <div class="col-6"> 
+          <h2 class = "fs-3 text-center mt-4">  Facilities </h2>
+        <div class="d-flex justify-content-center mt-3 mb-3">
+          <img class='facility_map rounded img-fluid text-center' src="images/farmland.jpg"></img>
+        </div>
+      </div>
+
+      <div class="col-3"> 
+        <div class="col-11" style="margin-right: 10%"> 
+          <h2 class="fs-3 text-center my-4">Plant Recents</h2>
+            {{#each plant_recents}}
+            <div class="row recent rounded mb-3">
+              <div class="col-6 text-center"> 
+                <h5 class='text-center mt-1 mb-3'> <a href="/plant?ID={{P_ID}}"> Plant {{P_ID}}</a></h4>
                 <p class='greenhouse_id'>Greenhouse : {{GREENHOUSE_ID}}</p>
                 <p class='type'>Type : {{TYPE}}</p>
                 <p class='health'>Health : {{HEALTH}}</p>
                 <p class='measurement_date'>Date : {{MEASUREMENT_DATE}}</p>
-                <p class='measurement_time'>Date : {{MEASUREMENT_TIME}}</p>
+                <p class='measurement_time'>Time : {{MEASUREMENT_TIME}}</p>
               </div>
-              <div class="col-4"> 
+              <div class="col-6"> 
                 <img class='image_recent rounded img-fluid text-center' src={{MEASUREMENT_PHOTO}}>
               </div>
             </div>
@@ -69,4 +54,6 @@
         </div>
       </div>
     </div>
+  </div>
+      </div>
   </div>
