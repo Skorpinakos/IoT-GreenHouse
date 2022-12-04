@@ -10,12 +10,7 @@ path="Edge_Compute/images/"
 out_path="Edge_Compute/diagnostics/"
 filename='Capture1.png' #set image to test
 default_distance=0.20 
-
-
-
-
 #first shoot
-
 start=0
 end=0
 dx=default_distance
