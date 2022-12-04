@@ -11,7 +11,7 @@ entities_properties = {
                "JOIN_DATE": ['date', False]},
 
     'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
-                   "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIEND_ID": ['integer', False, 'CLIENT', 'ID']},
+                   "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIENT_ID": ['integer', False, 'CLIENT', 'ID']},
 
     'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
                                "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "SOIL_PH": ['float', False], "CO2": ['float', False],

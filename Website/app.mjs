@@ -93,6 +93,7 @@ let give_plant_page = function(req,res){
         rows[0].GROWTH = (rows[0].GROWTH - rows[1].GROWTH).toFixed(2) + ' cm'
       }
       rows[0].SIZE = rows[0].SIZE.toFixed(2) + ' cm'
+      rows[0].LIFESPAN = rows[0].LIFESPAN + ' months'
       console.log(rows)
       res.render('plant', {layout : 'layout',plant_measurement_info:rows[0]});
     });
@@ -108,6 +109,11 @@ model.get_greenhouse_info(greenhouse_id, (err, rows) => {
     rows[0].TEMPERATURE = rows[0].TEMPERATURE.toFixed(2) + ' C'
     rows[0].HUMIDITY = rows[0].HUMIDITY.toFixed(2) + ' %'
     rows[0].SUNLIGHT = rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
+    rows[0].COORDS_X = rows[0].COORDS_X.toFixed(5)
+    rows[0].COORDS_Y = rows[0].COORDS_Y.toFixed(5)
+    rows[0].WIDTH = rows[0].WIDTH.toFixed(2) + ' m'
+    rows[0].LENGTH = rows[0].LENGTH.toFixed(2) + ' m'
+    rows[0].HEIGHT = rows[0].HEIGHT.toFixed(2) + ' m'
     rows[0].CO2 = rows[0].CO2.toFixed(2) + ' ppm'
 
     res.render('greenhouse', {layout : 'layout', greenhouse_measurement_info:rows[0]});
