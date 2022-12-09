@@ -80,31 +80,54 @@ let give_home_page = function(req,res){
 let give_plant_page = function(req,res){
   let measurement_id=req.query['ID'];
   console.log(measurement_id)
-  model.get_plant_info(measurement_id, (err, rows) => {   
-      if (err){
-        console.log(err.message);
-      } 
-      rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' + rows[0].MEASUREMENT_PHOTO
-      rows[0].HEALTH = (rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
-      if (rows.length  == 1){
-        rows[0].GROWTH = 0 + ' cm'
+  
+    model.getPlantInfo(measurement_id, (err, plant_rows) => {   
+      model.getPlantMeasurementInfo(measurement_id, (err, measurement_rows) => { 
+        model.getGreenhousePlants(plant_rows[0].GREENHOUSE_ID, (err,plants) => {  
+        if (err){
+          console.log(err.message);
+        } 
+        for (let p of plants){
+          if (p.ID == plant_rows[0].ID){
+            p['current_plant'] = 1;
+          }
+          else{
+            p['current_plant'] = 0;
+          }
+        }
+        let rows_plants = [];
+        for (let i = 0; i < plants[0].ROWS; i++){
+          rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
+        }
+        if(measurement_rows.length){
+          measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' + measurement_rows[0].MEASUREMENT_PHOTO
+          measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
+          if (measurement_rows.length  == 1){
+            measurement_rows[0].GROWTH = 0 + ' cm'
+          }
+          else if (rows.length  == 2){
+            measurement_rows[0].GROWTH = (measurement_rows[0].GROWTH - measurement_rows[1].GROWTH).toFixed(2) + ' cm'
+          }
+          measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
       }
-      else if (rows.length  == 2){
-        rows[0].GROWTH = (rows[0].GROWTH - rows[1].GROWTH).toFixed(2) + ' cm'
-      }
-      rows[0].SIZE = rows[0].SIZE.toFixed(2) + ' cm'
-      rows[0].LIFESPAN = rows[0].LIFESPAN + ' months'
-      console.log(rows)
-      res.render('plant', {layout : 'layout',plant_measurement_info:rows[0]});
+      plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
+        res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants});
+      });
     });
+  });
 };
 
 let give_greenhouse_page = function(req,res){
 let greenhouse_id=req.query['ID'];
-model.get_greenhouse_info(greenhouse_id, (err, rows) => {   
+model.getGreenhousePlants(greenhouse_id, (err,plants) => {
+model.getGreenhouseInfo(greenhouse_id, (err, rows) => {   
     if (err){
       console.log(err.message);
     } 
+    let rows_plants = [];
+    for (let i = 0; i < rows[0].ROWS; i++){
+      rows_plants.push(plants.slice(i * rows[0].COLUMNS, (i+1) * rows[0].COLUMNS))
+    }
     rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + rows[0].GREENHOUSE_PHOTO;
     rows[0].TEMPERATURE = rows[0].TEMPERATURE.toFixed(2) + ' C'
     rows[0].HUMIDITY = rows[0].HUMIDITY.toFixed(2) + ' %'
@@ -115,9 +138,11 @@ model.get_greenhouse_info(greenhouse_id, (err, rows) => {
     rows[0].LENGTH = rows[0].LENGTH.toFixed(2) + ' m'
     rows[0].HEIGHT = rows[0].HEIGHT.toFixed(2) + ' m'
     rows[0].CO2 = rows[0].CO2.toFixed(2) + ' ppm'
-
-    res.render('greenhouse', {layout : 'layout', greenhouse_measurement_info:rows[0]});
+    
+    res.render('greenhouse', {layout : 'layout', greenhouse_measurement_info:rows[0], rows_plants:rows_plants});
   });
+})
+
 };
 
 
@@ -130,7 +155,6 @@ let return_open_failures = function(req,res){
           console.log(err.message);
         } 
         res.json({'open_failures':rows});
-        //console.log(rows)
       });
     
 
@@ -139,17 +163,12 @@ let return_open_failures = function(req,res){
 let return_failure_coords = function(req,res){
   //rest api command, Serves list of open failures that looks like [{'id':1,'x':100,'y',200},{'id':1,'x':700,'y',400},...], it is inside a json file under the name 'open_failures'
   let key=parseInt(req.query['failure_id'])-1;
-  //console.log(key);
   model.get_failure_info(key, (err, rows) => {   
     if (err){
       console.log(err.message);
     }
     let info_to_pass={};
     Object.assign(info_to_pass,rows[0]);
- 
-
-    
-    //console.log(rows)
     res.json(info_to_pass);
   });    // fed ton an #each helper), we can use #
   
@@ -166,7 +185,6 @@ let give_history_page = function(req,res){
         if (err){
           console.log(err.message);
         } 
-        //console.log('Recents', rows)
         res.render('history', {layout : 'layout',search_results:rows,information:information});
       });
     
@@ -175,14 +193,12 @@ let give_history_page = function(req,res){
 let give_result_page = function(req,res){
     let search_text=req.query['input_text'];
     let information='Αποτελέσματα αναζήτησης'
-    //console.log(search_text);
     // here add query for db that return the search results instead of the folllowing line, search results based on the 'search_text' variable DONE////////////////////////////////
     let display_count = 30;
     model.get_search_results(display_count,search_text, (err, rows) => {   
         if (err){
           console.log(err.message);
         } 
-        //console.log('Recents', rows)
         res.render('history', {layout : 'layout',search_results:rows,information:information});
       });
 };
@@ -196,10 +212,8 @@ let give_contractor_login_page = function(req,res){
 
 let give_contractor_page = function(req,res){
     let key=parseInt(req.query['input_text']);
-    //console.log(serial_text);
     //check if serial number exists in contract table and insert the coresponding contracts info in contract_info bellow
     model.get_report_from_key(key, (err, rows) => {   
-        console.log(key,rows)
         if (err){
           console.log(err.message);
         } 
@@ -235,7 +249,6 @@ let give_admin_history = function(req,res){
         if (err){
           console.log(err.message);
         } 
-        //console.log('Recents', rows)
         res.render('admin_history', {layout : 'layout', search_results:rows,information:information});
       });
     }
@@ -255,8 +268,6 @@ let give_admin_page = function(req,res){
         }
         let info_to_pass={};
         Object.assign(info_to_pass,rows[0]);
-        
-        //console.log(rows)
         res.render('admin_page', {layout : 'layout', failure_info:info_to_pass, buildings : buildings, categories : categories, states:states});
       });
       
@@ -334,10 +345,8 @@ let submit_report = function(req,res){
   }
     if (is_it_valid_report(req)){
         let info = req.body
-        //console.log(req);
         let image_path = String(req.files[0].destination) + '/' + String(req.files[0].filename);
         image_path=image_path.replace('public/','');
-        //console.log(req)    
         model.find_biggest_location_id((err, rows_1) => {   
             if (err){
                 console.log('find_biggest_location_id');
@@ -355,17 +364,12 @@ let submit_report = function(req,res){
                 console.log(err.message);
             } 
             let now = current_datetime();
-            //console.log(req.socket.remoteAddress);
-
-            //console.log(ips);
             let failure_data={'id':rows_3[0]['id']+1,'ip':ip, 'title':info['title'],'description':info['description'],'creation_date':now,'closure_date':null,'state': 'Υπό επεξεργασία','image_path':image_path,'contact_phone':info['phone'],'contact_email':info['email'],'locale':rows_1[0]['id']+1,'category':info['category']};//change type atribute frome 1 to info['category]
             model.push_failure_in_db(failure_data,(err, rows_4) => {   
                 if (err){
                     console.log(err.message);
                 } 
                 let id_dict_to_pass={'failure_id_passed':failure_data['id']}
-                //console.log(id_dict_to_pass['i'])
-                //console.log(info);
                 let mailOptions = {
                     from: 'unireportuniversityofpatras@gmail.com',
                     to: String(info['email']),
@@ -419,9 +423,7 @@ let filter = function(body){
   let locale_info = {};
   let l = ['building', 'West', 'North'];
   for (let [key, value] of Object.entries(body)) {
-    //console.log(key, value);
     let e = is_empty(value)
-    console.log(e)
     if(e[0]){
       delete body[key];
     }
@@ -458,7 +460,6 @@ let admin_update = function(req,res){
   let failure_id=req.query['failure_id'];
   let locale_id=req.query['locale_id'];
   let body = req.body;
-  console.log(body)
   let filtered_body = filter(body);
   
   let ticket_info = filtered_body.ticket_info;
@@ -474,8 +475,6 @@ let admin_update = function(req,res){
     image_path=image_path.replace('public/','');
     ticket_info['image_path'] = image_path;
   }
-  console.log(ticket_info,locale_info)
-  //console.log(filtered_body)
   model.update_report(failure_id, locale_id, ticket_info, locale_info, (err) => {   
     if (err){
       console.log(err.message);
@@ -490,7 +489,6 @@ let contractor_update = function(req,res){
   let locale_id=req.query['locale_id'];
   let key=req.query['key'];
   let body = req.body;
-  console.log(body)
   let filtered_body = filter(body);
   
   let ticket_info = filtered_body.ticket_info;
@@ -501,7 +499,6 @@ let contractor_update = function(req,res){
       ticket_info['closure_date'] = current_datetime();
     }
   }
-  //console.log(filtered_body)
   model.update_report(failure_id, locale_id, ticket_info, locale_info, (err) => {   
     if (err){
       console.log(err.message);
