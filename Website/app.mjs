@@ -78,11 +78,9 @@ let give_home_page = function(req,res){
 };
 
 let give_plant_page = function(req,res){
-  let measurement_id=req.query['ID'];
-  console.log(measurement_id)
-  
-    model.getPlantInfo(measurement_id, (err, plant_rows) => {   
-      model.getPlantMeasurementInfo(measurement_id, (err, measurement_rows) => { 
+  let plant_id=req.query['ID'];
+    model.getPlantInfo(plant_id, (err, plant_rows) => {   
+      model.getPlantMeasurementInfo(plant_id, (err, measurement_rows) => { 
         model.getGreenhousePlants(plant_rows[0].GREENHOUSE_ID, (err,plants) => {  
         if (err){
           console.log(err.message);
@@ -119,167 +117,72 @@ let give_plant_page = function(req,res){
 
 let give_greenhouse_page = function(req,res){
 let greenhouse_id=req.query['ID'];
-model.getGreenhousePlants(greenhouse_id, (err,plants) => {
-model.getGreenhouseInfo(greenhouse_id, (err, rows) => {   
+model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
+  model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
+    model.getGreenhousePlants(greenhouse_id, (err,plants) => {
+  
+        if (err){
+          console.log(err.message);
+        } 
+        let rows_plants = [];
+        if(measurement_rows.length){
+          measurement_rows[0].TEMPERATURE = measurement_rows[0].TEMPERATURE.toFixed(2) + ' C'
+          measurement_rows[0].HUMIDITY = measurement_rows[0].HUMIDITY.toFixed(2) + ' %'
+          measurement_rows[0].SUNLIGHT = measurement_rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
+          measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
+        }
+        for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
+          rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
+        }
+        greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+        greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
+        greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
+        greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
+        greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
+        greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
+
+        
+        res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});
+      });
+    });
+  });
+};
+
+let giveClientGreenhouses = function(req,res){
+  let client_id = 20;
+  model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
+    model.getClientGreenhouses(client_id, (err, greenhouses) => { 
+    for(let i = 0; i < greenhouses.length; i++){
+      for(let j = 0; j < measurements.length; j++){
+        if (greenhouses[i].ID == measurements[j].GREENHOUSE_ID){
+          greenhouses[i].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouses[i].GREENHOUSE_PHOTO;
+          greenhouses[i].TEMPERATURE = measurements[j].TEMPERATURE.toFixed(2) + ' C'
+          greenhouses[i].HUMIDITY = measurements[j].HUMIDITY.toFixed(2) + ' %'
+          greenhouses[i].MEASUREMENT_DATE = measurements[j].MEASUREMENT_DATE;
+          greenhouses[i].MEASUREMENT_TIME = measurements[j].MEASUREMENT_TIME;
+        }
+
+    }
+    if(Object.keys(greenhouses[i]).length == 2){
+      greenhouses[i].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouses[i].GREENHOUSE_PHOTO;
+      greenhouses[i].TEMPERATURE = '-';
+      greenhouses[i].HUMIDITY = '-';
+      greenhouses[i].MEASUREMENT_DATE = '-';
+      greenhouses[i].MEASUREMENT_TIME = '-';
+
+    }
+    console.log(greenhouses)
+
+  }
+    // console.log(greenhouses)
     if (err){
       console.log(err.message);
     } 
-    let rows_plants = [];
-    for (let i = 0; i < rows[0].ROWS; i++){
-      rows_plants.push(plants.slice(i * rows[0].COLUMNS, (i+1) * rows[0].COLUMNS))
-    }
-    rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + rows[0].GREENHOUSE_PHOTO;
-    rows[0].TEMPERATURE = rows[0].TEMPERATURE.toFixed(2) + ' C'
-    rows[0].HUMIDITY = rows[0].HUMIDITY.toFixed(2) + ' %'
-    rows[0].SUNLIGHT = rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
-    rows[0].COORDS_X = rows[0].COORDS_X.toFixed(5)
-    rows[0].COORDS_Y = rows[0].COORDS_Y.toFixed(5)
-    rows[0].WIDTH = rows[0].WIDTH.toFixed(2) + ' m'
-    rows[0].LENGTH = rows[0].LENGTH.toFixed(2) + ' m'
-    rows[0].HEIGHT = rows[0].HEIGHT.toFixed(2) + ' m'
-    rows[0].CO2 = rows[0].CO2.toFixed(2) + ' ppm'
-    
-    res.render('greenhouse', {layout : 'layout', greenhouse_measurement_info:rows[0], rows_plants:rows_plants});
+    // console.log(greenhouses)
+
+    res.render('greenhouses', {layout : 'layout', greenhouses:greenhouses});
+    });
   });
-})
-
-};
-
-
-let return_open_failures = function(req,res){
-    //rest api command, Serves list of open failures that looks like [{'id':1,'x':100,'y',200},{'id':1,'x':700,'y',400},...], it is inside a json file under the name 'open_failures'
-    let draw_limit=100;
-    // here add query to db for retrieving list of failures that are currently unfixed and cast it to a list like this [{'id':1,'x':100,'y',200},{'id':1,'x':700,'y',400},...] named open_failures DONE////////////////////////////////
-    model.get_open_failures_coords(draw_limit, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        res.json({'open_failures':rows});
-      });
-    
-
-};
-
-let return_failure_coords = function(req,res){
-  //rest api command, Serves list of open failures that looks like [{'id':1,'x':100,'y',200},{'id':1,'x':700,'y',400},...], it is inside a json file under the name 'open_failures'
-  let key=parseInt(req.query['failure_id'])-1;
-  model.get_failure_info(key, (err, rows) => {   
-    if (err){
-      console.log(err.message);
-    }
-    let info_to_pass={};
-    Object.assign(info_to_pass,rows[0]);
-    res.json(info_to_pass);
-  });    // fed ton an #each helper), we can use #
-  
-
-};
-
-
-let give_history_page = function(req,res){
-
-    let information='Βλάβες με χρονολογική σειρά'
-    // here add query for db that return the 6 all failures in chronological order DONE/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let display_count= 30;
-    model.getRecents(display_count, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        res.render('history', {layout : 'layout',search_results:rows,information:information});
-      });
-    
-};
-
-let give_result_page = function(req,res){
-    let search_text=req.query['input_text'];
-    let information='Αποτελέσματα αναζήτησης'
-    // here add query for db that return the search results instead of the folllowing line, search results based on the 'search_text' variable DONE////////////////////////////////
-    let display_count = 30;
-    model.get_search_results(display_count,search_text, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        res.render('history', {layout : 'layout',search_results:rows,information:information});
-      });
-};
-
-let give_contractor_login_page = function(req,res){
-
-    let error={'e_type':'','message':''};
-    res.render('contractor_login', {layout : 'layout', error:error});
-
-};
-
-let give_contractor_page = function(req,res){
-    let key=parseInt(req.query['input_text']);
-    //check if serial number exists in contract table and insert the coresponding contracts info in contract_info bellow
-    model.get_report_from_key(key, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        if (rows.length == 0){
-            let error={'e_type':'undefined','message':'Το κλειδί σας δεν αντιστοιχεί σε κάποια αναφορά'};
-            res.render('contractor_login', {layout : 'layout',error:error});
-
-          } 
-        else{
-          let info_to_pass={};
-          Object.assign(info_to_pass,rows[0]);
-          info_to_pass['coords_to_show_x']=Math.round((info_to_pass['coordinates_x']*x_ratio+x0)*100000000)/100000000;
-          info_to_pass['coords_to_show_y']=Math.round((y0-info_to_pass['coordinates_y']*y_ratio)*100000000)/100000000;
-          info_to_pass['key'] = key;
-          res.render('contractor_page', {layout : 'layout',failure_info:info_to_pass, buildings : buildings, categories : categories});
-        }
-      });    // fed ton an #each helper), we can use #
-      
-};
-
-let give_admin_login_page = function(req,res){
-
-    let error={'e_type':'','message':''};
-    res.render('admin_login', {layout : 'layout', error:error});
-
-};
-
-let give_admin_history = function(req,res){
-    let key = req.query['input_text'];
-    if (admin_keys.includes(key)){
-        let information='Βλάβες με χρονολογική σειρά'
-    model.getAll((err, rows) => {   
-        if (err){
-          console.log(err.message);
-        } 
-        res.render('admin_history', {layout : 'layout', search_results:rows,information:information});
-      });
-    }
-    else{
-            let error={'e_type':'undefined','message':'Το κλειδί σας δεν είναι σωστό'};
-            res.render('admin_login', {layout : 'layout',error:error});
-    }
-    
-      
-};
-
-let give_admin_page = function(req,res){
-    let failure_id=req.query['failure_id'];
-    model.get_failure_info(failure_id, (err, rows) => {   
-        if (err){
-          console.log(err.message);
-        }
-        let info_to_pass={};
-        Object.assign(info_to_pass,rows[0]);
-        res.render('admin_page', {layout : 'layout', failure_info:info_to_pass, buildings : buildings, categories : categories, states:states});
-      });
-      
-};
-
-
-let give_report_page = function(req,res){
-
-    let error={'e_type':'','message':''};
-    res.render('report', {layout : 'layout', buildings : buildings, categories : categories,error:error });
-
-
 };
 
 let is_it_valid_report= function(report_info){
@@ -524,20 +427,11 @@ let delete_report = function(req,res){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
 router.route('/').get(give_home_page);
-router.route('/open_failures').get(return_open_failures);
-router.route('/failure_coordinates_by_id').get(return_failure_coords);
-router.route('/report').get(give_report_page);
-router.route('/history').get(give_history_page);
-router.route('/search').get(give_result_page);
+router.route('/greenhouses').get(giveClientGreenhouses);
 router.route('/plant').get(give_plant_page);
 router.route('/greenhouse').get(give_greenhouse_page);
 router.route('/report_complete').post(upload.any(), submit_report);
-router.route('/contractor_login').get(give_contractor_login_page);
-router.route('/contractor_page').get(give_contractor_page);
 router.route('/contractor_update').post(upload.any(),contractor_update);
-router.route('/admin_login').get(give_admin_login_page);
-router.route('/admin_history').get(give_admin_history);
-router.route('/admin_page').get(give_admin_page);
 router.route('/admin_update').post(upload.any(),admin_update);
 router.route('/delete_report').post(delete_report);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server

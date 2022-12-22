@@ -25,7 +25,7 @@ const getPlantRecents = (n, callback) => {
 
 const getGreenhouseRecents = (n, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY, SOIL_PH,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN (SELECT * FROM GREENHOUSE_MEASUREMENT) AS GM on G.ID = GREENHOUSE_ID) ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN (SELECT * FROM GREENHOUSE_MEASUREMENT) AS GM on G.ID = GREENHOUSE_ID) ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
     const db = new sqlite3.Database(db_name);
     db.all(sql, [n], (err, rows) => {
     if (err) {
@@ -55,7 +55,7 @@ const getPlantInfo = (id, callback) => {
 
 const getPlantMeasurementInfo = (id, callback) => {
 
-    let sql='SELECT ID, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, SIZE, GROWTH, MEASUREMENT_PHOTO FROM PLANT_MEASUREMENT WHERE PLANT_ID=? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT 2';
+    let sql='SELECT ID, MEASUREMENT_DATE, MEASUREMENT_TIME, LEAF_DENSITY, HEALTH, SIZE, GROWTH, MEASUREMENT_PHOTO FROM PLANT_MEASUREMENT WHERE PLANT_ID=? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT 2';
     const db = new sqlite3.Database(db_name);
     db.all(sql,[id], (err, rows) => {
     if (err) {
@@ -70,7 +70,22 @@ const getPlantMeasurementInfo = (id, callback) => {
 
 const getGreenhouseInfo = (id, callback) => {
 
-    let sql='SELECT GREENHOUSE_ID, GM.ID AS GM_ID, CLIEND_ID, MEASUREMENT_DATE, MEASUREMENT_TIME, ROWS, COLUMNS, HEIGHT, LENGTH, WIDTH, COORDS_X, COORDS_Y, TEMPERATURE, SUNLIGHT, HUMIDITY, SOIL_PH, CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN  GREENHOUSE_MEASUREMENT AS GM on G.ID = GREENHOUSE_ID) WHERE G.ID = ? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT 1';
+    let sql='SELECT ID, IP, CLIENT_ID, ROWS, COLUMNS, HEIGHT, LENGTH, WIDTH, COORDS_X, COORDS_Y, GREENHOUSE_PHOTO FROM GREENHOUSE WHERE ID = ?';
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [id], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
+const getGreenhouseMeasurementInfo = (id, callback) => {
+
+    let sql='SELECT ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY, CO2 FROM GREENHOUSE_MEASUREMENT WHERE GREENHOUSE_ID = ? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT 1';
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id], (err, rows) => {
     if (err) {
@@ -97,6 +112,37 @@ const getGreenhousePlants = (id, callback) => {
     callback(null, rows); // επιστρέφει array
     });
 }
+
+const getClientGreenhouseMeasurements = (id, callback) => {
+
+    let sql='SELECT DISTINCT GREENHOUSE_ID, GREENHOUSE_PHOTO, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, HUMIDITY FROM GREENHOUSE_MEASUREMENT AS GM JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [id], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
+const getClientGreenhouses = (id, callback) => {
+
+    let sql='SELECT ID, GREENHOUSE_PHOTO FROM GREENHOUSE WHERE CLIENT_ID = ?;';
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [id], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
 
 const getAll = (callback) => {
 
@@ -283,5 +329,5 @@ const delete_report = (id,callback) => {
     });
 }
 
-export {getPlantRecents,getGreenhouseRecents,getGreenhousePlants,getPlantMeasurementInfo, get_search_results,get_open_failures_coords,find_biggest_failure_id,find_biggest_location_id,push_failure_in_db,push_location_in_db,getPlantInfo,getGreenhouseInfo, get_report_from_key,getAll,delete_report,update_report};
+export {getPlantRecents,getClientGreenhouses, getClientGreenhouseMeasurements,getGreenhouseMeasurementInfo,getGreenhouseRecents,getGreenhousePlants,getPlantMeasurementInfo, get_search_results,get_open_failures_coords,find_biggest_failure_id,find_biggest_location_id,push_failure_in_db,push_location_in_db,getPlantInfo,getGreenhouseInfo, get_report_from_key,getAll,delete_report,update_report};
 

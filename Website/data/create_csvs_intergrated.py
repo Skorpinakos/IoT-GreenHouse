@@ -17,18 +17,18 @@ def create_all():
         'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "BIRTH_DATE": ['date', False],
                    "JOIN_DATE": ['date', False]},
 
-        'GREENHOUSE': {"ID": ['integer', True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
+        'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False, True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
                        "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIENT_ID": ['integer', False, 'CLIENT', 'ID']},
 
         'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
-                                   "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "SOIL_PH": ['float', False], "CO2": ['float', False],
+                                   "SUNLIGHT": ['float', False], "HUMIDITY": ['float', False], "CO2": ['float', False],
                                    "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
         'PLANT': {"ID": ['integer', True], "TYPE": ['string', False], "COLUMN": ['integer', False], "ROW": ['integer', False],
                   "LIFESPAN": ['integer', False], "GREENHOUSE_ID": ['integer', False, 'GREENHOUSE', 'ID']},
 
         'PLANT_MEASUREMENT': {"ID": ['integer', True], "PLANT_ID": ['integer', False, 'PLANT', 'ID'], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
-                              "GROWTH": ['float', False], "HEALTH": ['float', False], "MEASUREMENT_PHOTO": ['string', False]},
+                              "GROWTH": ['float', False], "HEALTH": ['float', False], "LEAF_DENSITY": ['float', False], "MEASUREMENT_PHOTO": ['string', False]},
     }
 
     def get_relevant(entity, attribute):
@@ -135,6 +135,8 @@ def create_all():
                                 shutil.copyfile(
                                     cwd + '\\' + image_path, cwd + "\\public\\images\\measurements\\" +
                                     str(temp_dict['ID']) + '.jpg')
+                            elif name == 'IP':
+                                temp_dict[name] = fake.ipv4_public()
                             elif name == 'GREENHOUSE_PHOTO':
                                 temp_dict[name] = str(
                                     temp_dict['ID']) + '.jpg'
@@ -165,9 +167,9 @@ def create_all():
                                     random.uniform(60.0, 120.0), 2)
                             elif name == 'HUMIDITY':
                                 temp_dict[name] = round(random.random(), 2)
-                            elif name == 'SOIL_PH':
+                            elif name == 'LEAF_DENSITY':
                                 temp_dict[name] = round(
-                                    random.uniform(5.0, 10.0), 2)
+                                    random.uniform(10.0, 100.0), 2)
                             elif name == 'CO2':
                                 temp_dict[name] = round(
                                     random.uniform(300.0, 1000.0), 2)
