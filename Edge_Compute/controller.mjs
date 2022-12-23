@@ -15,17 +15,31 @@ let give_recent_photo = function(req,res){
         
         fs.readFile('images/measurements/last_measurement.txt', 'utf8', function (err,last_measurement) { //read the file containing the name of the last measurement folder
           if (err) {
-            return console.log(err);
+            let failure = err;
+            res.statusCode = 406;
+            res.send(failure);
+            return console.log(failure);
           }
           if (last_measurement==''){
-            return console.log('no measurements yet');
+            let failure ='No measurements yet.';
+            res.statusCode = 406;
+            res.send(failure);
+            return console.log(failure);
           }
           //console.log(last_measurement); 
           let x=req['query']['x'];
           let y=req['query']['y'];
           //console.log(x)
           let plant_path='images/measurements/'+last_measurement+'/plant_images_of_x'+x+'_y'+y+'/' ; // use req information and last measurement to configure the path of the plant measurement requested
-          
+          if(fs.existsSync('./'+plant_path)==false){
+            console.log(fs.existsSync('.'+plant_path))
+            let failure= 'This plant has not been registered yet, either it does not exist in this greenhouse or no measurements have been made yet.'
+            res.statusCode = 406;
+            res.send(failure);
+            return console.log(failure);
+
+          }
+          else{
           fs.readdir(plant_path, (err, files) => {
             let folder_files=[];
             files.forEach(file => {
@@ -33,13 +47,17 @@ let give_recent_photo = function(req,res){
               folder_files.push(file);
             });
             if (folder_files.length==0){
-              return console.log('no photos of that plant in the last measurement')
+              let failure = 'No photos of that plant in the last measurement';
+              res.statusCode = 406;
+              res.send(failure);
+              return console.log(failure)
             }
             let index = Math.floor(folder_files.length/2);
             let filename=folder_files[index];
             res.sendFile(plant_path+filename,{ root:"."});
             console.log('sent image from '+plant_path+filename);
           });
+        }
 
         });
 
@@ -53,8 +71,6 @@ app.use(router);
 router.route('/get_recent_photo').get(give_recent_photo);
 
 
-/////
-//give_recent_photo({'x':'4','y':'28'},{});
-/////
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
