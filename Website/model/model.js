@@ -8,11 +8,11 @@ const __dirname = path.dirname(__filename);
 
 const db_name = path.join(__dirname, "../data", "Our_App.db");
 
-const getPlantRecents = (n, callback) => {
+const getPlantRecents = (n, id, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, PM.ID as PM_ID,P.ID AS P_ID, TYPE, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN (SELECT * FROM PLANT_MEASUREMENT) AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT DISTINCT GREENHOUSE_ID, PM.ID as PM_ID,P.ID AS P_ID, TYPE, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN (SELECT * FROM PLANT_MEASUREMENT) AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
     const db = new sqlite3.Database(db_name);
-    db.all(sql, [n], (err, rows) => {
+    db.all(sql, [id, n], (err, rows) => {
     if (err) {
         db.close();
         callback(err, null);
@@ -23,11 +23,11 @@ const getPlantRecents = (n, callback) => {
     });
 }
 
-const getGreenhouseRecents = (n, callback) => {
+const getGreenhouseRecents = (n,id, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN (SELECT * FROM GREENHOUSE_MEASUREMENT) AS GM on G.ID = GREENHOUSE_ID) ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN (SELECT * FROM GREENHOUSE_MEASUREMENT) AS GM on G.ID = GREENHOUSE_ID) WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
     const db = new sqlite3.Database(db_name);
-    db.all(sql, [n], (err, rows) => {
+    db.all(sql, [id, n], (err, rows) => {
     if (err) {
         db.close();
         callback(err, null);

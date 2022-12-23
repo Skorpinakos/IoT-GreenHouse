@@ -58,8 +58,9 @@ let last_clear_time=Date.now();
 let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    model.getPlantRecents(displayedRecents, (err, plant_rows) => {  
-      model.getGreenhouseRecents(displayedRecents, (err, greenhouse_rows) => { 
+    let client_id = 20;
+    model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
+      model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
           console.log(err.message);
         } 
@@ -185,50 +186,19 @@ let giveClientGreenhouses = function(req,res){
   });
 };
 
-let current_datetime = function(req,res){
-  let today = new Date();
+let addGreenhouse = function(req,res){
+  let client_id = 20;
   
-  let year = String(today.getFullYear());
+    res.render('add_greenhouse', {layout : 'layout'});
 
-  let month = String(today.getMonth() + 1);
-  if (month.length == 1){
-    month = '0' + month;
-  }
-
-  let day = String(today.getDate());
-  if (day.length == 1){
-    day = '0' + day;
-  }
-
-  let date = year + '-' + month + '-' + day;
-
-  let hours = String(today.getHours());
-  if (hours.length == 1){
-    hours = '0' + hours;
-  }
-
-  let minutes = String(today.getMinutes());
-  if (minutes.length == 1){
-    minutes = '0' + minutes;
-  }
-
-  let seconds = String(today.getSeconds());
-  if (seconds.length == 1){
-    seconds = '0' + seconds;
-  }
-
-  let time = hours + ":" + minutes + ":" + seconds;
-  
-  let now = date + ' ' + time;
-
-  return now;
-}
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
 router.route('/').get(giveHomePage);
 router.route('/greenhouses').get(giveClientGreenhouses);
 router.route('/plant').get(givePlantPage);
 router.route('/greenhouse').get(giveGreenhousePage);
-router.route('/add_greenhouse').post(upload.any(), addGreenhouse);
+router.route('/add_greenhouse').get(addGreenhouse);
+// router.route('/push_greenhouse').post(upload.any(), pushGreenhouse);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
