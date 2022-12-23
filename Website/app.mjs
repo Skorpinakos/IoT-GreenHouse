@@ -55,7 +55,7 @@ let ips={};
 let last_clear_time=Date.now();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// backend functions
-let give_home_page = function(req,res){
+let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
     model.getPlantRecents(displayedRecents, (err, plant_rows) => {  
@@ -77,7 +77,7 @@ let give_home_page = function(req,res){
       })});
 };
 
-let give_plant_page = function(req,res){
+let givePlantPage = function(req,res){
   let plant_id=req.query['ID'];
     model.getPlantInfo(plant_id, (err, plant_rows) => {   
       model.getPlantMeasurementInfo(plant_id, (err, measurement_rows) => { 
@@ -115,7 +115,7 @@ let give_plant_page = function(req,res){
   });
 };
 
-let give_greenhouse_page = function(req,res){
+let giveGreenhousePage = function(req,res){
 let greenhouse_id=req.query['ID'];
 model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
   model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
@@ -185,15 +185,6 @@ let giveClientGreenhouses = function(req,res){
   });
 };
 
-let is_it_valid_report= function(report_info){
-    if (report_info.hasOwnProperty('fileValidationError')) {
-        console.log("image didn't pass validation");
-       return false;
-    }
-    return true; //maybe add validity check later
-
-};
-
 let current_datetime = function(req,res){
   let today = new Date();
   
@@ -232,207 +223,12 @@ let current_datetime = function(req,res){
 
   return now;
 }
-
-let submit_report = function(req,res){
-  let limit=5;
-  if ((Date.now()-last_clear_time)>1800000){ips={};}
-  let ip=String(req.socket.remoteAddress);
-  if (ips[ip]==undefined){ips[ip]=0;}
-  ips[ip]=(ips[ip]+1);
-  console.log(Date.now()-last_clear_time);
-  if (ips[ip]>limit){
-    console.log('User made too many reports (' +limit+ ') in the last half hour');
-    let error={'e_type':'spam','message':'user made too many reports('+limit+')in the last half hour'};
-    res.render('report', {layout : 'layout', buildings : buildings, categories : categories, error:error  });
-    return
-  }
-    if (is_it_valid_report(req)){
-        let info = req.body
-        let image_path = String(req.files[0].destination) + '/' + String(req.files[0].filename);
-        image_path=image_path.replace('public/','');
-        model.find_biggest_location_id((err, rows_1) => {   
-            if (err){
-                console.log('find_biggest_location_id');
-                console.log(err.message);
-            } 
-        let location_info={'id':rows_1[0]['id']+1, 'building':info['building'], 'coordinates_x':info['West'],'coordinates_y': info['North']};
-        model.push_location_in_db(location_info,(err, rows_2) => {   
-            if (err){
-                console.log('push_location_in_db');
-                console.log(err.message);
-            } 
-        model.find_biggest_failure_id((err, rows_3) => {   
-            if (err){
-                console.log('find_biggest_failure_id');
-                console.log(err.message);
-            } 
-            let now = current_datetime();
-            let failure_data={'id':rows_3[0]['id']+1,'ip':ip, 'title':info['title'],'description':info['description'],'creation_date':now,'closure_date':null,'state': 'Υπό επεξεργασία','image_path':image_path,'contact_phone':info['phone'],'contact_email':info['email'],'locale':rows_1[0]['id']+1,'category':info['category']};//change type atribute frome 1 to info['category]
-            model.push_failure_in_db(failure_data,(err, rows_4) => {   
-                if (err){
-                    console.log(err.message);
-                } 
-                let id_dict_to_pass={'failure_id_passed':failure_data['id']}
-                let mailOptions = {
-                    from: 'unireportuniversityofpatras@gmail.com',
-                    to: String(info['email']),
-                    subject: 'Αναφορά βλάβης',
-                    text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η αναφορά σας στην πλατφόρμα 'Uni Report' του Πανεπιστημίου Πατρών καταχωρήθηκε με σειριακό κωδικό: '"+String(failure_data['id'])+"' . Μπορείτε να παρακολουθήσετε την εξέλιξη της βλάβης στην σελίδα της υπηρεσίας εισάγοντας στην γραμμή αναζήτησης τον κωδικό της βλάβης. Τίτλος βλάβης: "+String(failure_data['title']),
-                  };
-                  
-                  if(mailOptions.to){
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if (error) {
-                          console.log(error);
-                        } else {
-                          console.log('Email sent: ' + info.response);
-                        }
-                      }); 
-                  }
-
-                res.render('successful_report', {layout : 'layout', id_dict_to_pass:id_dict_to_pass});
-                });
-            });
-        });
-    }); 
-
-    }
-    else{
-        let error={'e_type':'failed application','message':'Η υποβολή ήταν ανεπιτυχής'};
-        res.render('report', {layout : 'layout', buildings : buildings, categories : categories, error:error  });
-
-    }
-
-};
-
-let is_empty = function(v){
-  if (v.length && v == ''){
-    return [1];
-  }
-
-  for (let i =0; i < v.length; i++){
-    if (v[i] != ''){
-      if(Array.isArray(v)){
-        return [0,v[i]]
-      }
-      return [0];
-    }
-  }
-  return [1];
-}
-
-let filter = function(body){
-  let ticket_info = {};
-  let locale_info = {};
-  let l = ['building', 'West', 'North'];
-  for (let [key, value] of Object.entries(body)) {
-    let e = is_empty(value)
-    if(e[0]){
-      delete body[key];
-    }
-    else{
-      if(l.includes(key)){
-        if (key=="West") {key = "coordinates_x"}
-        if (key=="North") {key = "coordinates_y"}
-        if(e.length == 1){
-          locale_info[key] = value;
-        }
-        else{
-          locale_info[key] = e[1];
-        }
-      }
-      else{
-        if(e.length == 1){
-          ticket_info[key] = value;
-        }
-        else{
-          ticket_info[key] = e[1];
-        }
-      }
-    }
-  }
-  return {
-    'ticket_info': ticket_info,
-    'locale_info': locale_info
-  };
-}
-
-
-
-let admin_update = function(req,res){
-  let failure_id=req.query['failure_id'];
-  let locale_id=req.query['locale_id'];
-  let body = req.body;
-  let filtered_body = filter(body);
-  
-  let ticket_info = filtered_body.ticket_info;
-  let locale_info = filtered_body.locale_info;
-  
-  if(ticket_info['state']){
-    if(ticket_info['state'] == 'Κλειστή'){
-      ticket_info['closure_date'] = current_datetime();
-    }
-  }
-  if(req.files.length > 0){
-    let image_path = String(String(req.files[0].destination) + '/' + String(req.files[0].filename));
-    image_path=image_path.replace('public/','');
-    ticket_info['image_path'] = image_path;
-  }
-  model.update_report(failure_id, locale_id, ticket_info, locale_info, (err) => {   
-    if (err){
-      console.log(err.message);
-    } 
-    res.redirect(String('/admin_page?failure_id=' + failure_id));
-  });
-};
-
-
-let contractor_update = function(req,res){
-  let failure_id=req.query['failure_id'];
-  let locale_id=req.query['locale_id'];
-  let key=req.query['key'];
-  let body = req.body;
-  let filtered_body = filter(body);
-  
-  let ticket_info = filtered_body.ticket_info;
-  let locale_info = filtered_body.locale_info;
-  
-  if(ticket_info['state']){
-    if(ticket_info['state'] == 'Κλειστή'){
-      ticket_info['closure_date'] = current_datetime();
-    }
-  }
-  model.update_report(failure_id, locale_id, ticket_info, locale_info, (err) => {   
-    if (err){
-      console.log(err.message);
-    } 
-    res.redirect(String('/contractor_page?input_text=' + key));
-  });
-
-
-
-};
-
-let delete_report = function(req,res){
-  let information='Βλάβες με χρονολογική σειρά'
-  let failure_id=req.query['failure_id'];
-      model.delete_report(failure_id, (err, rows) => {   
-          if (err){
-              console.log(err.message);
-          }
-          res.render('admin_history', {layout : 'layout', search_results:rows,information:information});
-      });
-};
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
-router.route('/').get(give_home_page);
+router.route('/').get(giveHomePage);
 router.route('/greenhouses').get(giveClientGreenhouses);
-router.route('/plant').get(give_plant_page);
-router.route('/greenhouse').get(give_greenhouse_page);
-router.route('/report_complete').post(upload.any(), submit_report);
-router.route('/contractor_update').post(upload.any(),contractor_update);
-router.route('/admin_update').post(upload.any(),admin_update);
-router.route('/delete_report').post(delete_report);
+router.route('/plant').get(givePlantPage);
+router.route('/greenhouse').get(giveGreenhousePage);
+router.route('/add_greenhouse').post(upload.any(), addGreenhouse);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
