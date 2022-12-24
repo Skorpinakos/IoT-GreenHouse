@@ -78,4 +78,4 @@ def process_image(filename,path,out_path,diagnostics_mode='none'):
 
 
     return sorted(list(lines.keys())),lines,centroids #returns the sorted y coordinate of lines and the lines and centroids dicts 
-process_image(filename,path,out_path,"full")
+#process_image(filename,path,out_path,"full")
