@@ -32,7 +32,7 @@ let give_recent_photo = function(req,res){
           //console.log(x)
           let plant_path='images/measurements/'+last_measurement+'/plant_images_of_x'+x+'_y'+y+'/' ; // use req information and last measurement to configure the path of the plant measurement requested
           if(fs.existsSync('./'+plant_path)==false){
-            console.log(fs.existsSync('.'+plant_path))
+            
             let failure= 'This plant has not been registered yet, either it does not exist in this greenhouse or no measurements have been made yet.'
             res.statusCode = 406;
             res.send(failure);
