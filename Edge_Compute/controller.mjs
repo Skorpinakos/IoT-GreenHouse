@@ -57,7 +57,7 @@ let get_datetime = function(){
 }
 
 let start_greenhouse_measurement = function(req,res){
-  console.log("A new measurement was requested.");
+  console.log("\n\n\n____________________________________________\nA new measurement was requested.");
   fs.readFile('images/measurements/active_measurement.txt', 'utf8', function (err,activity) { //read the file containing the datetime of the active measurement or nothing
     
     if (err) {
@@ -130,7 +130,9 @@ let start_greenhouse_measurement = function(req,res){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// backend functions
 let give_recent_photo = function(req,res){
-  //console.log(req);
+        let x=req['query']['x'];
+        let y=req['query']['y'];
+        console.log("\n\n\n____________________________________________\nA recent image was requested from plant at coordinates x:"+x+' and y:'+y);
        
         
         fs.readFile('images/measurements/last_measurement.txt', 'utf8', function (err,last_measurement) { //read the file containing the name of the last measurement folder
@@ -147,8 +149,7 @@ let give_recent_photo = function(req,res){
             return console.error(failure);
           }
           //console.log(last_measurement); 
-          let x=req['query']['x'];
-          let y=req['query']['y'];
+
           //console.log(x)
           let plant_path='images/measurements/'+last_measurement+'/plant_images_of_x'+x+'_y'+y+'/' ; // use req information and last measurement to configure the path of the plant measurement requested
           if(fs.existsSync('./'+plant_path)==false){

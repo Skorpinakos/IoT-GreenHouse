@@ -96,6 +96,7 @@ config_dict = json.load(f)
 #make_multiple_fakes(config_dict)
 
 dt=sys.argv[1]
+time.sleep(5)
 datetime_object = datetime.datetime.strptime(dt, "%Y_%m_%d_%H_%M_%S")
 unix_time=int(time.mktime(datetime_object.timetuple()))
 print("hi, i am making a fake measurement for datetime: ",dt)
