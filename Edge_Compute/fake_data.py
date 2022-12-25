@@ -18,7 +18,7 @@ def make_measurement(dt,config_dict,moment):
     unix_time=moment
     #print(dt)
     
-    print(dt)
+    #print(dt)
     path_rand_imgs='images/fake_images_for_data_creation'
     path_to="images/measurements/measurement_at_"+dt
 
@@ -52,7 +52,7 @@ def make_measurement(dt,config_dict,moment):
                         dst=path_to+"/plant_images_of_x{}_y{}/{}.png".format(column,row,i)
                     except:
                         pass
-                    print(dst)
+                    #print(dst)
                     shutil.copyfile(src,dst)
                     
                 dt2=datetime.datetime.fromtimestamp(unix_time)
