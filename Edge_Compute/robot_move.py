@@ -1,10 +1,6 @@
 from prototype_for_plant_finder import process_image #process_image takes the path where take_photo stores and the current photo filaname and returns
 # a list of th y dimension pixel height where lines occur and also centers_x and centers_y which are the x,y coordinates for each plant
-import time,sys
-print("hi",sys.argv[1])
-time.sleep(5)
-print("finished")
-exit()
+
 def make_move(dx):
     pass
 def take_photo(path,filename):

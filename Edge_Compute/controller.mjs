@@ -7,6 +7,23 @@ const app = express(); //make app object
 let port ='3000'; //set port
 const router = express.Router(); //make a router object
 
+
+let inform_db = function(datetime){
+
+  let rawdata = fs.readFileSync('greenhouse_config.json');
+  let greenhouse_config = JSON.parse(rawdata);
+
+  rawdata = fs.readFileSync('images/measurements/measurement_at_'+datetime+'/data.json');
+  let data_to_send = JSON.parse(rawdata);
+
+  fetch(greenhouse_config['server_url'], {
+    method: 'POST',
+    body: JSON.stringify(data_to_send),
+    headers: { 'Content-Type': 'application/json' }
+    });
+    console.log('Posted the data.json from measurement at '+datetime);
+}
+
 let get_datetime = function(){
   let date_ob = new Date();
 
@@ -66,7 +83,7 @@ let start_greenhouse_measurement = function(req,res){
       }
       let ingestion_controller_output;
       // spawn new child process to call the python_process script
-      let python_process = spawn('python', ['robot_move.py',datetime]);
+      let python_process = spawn('python', ['fake_data.py',datetime]);
       console.log('No on-going measurement, starting new.');
       res.statusCode = 200;
       res.send('A new measurement has started at '+datetime);
@@ -97,6 +114,7 @@ let start_greenhouse_measurement = function(req,res){
             return console.error(failure);
           }
           // measurement has finished, have to inform the db with fetch api 
+          inform_db(datetime);
         });
       });
 
