@@ -1,15 +1,12 @@
 from prototype_for_plant_finder import process_image #process_image takes the path where take_photo stores and the current photo filaname and returns
 # a list of th y dimension pixel height where lines occur and also centers_x and centers_y which are the x,y coordinates for each plant
+from simulation import Simulation
 
-def make_move(dx):
-    pass
-def take_photo(path,filename):
-    return path,filename
-
+sim=Simulation(view="images\Capture4.png",camera_dimensions=[589,290])
 path="Edge_Compute/images/"
 out_path="Edge_Compute/diagnostics/"
 filename='Capture1.png' #set image to test
-default_distance=0.20 
+default_distance=50
 #first shoot
 start=0
 end=0
@@ -20,8 +17,8 @@ while True:
 
     step=step+1
     print(step)
-    make_move(dx)
-    path,filename=take_photo(path,filename)
+    sim.make_move(dx)
+    path,filename=sim.take_photo()
     lines_y,lines,centroids=process_image(filename,path,out_path,diagnostics_mode='time+final')
     if len(lines_y)==0:
         print('no plants, i finished') #this wouldn't happen we need an error handler in image_process to return 0 y_lines if no plants
