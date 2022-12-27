@@ -8,7 +8,7 @@ def check_cluster_multitudes(test_cases,edge_point_list):
     #print(edge_point_list)
     wcss = []
     for i in test_cases:
-        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=60, n_init=6, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
+        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=70, n_init=4, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
         #print(edge_point_list)
         kmeans.fit(edge_point_list)
         wcss.append(kmeans.inertia_)
@@ -34,7 +34,7 @@ def find_elbow(wcss,test_cases):
     return n
 
 def find_centroids(edge_point_list,n):
-    kmeans = KMeans(n_clusters=n, init='k-means++', max_iter=80, n_init=6, random_state=0) #increase max_iter and n_init for better clustering , decrease for faster 'find final centroids' time
+    kmeans = KMeans(n_clusters=n, init='k-means++', max_iter=90, n_init=6, random_state=0) #increase max_iter and n_init for better clustering , decrease for faster 'find final centroids' time
     kmeans.fit(edge_point_list)
     #print(kmeans.cluster_centers_)
 
@@ -47,7 +47,7 @@ def find_centroids(edge_point_list,n):
     return centers_x,centers_y,labels
 
 
-def plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,_,lines_y):
+def plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,_,lines_y,y1,y2):
     image_x_length=img.shape[1]
     plt.imshow(img)
     plt.plot(centers_x,centers_y,'o',color='yellow')
@@ -56,7 +56,12 @@ def plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,_,lines_
         p2 = [line, line]
         plt.plot(p1, p2, color="red", linewidth=3)
 
- 
+    p1 = [0, image_x_length]
+    p2 = [y1, y1]
+    plt.plot(p1, p2, color="blue", linewidth=2)
+    p1 = [0, image_x_length]
+    p2 = [y2, y2]
+    plt.plot(p1, p2, color="blue", linewidth=2)
     plt.savefig(out_path+'original image with centroids drawn.png')
     plt.show()
 

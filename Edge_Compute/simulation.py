@@ -2,7 +2,9 @@
 import random
 import cv2
 import time
+import json
 
+random.seed(0)
 
 class Simulation:
     def __init__(self,view,camera_dimensions):
@@ -11,8 +13,10 @@ class Simulation:
         self.pos=0
         self.cam_width=camera_dimensions[0]
         self.cam_height=camera_dimensions[1]
-        self.motor_tolerance=0.1
+        self.motor_tolerance=0.2
         self.cropped_image='no image yet'
+        f = open('greenhouse_config.json')
+        self.config = json.load(f)
         
 
     def make_move(self,dx):
@@ -29,13 +33,13 @@ class Simulation:
         #print(cropped_image)
         
         
-        return "Edge_Compute/images/","temp_img_taken.png"
+        return "images/","temp_img_taken.png"
 
 
 
 
-sim=Simulation(view="images/Capture4.png",camera_dimensions=[589,290])
+#sim=Simulation(view="images/Capture4.png",camera_dimensions=[589,290])
 #sim.make_move(50)
-while(sim.pos<1120-sim.cam_height):
-    sim.take_photo()
-    sim.make_move(50)
+#while(sim.pos<1120-sim.cam_height):
+    #sim.take_photo()
+    #sim.make_move(50)
