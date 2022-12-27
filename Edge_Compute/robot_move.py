@@ -26,14 +26,14 @@ while True:
     signal_history=signal_history.split('\n')
     signal_history=list(map(int,signal_history))
     signal_history_file.close()
-    lines_y,lines,centroids,signal=process_image(filename,path,out_path,sim.config,diagnostics_mode='time+final+sig')
+    lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,sim.config,diagnostics_mode='time+final+sig')
     if step==1:
         signal_history_file=open('sig.txt','a',encoding='utf-8')
         position=0
         for intensity in signal:
             signal_history_file.write(intensity)
     else:
-        position,total_signal=figure_out_position(signal_history,signal,y1,y2)
+        position,total_signal=figure_out_position(signal_history,signal,y1)
 
     if len(lines_y)==0:
         print('no plants, i finished') #this wouldn't happen we need an error handler in image_process to return 0 y_lines if no plants

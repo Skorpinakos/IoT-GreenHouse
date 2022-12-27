@@ -104,7 +104,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(lines)
 
 
-    return sorted(list(lines.keys())),lines,centroids,signal #returns the sorted y coordinate of lines and the lines and centroids dicts 
+    return sorted(list(lines.keys())),lines,centroids,signal,y1 #returns the sorted y coordinate of lines and the lines and centroids dicts 
 f = open('greenhouse_config.json')
 config_dict = json.load(f)
 #process_image(filename,path,out_path,config_dict,"final")
