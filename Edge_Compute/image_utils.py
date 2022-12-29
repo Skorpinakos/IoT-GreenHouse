@@ -82,7 +82,7 @@ def detect_cutt_offs(weight_image,diagnostics_mode):
         
     y1=zero_crossings[0]
     y2=zero_crossings[-1]
-    return y1,y2,zero_crossings,signal_filtered
+    return y1,y2,zero_crossings,signal
 
 def edge_image_to_edge_points_np_list(edge_image,y1,y2):
     edge_point_list=[]

@@ -28,6 +28,7 @@ while True:
         
         signal_history_file=open('sig.txt','w',encoding='utf-8')
         signal_history_file.write("")
+        signal_history_file.close()
         signal_history_file=open('sig.txt','a',encoding='utf-8')
         position=0
         for intensity in signal:
@@ -41,6 +42,9 @@ while True:
         signal_history_file.close()
         max_deviation=40
         position,total_signal=figure_out_position(signal_history,signal,y1,max_deviation)
+        signal_history_file=open('sig.txt','w',encoding='utf-8')
+        signal_history_file.write("")
+        signal_history_file.close()
         signal_history_file=open('sig.txt','a',encoding='utf-8')
         for intensity in total_signal:
             signal_history_file.write(str(intensity)+'\n')

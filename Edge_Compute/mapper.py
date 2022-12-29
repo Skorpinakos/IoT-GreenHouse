@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 def figure_out_position(signal_history,signal,y1,max_deviation):
-    window_size=7
+    window_size=130
     signal_size=len(signal)
     to_compare_history=np.array(signal_history[-window_size:])
     diffs=[]
@@ -15,23 +15,27 @@ def figure_out_position(signal_history,signal,y1,max_deviation):
         #print(len(to_compare_history))
         #print(len(to_compare_signal))
         #print(possible_overlap,len(to_compare_history))
-        res=np.sum(np.absolute(to_compare_history-to_compare_signal))
+        res=np.sum(np.square(to_compare_history-to_compare_signal))
         diffs.append(res)
 
         #break
 
 
+    sorted_diffs=diffs.copy()
+    sorted_diffs.sort()
+    for i,possible_index in enumerate(sorted_diffs):
+        translation=diffs.index(possible_index)+window_size-1
+        print("error achieved:",min(diffs))#,diffs)
+        print("trans",translation)
 
-
-    translation=diffs.index(min(diffs))+window_size-1
-    print("error achieved:",min(diffs),diffs)
-    print("trans",translation)
     
-    position=0
-    total_signal=signal_history.copy()
-    total_signal.extend(signal[translation:])
-    print("i guess the step was:",len(total_signal)-len(signal_history))
-    #print(total_signal)
+        position=0
+        total_signal=signal_history.copy()
+        total_signal.extend(signal[translation:])
+        print("i guess the step was:",len(total_signal)-len(signal_history))
+        #print(total_signal)
+        if i ==0:
+            break
 
     plt.plot(signal_history)
     plt.plot(signal)
@@ -42,4 +46,4 @@ def figure_out_position(signal_history,signal,y1,max_deviation):
 
 
     return position,total_signal
-figure_out_position([0,1,2,3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3],[3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3,9,12],5,30)
+#figure_out_position([0,1,2,3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3],[3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3,9,12],5,30)
