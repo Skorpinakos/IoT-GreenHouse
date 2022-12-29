@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 def figure_out_position(signal_history,signal,y1,max_deviation):
-    window_size=130
+    window_size=70
     signal_size=len(signal)
     to_compare_history=np.array(signal_history[-window_size:])
     diffs=[]
