@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 
 
 def detect_cutt_offs(weight_image,diagnostics_mode):
-    cut_factor=1.05
+    cut_factor=1.0
     signal=[]
     for line in weight_image[0:-1]:
         signal.append(sum(line))

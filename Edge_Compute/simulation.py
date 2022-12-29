@@ -17,10 +17,12 @@ class Simulation:
         self.cropped_image='no image yet'
         f = open('greenhouse_config.json')
         self.config = json.load(f)
+        self.step=0
         
 
     def make_move(self,dx):
-        self.pos+=int(dx+dx*self.motor_tolerance*random.randint(-100,100)/100) # change actual movement by a random percentage
+        self.step=int(dx+dx*self.motor_tolerance*random.randint(-100,100)/100) # change actual movement by a random percentage
+        self.pos+=self.step
         
 
     def take_photo(self):

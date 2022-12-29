@@ -1,5 +1,5 @@
 
-from signal import signal
+
 import time
 import json
 from turtle import distance
@@ -95,7 +95,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
         for center in clustered_centers[line]:
             heights.append(center[0])
         lines[sum(heights)/len(heights)]=clustered_centers[line] #keep in mind that the average y might slightly differ from what kmeans returned as center
-    print(lines)
+    #print(lines)
 
 
 

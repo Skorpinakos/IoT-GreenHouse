@@ -18,22 +18,34 @@ step=0
 while True:
 
     step=step+1
-    print(step)
+    #print(step)
     sim.make_move(dx)
     path,filename=sim.take_photo()
-    signal_history_file=open("sig.txt",'r',encoding='utf-8')
-    signal_history=signal_history_file.read()
-    signal_history=signal_history.split('\n')
-    signal_history=list(map(int,signal_history))
-    signal_history_file.close()
-    lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,sim.config,diagnostics_mode='time+final+sig')
+
+    lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,sim.config,diagnostics_mode='final')
+    print("current step : ",sim.step)
     if step==1:
+        
+        signal_history_file=open('sig.txt','w',encoding='utf-8')
+        signal_history_file.write("")
         signal_history_file=open('sig.txt','a',encoding='utf-8')
         position=0
         for intensity in signal:
-            signal_history_file.write(intensity)
+            signal_history_file.write(str(intensity)+'\n')
+        signal_history_file.close()
     else:
-        position,total_signal=figure_out_position(signal_history,signal,y1)
+        signal_history_file=open("sig.txt",'r',encoding='utf-8')
+        signal_history=signal_history_file.read().strip()
+        signal_history=signal_history.split('\n')
+        signal_history=list(map(float,list(map(str,signal_history))))
+        signal_history_file.close()
+        max_deviation=40
+        position,total_signal=figure_out_position(signal_history,signal,y1,max_deviation)
+        signal_history_file=open('sig.txt','a',encoding='utf-8')
+        for intensity in total_signal:
+            signal_history_file.write(str(intensity)+'\n')
+        signal_history_file.close()
+
 
     if len(lines_y)==0:
         print('no plants, i finished') #this wouldn't happen we need an error handler in image_process to return 0 y_lines if no plants
