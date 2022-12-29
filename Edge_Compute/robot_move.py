@@ -19,7 +19,7 @@ while True:
 
     step=step+1
     #print(step)
-    sim.make_move(dx)
+    
     path,filename=sim.take_photo()
 
     lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,sim.config,diagnostics_mode='final')
@@ -40,8 +40,9 @@ while True:
         signal_history=signal_history.split('\n')
         signal_history=list(map(float,list(map(str,signal_history))))
         signal_history_file.close()
-        max_deviation=40
-        position,total_signal=figure_out_position(signal_history,signal,y1,max_deviation)
+        #max_deviation=40
+        position,total_signal,total_lines=figure_out_position(signal_history,signal,y1)
+        print("total lines seen: ",total_lines)
         signal_history_file=open('sig.txt','w',encoding='utf-8')
         signal_history_file.write("")
         signal_history_file.close()
@@ -71,6 +72,6 @@ while True:
 
     if flag_changed_line==True:
         pass
-        
+    sim.make_move(dx)
 
     #find focus lane and focus plants centers

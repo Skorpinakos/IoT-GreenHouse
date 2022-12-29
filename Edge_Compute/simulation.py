@@ -13,7 +13,7 @@ class Simulation:
         self.pos=0
         self.cam_width=camera_dimensions[0]
         self.cam_height=camera_dimensions[1]
-        self.motor_tolerance=0.8
+        self.motor_tolerance=0.3
         self.cropped_image='no image yet'
         f = open('greenhouse_config.json')
         self.config = json.load(f)
