@@ -16,7 +16,7 @@ let inform_db = function(datetime){
   rawdata = fs.readFileSync('images/measurements/measurement_at_'+datetime+'/data.json');
   let data_to_send = JSON.parse(rawdata);
 
-  fetch(greenhouse_config['server_url']+'/new_measurement', {
+  fetch(greenhouse_config['server_url']+'/store_new_measurement', {
     method: 'POST',
     body: JSON.stringify(data_to_send),
     headers: { 'Content-Type': 'application/json' }
