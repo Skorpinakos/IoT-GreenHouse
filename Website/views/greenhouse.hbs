@@ -61,14 +61,10 @@
                     </div>
                     <div class = "col-1"></div>
                 </div>
-            </div>
-        </div>        
-    </div>
   {{#with greenhouse_measurement_info}}
     <div class="row my-5" >
         <div class = "col-2"></div>
         <div class="col-8"> 
-            <div class="row recent rounded mb-3">
                 <dir class="row">
                     <h4 class='text-center mt-1 mb-3'>Last Measurement</h4>
                 </dir>
@@ -87,8 +83,35 @@
                         <p class='co2'>CO2 : {{CO2}}</p>
                     </div>
                 </div>
-            </div>
             {{/with}}
         </div>
+        <div class = "col-2"></div>
+
+    <div class="row my-4">
+        <div class="col-6">
+            <form>
+                <div class="row">
+                    <legend>Select Greenhouse Image</legend>
+                    <input  type="file" name="image" required>
+                </div>
+                <div class="row">
+                    <div class="col-4 mt-3 text-start">
+                        <button type="submit" class="btn btn-primary"> Submit </button>
+                    </div>
+                    <div class="col-8"></div>
+                </div>
+            </form>
+        </div>
+        <div class="col-6 text-end">
+            {{#with greenhouse_info}}
+                <a href="/start_new_measurement?IP={{IP}}" class="btn btn-success btn-lg active" role="button" aria-pressed="true">Start New Measurement</a>
+            {{/with}}
+
+        </div>
     </div>
+
+</div>
+</div>    
+</div>
+</div>
 </div>

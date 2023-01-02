@@ -124,19 +124,27 @@ def create_all():
                         if typos == 'integer':
                             if name == 'ROWS':
                                 temp_dict[name] = random.randint(5, 10)
+                                if temp_dict['ID'] == 184:
+                                    temp_dict[name] = 12
                             elif name == 'COLUMNS':
                                 temp_dict[name] = random.randint(5, 15)
+                                if temp_dict['ID'] == 184:
+                                    temp_dict[name] = 6
                         if typos == 'string':
                             if name == 'MEASUREMENT_PHOTO':
-                                temp_dict[name] = str(temp_dict['ID']) + '.jpg'
-                                image_path = random.choice(measurement_paths)
-                                cwd = os.path.abspath(os.getcwd())
-                                print(image_path)
-                                shutil.copyfile(
-                                    cwd + '\\' + image_path, cwd + "\\public\\images\\measurements\\" +
-                                    str(temp_dict['ID']) + '.jpg')
+                                # temp_dict[name] = str(temp_dict['ID']) + '.jpg'
+                                # image_path = random.choice(measurement_paths)
+                                # cwd = os.path.abspath(os.getcwd())
+                                # print(image_path)
+                                # shutil.copyfile(
+                                #     cwd + '\\' + image_path, cwd + "\\public\\images\\measurements\\" +
+                                #     str(temp_dict['ID']) + '.jpg')
+                                temp_dict[name] = 'null'
+
                             elif name == 'IP':
                                 temp_dict[name] = fake.ipv4_public()
+                                if temp_dict['ID'] == 184:
+                                    temp_dict[name] = 'localhost:4000'
                             elif name == 'GREENHOUSE_PHOTO':
                                 temp_dict[name] = str(
                                     temp_dict['ID']) + '.jpg'

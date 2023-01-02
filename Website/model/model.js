@@ -10,7 +10,7 @@ const db_name = path.join(__dirname, "../data", "Our_App.db");
 
 const getPlantRecents = (n, id, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, PM.ID as PM_ID,P.ID AS P_ID, TYPE, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN (SELECT * FROM PLANT_MEASUREMENT) AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT DISTINCT GREENHOUSE_ID, PM.ID as PM_ID, P.ID AS P_ID, ROW, COLUMN, TYPE, IP, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN (SELECT * FROM PLANT_MEASUREMENT) AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id, n], (err, rows) => {
     if (err) {
@@ -40,7 +40,7 @@ const getGreenhouseRecents = (n,id, callback) => {
 
 const getPlantInfo = (id, callback) => {
 
-    let sql='SELECT GREENHOUSE_ID, ID, TYPE, LIFESPAN, ROW, COLUMN FROM PLANT WHERE ID=?';
+    let sql='SELECT GREENHOUSE_ID, P.ID, IP, TYPE, LIFESPAN, ROW, COLUMN FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) WHERE P.ID = ?';
     const db = new sqlite3.Database(db_name);
     db.all(sql,[id], (err, rows) => {
     if (err) {
@@ -143,5 +143,31 @@ const getClientGreenhouses = (id, callback) => {
     });
 }
 
-export {getPlantRecents, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlants, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
+const get_update_query = (entity, info) =>{
+    let attributes = '';
+
+    for (let i = 0; i < info.length; i++) {
+        attributes += String(info[i] + ' = ?')
+        if( i < info.length - 1){
+            attributes += ', ';
+      }}
+    
+    let sql = "UPDATE " + entity + " SET " + attributes + " WHERE id = ?";
+    return sql
+}
+const update_measurement_photo = (id, attributes, update_values) =>{
+    
+    let sql=get_update_query('PLANT_MEASUREMENT', attributes);
+    let values = Object.values(update_values).concat(id);
+    const db = new sqlite3.Database(db_name); 
+        db.run(sql, values, (err) => {
+        if (err) {
+            db.close();
+            console.log(err);
+        } // επιστρέφει array
+        db.close();
+    });
+}
+
+export {getPlantRecents, update_measurement_photo, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlants, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
 

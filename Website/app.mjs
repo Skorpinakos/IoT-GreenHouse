@@ -3,20 +3,15 @@ import express from 'express'
 import { engine } from 'express-handlebars';
 import * as model from './model/model.js';
 import multer from 'multer';
-import nodemailer from 'nodemailer';
+import path from 'path';
+import bodyParser from 'body-parser'
+import fs from 'fs'
 const app = express(); //make app object
-let port = process.env.PORT || '3000'; //set port
+let port = process.env.PORT || '4000'; //set port
 const router = express.Router(); //make a router object
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json()); 
 
-const admin_keys = ['tsabras123', 'steve456'];
-
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'unireportuniversityofpatras@gmail.com',
-    pass: 'zqegiddfnqglegok'
-  }
-});
 
 const storage = multer.diskStorage({
     destination:(req,file,callback) =>{
@@ -47,25 +42,20 @@ app.use(express.static('public')); //make the 'public' directory public (users c
 app.engine('hbs', engine({ extname: 'hbs' })); //for using 'hbs' file extension instead of 'handlebars'
 app.set('view engine', 'hbs'); //set rendering engine the handlebars
 
-let x0=21.783835;
-let x_ratio=(21.795379-x0)/1100;
-let y0=38.292066;
-let y_ratio=(y0-38.286980)/600;
-let ips={};
-let last_clear_time=Date.now();
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// backend functions
 let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    let client_id = 20;
+    let client_id = 23;
     model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
       model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
           console.log(err.message);
         } 
         for (let i in plant_rows){
-          plant_rows[i].MEASUREMENT_PHOTO = 'images/measurements/' + plant_rows[i].MEASUREMENT_PHOTO
+          console.log(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN)
+          get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
+          plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
           plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
         }
         for(let i in greenhouse_rows){
@@ -99,12 +89,13 @@ let givePlantPage = function(req,res){
           rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
         }
         if(measurement_rows.length){
-          measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' + measurement_rows[0].MEASUREMENT_PHOTO
+          get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
+          measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
           if (measurement_rows.length  == 1){
             measurement_rows[0].GROWTH = 0 + ' cm'
           }
-          else if (rows.length  == 2){
+          else if (measurement_rows.length  == 2){
             measurement_rows[0].GROWTH = (measurement_rows[0].GROWTH - measurement_rows[1].GROWTH).toFixed(2) + ' cm'
           }
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
@@ -150,7 +141,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
 };
 
 let giveClientGreenhouses = function(req,res){
-  let client_id = 20;
+  let client_id = 23;
   model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
     model.getClientGreenhouses(client_id, (err, greenhouses) => { 
     for(let i = 0; i < greenhouses.length; i++){
@@ -186,12 +177,52 @@ let giveClientGreenhouses = function(req,res){
   });
 };
 
-let addGreenhouse = function(req,res){
-  let client_id = 20;
-  
+let addGreenhouse = function(req,res){  
     res.render('add_greenhouse', {layout : 'layout'});
-
 };
+
+let storeNewMeasurement = function(req,res){  
+  console.log(req.body);
+  res.statusCode=200;
+  res.send("Received package.");
+};
+
+let startNewMeasurement = async function(req,res){ 
+  let ip = req['query'].IP; 
+  console.log(ip)
+  ip = 'localhost:3000'
+  let url = 'http://' + ip + '/start_greenhouse_measurement'
+  console.log(url)
+  const response = await fetch(url);
+  console.log(response)
+  const data = response.text();
+  console.log(data);
+};
+
+
+let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c) {
+  console.log(ip)
+  if(p_id<9401 || p_id>9498){
+    ip = 'localhost:3000'
+  }
+  let url = 'http://' + ip + '/get_recent_photo' + '?x=' + r + '&y=' + c
+  console.log(url);
+  const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }
+});
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  //const fileType = await fileType.fromBuffer(buffer);
+  if (1) {
+      const dir = path.resolve() + '\\public\\'
+      const outputFileName = 'images\\measurements\\' +  p_id + '.png';
+      console.log(dir + outputFileName)
+      fs.createWriteStream(dir + outputFileName).write(buffer);
+      model.update_measurement_photo(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
+  } else {
+      console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
+  }
+  
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
 router.route('/').get(giveHomePage);
@@ -199,6 +230,9 @@ router.route('/greenhouses').get(giveClientGreenhouses);
 router.route('/plant').get(givePlantPage);
 router.route('/greenhouse').get(giveGreenhousePage);
 router.route('/add_greenhouse').get(addGreenhouse);
+router.route('/start_new_measurement').get(startNewMeasurement);
+router.route('/store_new_measurement').post(storeNewMeasurement);
+
 // router.route('/push_greenhouse').post(upload.any(), pushGreenhouse);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
