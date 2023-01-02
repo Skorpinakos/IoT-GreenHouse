@@ -104,7 +104,8 @@
         </div>
         <div class="col-6 text-end">
             {{#with greenhouse_info}}
-                <a href="/start_new_measurement?IP={{IP}}" class="btn btn-success btn-lg active" role="button" aria-pressed="true">Start New Measurement</a>
+                <a  id="new_button" class="btn btn-success btn-lg active" role="button" aria-pressed="true">Start New Measurement</a>
+                <a  id="new_button_hidden" class="btn btn-success btn-lg active" style="display: none" role="button" aria-pressed="true">{{IP}}</a>
             {{/with}}
 
         </div>
@@ -115,3 +116,4 @@
 </div>
 </div>
 </div>
+<script src="scripts/start_new_measurement.js"></script>

@@ -197,6 +197,7 @@ let startNewMeasurement = async function(req,res){
   console.log(response)
   const data = response.text();
   console.log(data);
+  res.json({"status":'ok'});
 };
 
 
