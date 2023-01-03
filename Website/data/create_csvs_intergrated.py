@@ -124,12 +124,12 @@ def create_all():
                         if typos == 'integer':
                             if name == 'ROWS':
                                 temp_dict[name] = random.randint(5, 10)
-                                if temp_dict['ID'] == 184:
-                                    temp_dict[name] = 12
+                                if temp_dict['ID'] == 12:
+                                    temp_dict[name] = 6
                             elif name == 'COLUMNS':
                                 temp_dict[name] = random.randint(5, 15)
-                                if temp_dict['ID'] == 184:
-                                    temp_dict[name] = 6
+                                if temp_dict['ID'] == 12:
+                                    temp_dict[name] = 12
                         if typos == 'string':
                             if name == 'MEASUREMENT_PHOTO':
                                 # temp_dict[name] = str(temp_dict['ID']) + '.jpg'

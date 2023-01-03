@@ -43,7 +43,7 @@
                                     {{#if current_plant}}
                                       <td class="table-info">{{ID}}</td>
                                     {{else}}
-                                      <td>{{ID}}</td>
+                                  <td style="color:(255*(1-{{HEALTH}}),255*{{HEALTH}},0)"><a href="/plant?ID={{ID}}">{{ID}}</a></td>
                                     {{/if}}
                                   {{/each}}
                               </tr>

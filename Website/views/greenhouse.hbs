@@ -52,7 +52,7 @@
                               <tr> 
                                   <th scope="row">{{@index}}</th>
                                   {{#each this}}
-                                  <td><a href="/plant?ID={{ID}}">{{ID}}</a></td>
+                                  <td style="color:(255*(1-{{HEALTH}}),255*{{HEALTH}},0)"><a href="/plant?ID={{ID}}">{{ID}}</a></td>
                                   {{/each}}
                               </tr>
                           {{/each}}
@@ -91,7 +91,7 @@
         <div class="col-6">
             <form>
                 <div class="row">
-                    <legend>Select Greenhouse Image</legend>
+                    <legend>Update Greenhouse Image</legend>
                     <input  type="file" name="image" required>
                 </div>
                 <div class="row">

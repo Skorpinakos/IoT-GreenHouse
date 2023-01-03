@@ -46,7 +46,7 @@ app.set('view engine', 'hbs'); //set rendering engine the handlebars
 let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    let client_id = 2;
+    let client_id = 16;
     model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
       model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
@@ -72,32 +72,55 @@ let givePlantPage = function(req,res){
   let plant_id=req.query['ID'];
     model.getPlantInfo(plant_id, (err, plant_rows) => {   
       model.getPlantMeasurementInfo(plant_id, (err, measurement_rows) => { 
-        model.getGreenhousePlants(plant_rows[0].GREENHOUSE_ID, (err,plants) => {  
-        if (err){
-          console.log(err.message);
-        } 
-        for (let p of plants){
-          if (p.ID == plant_rows[0].ID){
-            p['current_plant'] = 1;
-          }
-          else{
-            p['current_plant'] = 0;
-          }
-        }
-        let rows_plants = [];
-        for (let i = 0; i < plants[0].ROWS; i++){
-          rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
-        }
         if(measurement_rows.length){
+          model.getGreenhousePlantsWithHealth(plant_rows[0].GREENHOUSE_ID, (err,plants) => {  
+            if (err){
+              console.log(err.message);
+            } 
+            for (let p of plants){
+                if (p.ID == plant_rows[0].ID){
+                  p['current_plant'] = 1;
+                }
+                else{
+                  p['current_plant'] = 0;
+                }
+            }
+            let rows_plants = [];
+            for (let i = 0; i < plants[0].ROWS; i++){
+              rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
+            }
+            console.log(rows_plants);
           get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
           measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
+          plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
+          res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants});
+        });
       }
-      plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
+      else{
+        model.getGreenhousePlantsWithoutHealth(plant_rows[0].GREENHOUSE_ID, (err,plants) => {  
+          if (err){
+            console.log(err.message);
+          } 
+          for (let p of plants){
+              if (p.ID == plant_rows[0].ID){
+                p['current_plant'] = 1;
+              }
+              else{
+                p['current_plant'] = 0;
+              }
+          }
+          let rows_plants = [];
+          for (let i = 0; i < plants[0].ROWS; i++){
+            rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
+          }
+          console.log(rows_plants);
+        plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
         res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants});
       });
+      }
     });
   });
 };
@@ -106,37 +129,56 @@ let giveGreenhousePage = function(req,res){
 let greenhouse_id=req.query['ID'];
 model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
   model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
-    model.getGreenhousePlants(greenhouse_id, (err,plants) => {
-  
-        if (err){
-          console.log(err.message);
-        } 
-        let rows_plants = [];
         if(measurement_rows.length){
-          measurement_rows[0].TEMPERATURE = measurement_rows[0].TEMPERATURE.toFixed(2) + ' C'
-          measurement_rows[0].HUMIDITY = measurement_rows[0].HUMIDITY.toFixed(2) + ' %'
-          measurement_rows[0].SUNLIGHT = measurement_rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
-          measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
+            model.getGreenhousePlantsWithHealth(greenhouse_id, (err,plants) => {
+              if (err){
+                console.log(err.message);
+              } 
+              let rows_plants = [];
+            measurement_rows[0].TEMPERATURE = measurement_rows[0].TEMPERATURE.toFixed(2) + ' C'
+            measurement_rows[0].HUMIDITY = measurement_rows[0].HUMIDITY.toFixed(2) + ' %'
+            measurement_rows[0].SUNLIGHT = measurement_rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
+            measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
+            for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
+              rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
+            }
+            greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+            greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
+            greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
+            greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
+            greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
+            greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
+            res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});  
+          });
         }
-        for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
-          rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
-        }
-        greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
-        greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
-        greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
-        greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
-        greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
-        greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
 
-        
-        res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});
-      });
+        else{
+          model.getGreenhousePlantsWithoutHealth(greenhouse_id, (err,plants) => {
+            if (err){
+              console.log(err.message);
+            } 
+            let rows_plants = [];
+          for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
+            rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
+          }
+          greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+          greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
+          greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
+          greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
+          greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
+          greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
+          res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});  
+        });
+
+      }
+
+
     });
   });
 };
 
 let giveClientGreenhouses = function(req,res){
-  let client_id = 2;
+  let client_id = 16;
   model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
     model.getClientGreenhouses(client_id, (err, greenhouses) => { 
     for(let i = 0; i < greenhouses.length; i++){
@@ -188,6 +230,7 @@ let storeNewMeasurement = function(req,res){
     let measurement_datetime = req.body.START_DATETIME.split(" ");
     let greenhouse_measurement_id = last_greenhouse_measurement[0].ID + 1;
     greenhouse_measurement.push(greenhouse_measurement_id, measurement_datetime[0], measurement_datetime[1], req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
+    console.log(greenhouse_measurement)
     model.storeGreenhouseMeasurement(greenhouse_measurement, (err) => {
       if (err){
         console.log(err.message);
