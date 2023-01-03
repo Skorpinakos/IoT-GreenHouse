@@ -53,7 +53,7 @@ let giveHomePage = function(req,res){
           console.log(err.message);
         } 
         for (let i in plant_rows){
-          console.log(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN)
+          // console.log(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN)
           get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
           plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
           plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
@@ -163,7 +163,7 @@ let giveClientGreenhouses = function(req,res){
       greenhouses[i].MEASUREMENT_TIME = '-';
 
     }
-    console.log(greenhouses)
+    // console.log(greenhouses)
 
   }
     // console.log(greenhouses)
@@ -181,33 +181,67 @@ let addGreenhouse = function(req,res){
     res.render('add_greenhouse', {layout : 'layout'});
 };
 
-let storeNewMeasurement = function(req,res){  
-  console.log(req.body);
+let storeNewMeasurement = function(req,res){ 
   res.statusCode=200;
   res.send("Received package.");
+  model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
+    if (err){
+      console.log(err.message);
+    };
+    let greenhouse_measurement = [];
+    let measurement_datetime = req.body.START_DATETIME.split(" ");
+    let greenhouse_measurement_id = last_greenhouse_measurement[0].ID + 1;
+    greenhouse_measurement.push(greenhouse_measurement_id, measurement_datetime[0], measurement_datetime[1], req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
+    model.storeGreenhouseMeasurement(greenhouse_measurement, (err) => {
+      if (err){
+        console.log(err.message);
+      }; 
+      model.getFirstGreenhousePlantId(req.body.GREENHOUSE_ID, (err, first_greenhouse_plant) => { 
+        model.getLastPlantMeasurementId((err, last_plant_measurement) => { 
+          if (err){
+            console.log(err.message);
+          }; 
+          const last_measurement_id = last_plant_measurement[0].ID;
+          for (let i = 0; i < req.body.measurements.length; i++){
+            let plant_measurement = [];
+            let id = last_measurement_id + i + 1;
+            let plant_id = first_greenhouse_plant[0].ID + i;
+            let size = req.body.measurements[i][0];
+            let growth = req.body.measurements[i][0];
+            let health = req.body.measurements[i][2];
+            let leaf_density = req.body.measurements[i][1];
+            let row = i % rows_columns[0];
+            let column = i % rows_columns[1];
+            plant_measurement.push(id, plant_id, req.body.measurements[i][0], req.body.measurements[i][1], size, growth, health, leaf_density, 'null');
+            model.storePlantMeasurement(plant_measurement,(err) => {
+              if (err){
+                console.log(err.message);
+              }; 
+            });
+          }
+        });
+      });
+    });
+  });
 };
 
 let startNewMeasurement = async function(req,res){ 
   let ip = req['query'].IP; 
-  console.log(ip)
   ip = 'localhost:3000'
   let url = 'http://' + ip + '/start_greenhouse_measurement'
-  console.log(url)
   const response = await fetch(url);
   console.log(response)
   const data = response.text();
-  console.log(data);
+  // console.log(data);
   res.json({"status":'ok'});
 };
 
 
 let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c) {
-  console.log(ip)
   if(p_id<9401 || p_id>9498){
     ip = 'localhost:3000'
   }
   let url = 'http://' + ip + '/get_recent_photo' + '?x=' + r + '&y=' + c
-  console.log(url);
   const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }
 });
   const arrayBuffer = await response.arrayBuffer();
@@ -216,9 +250,9 @@ let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c
   if (1) {
       const dir = path.resolve() + '\\public\\'
       const outputFileName = 'images\\measurements\\' +  p_id + '.png';
-      console.log(dir + outputFileName)
+      // console.log(dir + outputFileName)
       fs.createWriteStream(dir + outputFileName).write(buffer);
-      model.update_measurement_photo(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
+      model.updateMeasurementPhoto(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
   } else {
       console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
   }

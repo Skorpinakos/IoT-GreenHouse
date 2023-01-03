@@ -143,7 +143,7 @@ const getClientGreenhouses = (id, callback) => {
     });
 }
 
-const get_update_query = (entity, info) =>{
+const getUpdateQuery = (entity, info) =>{
     let attributes = '';
 
     for (let i = 0; i < info.length; i++) {
@@ -155,9 +155,86 @@ const get_update_query = (entity, info) =>{
     let sql = "UPDATE " + entity + " SET " + attributes + " WHERE id = ?";
     return sql
 }
-const update_measurement_photo = (id, attributes, update_values) =>{
+
+const storePlantMeasurement = (info,callback) => {
+
+    let sql="INSERT INTO PLANT_MEASUREMENT (ID, PLANT_ID, MEASUREMENT_DATE, MEASUREMENT_TIME, SIZE, GROWTH, HEALTH, LEAF_DENSITY, MEASUREMENT_PHOTO) VALUES (?,?,?,?,?,?,?,?,?)";
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, info, (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null); // επιστρέφει array
+    });
+}
+
+const storeGreenhouseMeasurement = (info,callback) => {
+
+    let sql="INSERT INTO GREENHOUSE_MEASUREMENT (ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY, CO2, GREENHOUSE_ID) VALUES (?,?,?,?,?,?,?,?)";
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, info, (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null); // επιστρέφει array
+    });
+}
+
+const getLastPlantMeasurementId = (callback) => {
+
+    let sql="SELECT ID FROM PLANT_MEASUREMENT ORDER BY ID DESC LIMIT 1";
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
+const getFirstGreenhousePlantId = (greenhouse_id, callback) => {
+
+    let sql="SELECT P.ID FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) WHERE G.ID = ? ORDER BY P.ID ASC LIMIT 1";
+    console.log(greenhouse_id)
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [greenhouse_id], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
+const getLastGreenhouseMeasurementId = (callback) => {
+
+    let sql="SELECT ID FROM GREENHOUSE_MEASUREMENT ORDER BY ID DESC LIMIT 1";
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
+const updateMeasurementPhoto = (id, attributes, update_values) =>{
     
-    let sql=get_update_query('PLANT_MEASUREMENT', attributes);
+    let sql=getUpdateQuery('PLANT_MEASUREMENT', attributes);
     let values = Object.values(update_values).concat(id);
     const db = new sqlite3.Database(db_name); 
         db.run(sql, values, (err) => {
@@ -169,5 +246,5 @@ const update_measurement_photo = (id, attributes, update_values) =>{
     });
 }
 
-export {getPlantRecents, update_measurement_photo, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlants, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
+export {getFirstGreenhousePlantId, storePlantMeasurement, storeGreenhouseMeasurement, getLastGreenhouseMeasurementId, getLastPlantMeasurementId, getPlantRecents, updateMeasurementPhoto, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlants, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
 
