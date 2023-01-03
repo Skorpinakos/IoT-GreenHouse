@@ -52,7 +52,7 @@
                               <tr> 
                                   <th scope="row">{{@index}}</th>
                                   {{#each this}}
-                                  <td style="background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a href="/plant?ID={{ID}}">{{ID}}</a></td>
+                                  <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}</a></td>
                                   {{/each}}
                               </tr>
                           {{/each}}

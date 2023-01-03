@@ -98,9 +98,9 @@ const getGreenhouseMeasurementInfo = (id, callback) => {
     });
 }
 
-const getGreenhousePlantsWithHealth = (id, callback) => {
+const getGreenhousePlantsWithInfo = (id, callback) => {
 
-    let sql='SELECT P.ID, ROWS, COLUMNS, HEALTH FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
+    let sql='SELECT P.ID, ROWS, COLUMNS, HEALTH, SIZE FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id], (err, rows) => {
     if (err) {
@@ -113,7 +113,7 @@ const getGreenhousePlantsWithHealth = (id, callback) => {
     });
 }
 
-const getGreenhousePlantsWithoutHealth = (id, callback) => {
+const getGreenhousePlantsWithoutInfo = (id, callback) => {
 
     let sql='SELECT P.ID, ROWS, COLUMNS FROM PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE GREENHOUSE_ID = ? ORDER BY ROW ASC, COLUMN ASC;';
     const db = new sqlite3.Database(db_name);
@@ -261,5 +261,5 @@ const updateMeasurementPhoto = (id, attributes, update_values) =>{
     });
 }
 
-export {getFirstGreenhousePlantId, storePlantMeasurement, storeGreenhouseMeasurement, getLastGreenhouseMeasurementId, getLastPlantMeasurementId, getPlantRecents, updateMeasurementPhoto, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlantsWithHealth, getGreenhousePlantsWithoutHealth, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
+export {getFirstGreenhousePlantId, storePlantMeasurement, storeGreenhouseMeasurement, getLastGreenhouseMeasurementId, getLastPlantMeasurementId, getPlantRecents, updateMeasurementPhoto, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlantsWithInfo, getGreenhousePlantsWithoutInfo, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
 

@@ -41,9 +41,9 @@
                                   <th scope="row">{{@index}}</th>
                                   {{#each this}}
                                     {{#if current_plant}}
-                                      <td class="table-info">{{ID}}</td>
+                                      <td class="table-info" style="text-align: center;">{{SIZE}}</td>
                                     {{else}}
-                                  <td style="background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a href="/plant?ID={{ID}}">{{ID}}</a></td>
+                                  <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}</a></td>
                                     {{/if}}
                                   {{/each}}
                               </tr>
@@ -76,7 +76,7 @@
                     </div>
                     <div class="col-4 text-start"> 
                         <p class='size'>Size : {{SIZE}}</p>
-                        <p class='growth'>Growth : {{GROWTH}}</p>
+                        <p class='leaf_density'>Leaf Density : {{LEAF_DENSITY}}</p>
                     </div>
                     
 
