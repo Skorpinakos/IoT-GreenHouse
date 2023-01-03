@@ -46,7 +46,7 @@ app.set('view engine', 'hbs'); //set rendering engine the handlebars
 let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    let client_id = 23;
+    let client_id = 2;
     model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
       model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
@@ -92,12 +92,7 @@ let givePlantPage = function(req,res){
           get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
           measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
-          if (measurement_rows.length  == 1){
-            measurement_rows[0].GROWTH = 0 + ' cm'
-          }
-          else if (measurement_rows.length  == 2){
-            measurement_rows[0].GROWTH = (measurement_rows[0].GROWTH - measurement_rows[1].GROWTH).toFixed(2) + ' cm'
-          }
+          measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
       }
       plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
@@ -141,7 +136,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
 };
 
 let giveClientGreenhouses = function(req,res){
-  let client_id = 23;
+  let client_id = 2;
   model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
     model.getClientGreenhouses(client_id, (err, greenhouses) => { 
     for(let i = 0; i < greenhouses.length; i++){
@@ -184,6 +179,7 @@ let addGreenhouse = function(req,res){
 let storeNewMeasurement = function(req,res){ 
   res.statusCode=200;
   res.send("Received package.");
+  console.log(req.body)
   model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
     if (err){
       console.log(err.message);
@@ -202,22 +198,35 @@ let storeNewMeasurement = function(req,res){
             console.log(err.message);
           }; 
           const last_measurement_id = last_plant_measurement[0].ID;
+          const seperated_measurement_date = measurement_datetime[0].split('-');
+          const seperated_measurement_time = measurement_datetime[1].split(':');
+          console.log(seperated_measurement_date, seperated_measurement_time);
+          const measurement_start_datetime = new Date(seperated_measurement_date[0],seperated_measurement_date[2],seperated_measurement_date[1],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
+          console.log(measurement_start_datetime)
           for (let i = 0; i < req.body.measurements.length; i++){
+            model.getPlantMeasurementInfo(first_greenhouse_plant[0].ID + i, (err, measurement_rows) => { 
             let plant_measurement = [];
             let id = last_measurement_id + i + 1;
             let plant_id = first_greenhouse_plant[0].ID + i;
-            let size = req.body.measurements[i][0];
-            let growth = req.body.measurements[i][0];
-            let health = req.body.measurements[i][2];
-            let leaf_density = req.body.measurements[i][1];
-            let row = i % rows_columns[0];
-            let column = i % rows_columns[1];
-            plant_measurement.push(id, plant_id, req.body.measurements[i][0], req.body.measurements[i][1], size, growth, health, leaf_density, 'null');
+            let size = req.body.measurements[i][1];
+            let growth = req.body.measurements[i][1];
+            measurement_start_datetime.setTime(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000));
+            let measurement_date = measurement_start_datetime.toLocaleDateString().replaceAll('/','-');
+            let measurement_time = measurement_start_datetime.toLocaleTimeString();
+            console.log(measurement_date, measurement_time);
+            if(measurement_rows.length == 1){
+              growth = req.body.measurements[i][1] - measurement_rows.SIZE;
+            }
+            let health = req.body.measurements[i][3];
+            let leaf_density = req.body.measurements[i][2];
+
+            plant_measurement.push(id, plant_id, measurement_date, measurement_time, size, growth, health, leaf_density, 'null');
             model.storePlantMeasurement(plant_measurement,(err) => {
               if (err){
                 console.log(err.message);
               }; 
             });
+          });
           }
         });
       });
