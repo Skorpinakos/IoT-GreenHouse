@@ -46,7 +46,7 @@ app.set('view engine', 'hbs'); //set rendering engine the handlebars
 let giveHomePage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    let client_id = 18;
+    let client_id = 15;
     model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
       model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
@@ -214,7 +214,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
 };
 
 let giveClientGreenhouses = function(req,res){
-  let client_id = 18;
+  let client_id = 15;
   model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
     model.getClientGreenhouses(client_id, (err, greenhouses) => { 
     for(let i = 0; i < greenhouses.length; i++){
