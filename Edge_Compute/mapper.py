@@ -82,11 +82,11 @@ def figure_out_position(signal_history,signal,y1):
     norm=np.array(signal_filtered)
     norm.fill(plant_edge)
     normalized_signal=np.array(signal_filtered)-norm
-    #plt.plot(normalized_signal)
-    #plt.title('vertical scan signal filtered and normalized')
-    #plt.xlabel('line')
-    #plt.ylabel('intensity')
-    #plt.show()
+    plt.plot(normalized_signal)
+    plt.title('vertical scan signal filtered and normalized')
+    plt.xlabel('line')
+    plt.ylabel('intensity')
+    plt.show()
 
     #existance=np.sign(normalized_signal)
     zero_crossings = list(np.where(np.diff(np.sign(normalized_signal)))[0])
