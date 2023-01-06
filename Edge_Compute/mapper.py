@@ -2,7 +2,7 @@ from fnmatch import translate
 import numpy as np
 from matplotlib import pyplot as plt
 
-def figure_out_position(signal_history,signal,y1):
+def figure_out_position(signal_history,signal,diagnostics='full'):
     window_size=70
     signal_size=len(signal)
     to_compare_history=np.array(signal_history[-window_size:])
@@ -29,20 +29,21 @@ def figure_out_position(signal_history,signal,y1):
         #print("trans",translation)
 
     
-        position=0
+        
         total_signal=signal_history.copy()
         total_signal.extend(signal[translation:])
-        print("i guess the step was:",len(total_signal)-len(signal_history))
+        if 'full' in diagnostics or 'step' in diagnostics:
+            print("i guess the step was:",len(total_signal)-len(signal_history))
         #print(total_signal)
         if i ==0:
             break
+    if 'full' in diagnostics or 'history' in diagnostics:
+        plt.plot(signal_history)
+        plt.plot(signal)
+        plt.show()
+        plt.plot(total_signal)
 
-    plt.plot(signal_history)
-    plt.plot(signal)
-    plt.show()
-    plt.plot(total_signal)
-
-    plt.show()
+        plt.show()
         ####IMPORTANT following algorithm has to be the same used in image_utils.py where it detects lines
     high_noise_thres=int(40*len(total_signal)/1000)
     #print(high_noise_thres)
@@ -82,11 +83,12 @@ def figure_out_position(signal_history,signal,y1):
     norm=np.array(signal_filtered)
     norm.fill(plant_edge)
     normalized_signal=np.array(signal_filtered)-norm
-    plt.plot(normalized_signal)
-    plt.title('vertical scan signal filtered and normalized')
-    plt.xlabel('line')
-    plt.ylabel('intensity')
-    plt.show()
+    if 'full' in diagnostics or 'norm' in diagnostics:
+        plt.plot(normalized_signal)
+        plt.title('vertical scan signal filtered and normalized')
+        plt.xlabel('line')
+        plt.ylabel('intensity')
+        plt.show()
 
     #existance=np.sign(normalized_signal)
     zero_crossings = list(np.where(np.diff(np.sign(normalized_signal)))[0])
@@ -102,5 +104,5 @@ def figure_out_position(signal_history,signal,y1):
         zero_crossings=zero_crossings[:-1]
         
 
-    return position,total_signal,int(len(zero_crossings)/2)
+    return total_signal,int(len(zero_crossings)/2)
 #figure_out_position([0,1,2,3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3],[3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3,9,12],5)

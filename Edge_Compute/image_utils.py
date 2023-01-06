@@ -1,14 +1,78 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+import os
+
+def dt2datetime(dt):
+    return dt[0:9].replace("_","-")+' '+dt[11:-1].replace("_",":")
+def datetime2dt(dt):
+    return str(dt).replace(":","_").replace(" ","_").replace("-","_")
 
 
+
+def save_center(row,column,center,points,path,filename,path_to):
+
+
+
+    points1=points.copy()
+    population=len(points1)
+    miss=int(population*0.05)
+
+
+    points1.sort(key=lambda x: x[0], reverse=False)
+    top=max(abs(points1[miss][0]-center[0]),30)
+
+    points1.sort(key=lambda x: x[0], reverse=True)
+    bottom=max(abs(points1[miss][0]-center[0]),30)
+
+    points1.sort(key=lambda x: x[1], reverse=False)
+    left=max(abs(points1[miss][1]-center[1]),30)
+
+    points1.sort(key=lambda x: x[1], reverse=True)
+    right=max(abs(points1[miss][1]-center[1]),30)
+
+
+    #print(top,bottom,left,right)
+    #exit()
+    #top=60
+    #bottom=60
+    #right=60
+    #left=60
+    #print(row,column,center,points[0:6],"...",path,filename)
+    #print("_________________________________")
+    try:
+        path_name=path_to+"/plant_images_of_x{}_y{}".format(column,row)
+        os.mkdir(path_name)
+    except Exception as e:
+        #print(e)
+        pass
+
+    names=os.listdir(path_name)
+    if len(names)==0:
+        i=0
+    else:
+        i=int(max(names).split(".")[0])+1
+    dst=path_to+"/plant_images_of_x{}_y{}/{}.png".format(column,row,i)
+    source=cv2.imread(path+filename)
+
+    dimensions = source.shape
+    # height, width, number of channels in image
+    height = source.shape[0]
+    width = source.shape[1]
+
+    cropped_image = source[max(0,center[0]-top):min(height,center[0]+bottom), max(0,center[1]-left):min(width,center[1]+right)] 
+    cv2.imwrite(dst, cropped_image)
+    #cv2.imshow('test', cropped_image)
+    #cv2.waitKey(1000)
+    #exit()
+    
 def detect_cutt_offs(weight_image,diagnostics_mode):
+    
     cut_factor=1.0
     signal=[]
     for line in weight_image[0:-1]:
         signal.append(sum(line))
-
+    ####IMPORTANT following algorithm has to be the same used in mapper.py where it detects position
     high_noise_thres=int(40*len(signal)/1000)
     #print(high_noise_thres)
     #plt.plot(signal)

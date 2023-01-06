@@ -23,11 +23,17 @@ class Simulation:
     def make_move(self,dx):
         self.step=int(dx+dx*self.motor_tolerance*random.randint(-100,100)/100) # change actual movement by a random percentage
         self.pos+=self.step
+        if self.pos+self.cam_height>=self.view.shape[0]:
+            print("reached end,breaking...")
+            exit()
         
 
     def take_photo(self):
         #print(self.pos,self.cam_height,self.cam_width)
-        self.cropped_image = self.view[self.pos:(self.pos+self.cam_height),0:self.cam_width]
+        try:
+            self.cropped_image = self.view[self.pos:(self.pos+self.cam_height),0:self.cam_width]
+        except:
+            return False
         cv2.imwrite("images/temp_img_taken.png",self.cropped_image)
         #print(type(self.cropped_image))
         cv2.imshow("photo",self.cropped_image)

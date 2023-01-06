@@ -58,7 +58,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
 #packing data in cluster dicts for export ##################################
 
-    #make dict with center ids and points type: {7 : [[523.02,125.01] , ] ,}
+    #make dict with center ids and points type: {7 : [[523,125] , ] ,}
     clustered_points={}
     centers=[]
     for i in range(len(centers_y)):
@@ -67,10 +67,10 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     for i,point in enumerate(edge_point_list_good):
         clustered_points[centers_ids_for_each_index_of_input_list[i]].append(list(point))
     
-    #make dict with center coords and points type: {[501.03,131.17] : [[523.02,125.01] , ] ,}
+    #make dict with center coords and points type: {[501.03,131.17] : [[523,125] , ] ,}
     centroids={}
     for i,center in enumerate(centers):
-        centroids[tuple(center)]=clustered_points[i]
+        centroids[tuple([int(center[0]),int(center[1])])]=clustered_points[i]
     #print(centroids)
 
 
@@ -79,7 +79,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
     for i in range(len(lines_y)):
         clustered_centers[i]=[]
-    for i,center in enumerate(centers):
+    for i,center in enumerate(list(centroids.keys())):
         height=center[0]
         distances=[]
         for line in lines_y:
@@ -104,7 +104,18 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(lines)
 
 
-    return sorted(list(lines.keys())),lines,centroids,signal,y1 #returns the sorted y coordinate of lines and the lines and centroids dicts 
+    return sorted(list(lines.keys())),lines,centroids,signal,y1 
+
+#returns sorted "y dimension" list of lines (floats)
+#returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
+#returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
+#returns signal from cropping process
+#returns top cropping height
+
+
 f = open('greenhouse_config.json')
 config_dict = json.load(f)
-#process_image(filename,path,out_path,config_dict,"final")
+#lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,config_dict,"final")
+#print(lines_y)
+#print(lines)
+#print(centroids)
