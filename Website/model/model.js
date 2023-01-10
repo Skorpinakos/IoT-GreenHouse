@@ -1,7 +1,8 @@
 import sqlite3 from "sqlite3";
 import path from "path";
 import { fileURLToPath } from 'url';
-import { Console } from "console";
+import bcrypt from 'bcrypt'
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,7 +11,7 @@ const db_name = path.join(__dirname, "../data", "Our_App.db");
 
 const getPlantRecents = (n, id, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, PM.ID as PM_ID, P.ID AS P_ID, ROW, COLUMN, TYPE, IP, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN (SELECT * FROM PLANT_MEASUREMENT) AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT GREENHOUSE_ID, PM.ID as PM_ID, P.ID AS P_ID, ROW, COLUMN, TYPE, IP, MEASUREMENT_DATE, MEASUREMENT_TIME, HEALTH, MEASUREMENT_PHOTO FROM (PLANT AS P JOIN PLANT_MEASUREMENT AS PM on P.ID = PLANT_ID) JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID WHERE CLIENT_ID = ? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC LIMIT ?";
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id, n], (err, rows) => {
     if (err) {
@@ -25,7 +26,7 @@ const getPlantRecents = (n, id, callback) => {
 
 const getGreenhouseRecents = (n,id, callback) => {
 
-    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN (SELECT * FROM GREENHOUSE_MEASUREMENT) AS GM on G.ID = GREENHOUSE_ID) WHERE CLIENT_ID = ? GROUP BY GREENHOUSE_ID ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC LIMIT ?";
+    let sql="SELECT DISTINCT GREENHOUSE_ID, GM.ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY,CO2, GREENHOUSE_PHOTO FROM (GREENHOUSE AS G JOIN GREENHOUSE_MEASUREMENT AS GM on G.ID = GREENHOUSE_ID) WHERE CLIENT_ID = ? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC LIMIT ?";
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id, n], (err, rows) => {
     if (err) {
@@ -167,7 +168,7 @@ const getUpdateQuery = (entity, info) =>{
             attributes += ', ';
       }}
     
-    let sql = "UPDATE " + entity + " SET " + attributes + " WHERE id = ?";
+    let sql = "UPDATE " + entity + " SET " + attributes + " WHERE ID = ?";
     return sql
 }
 
@@ -247,6 +248,21 @@ const getLastGreenhouseMeasurementId = (callback) => {
     });
 }
 
+const getLastClienttId = (callback) => {
+
+    let sql="SELECT ID FROM CLIENT ORDER BY ID DESC LIMIT 1";
+    const db = new sqlite3.Database(db_name);
+    db.all(sql, [], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err+'1', null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows); // επιστρέφει array
+    });
+}
+
 const updateMeasurementPhoto = (id, attributes, update_values) =>{
     
     let sql=getUpdateQuery('PLANT_MEASUREMENT', attributes);
@@ -261,5 +277,53 @@ const updateMeasurementPhoto = (id, attributes, update_values) =>{
     });
 }
 
-export {getFirstGreenhousePlantId, storePlantMeasurement, storeGreenhouseMeasurement, getLastGreenhouseMeasurementId, getLastPlantMeasurementId, getPlantRecents, updateMeasurementPhoto, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlantsWithInfo, getGreenhousePlantsWithoutInfo, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
+let getClientByUsername = (username, callback) => {
+    let sql = "SELECT ID, PASSWORD FROM CLIENT WHERE USERNAME = ? LIMIT 0, 1";
+    const db = new sqlite3.Database(db_name); 
+    db.all(sql, [String(username)], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    } // επιστρέφει array
+    db.close();
+    callback(null, rows[0]); // επιστρέφει array
+    });
+}
+
+
+//Η συνάρτηση δημιουργεί έναν νέο χρήστη με password
+let registerClient = function (username, password, callback) {
+    // ελέγχουμε αν υπάρχει χρήστης με αυτό το username
+    getClientByUsername(username, async (err, user) => {
+        getLastClienttId(async (err, lastClient) => {
+            if (user != undefined) {
+                callback(null, null, { message: "User already exists." })
+            } 
+            else {
+                try {
+                    const hashedPassword = await bcrypt.hash(password, 10);
+                    const id = lastClient[0].ID + 1;
+                    const sql = 'INSERT INTO CLIENT (ID, USERNAME, PASSWORD) VALUES (?, ?, ?)';
+                    const db = new sqlite3.Database(db_name); 
+                    db.run(sql, [id, username, hashedPassword], (err) => {
+                    if (err) {
+                        db.close();
+                        callback(err, null, null);
+                        console.log(err);
+                    } // επιστρέφει array
+                    db.close();
+                    callback(null, null, { message: "Registration succeeded."}); // επιστρέφει array
+                    });
+
+                } catch (error) {
+                    callback(error, null, { message: "Registration failed."});
+                }
+            }
+
+        });
+    });
+}
+
+export {registerClient, getClientByUsername, getFirstGreenhousePlantId, storePlantMeasurement, storeGreenhouseMeasurement, getLastGreenhouseMeasurementId, getLastPlantMeasurementId, getPlantRecents, updateMeasurementPhoto, getClientGreenhouses, getClientGreenhouseMeasurements, getGreenhouseMeasurementInfo,getGreenhouseRecents, getGreenhousePlantsWithInfo, getGreenhousePlantsWithoutInfo, getPlantMeasurementInfo, getPlantInfo,getGreenhouseInfo};
 

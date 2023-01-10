@@ -7,7 +7,7 @@ import create_csvs_intergrated as csv_maker
 
 entities_properties = {
 
-    'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "BIRTH_DATE": ['date', False],
+    'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "USERNAME": ['string', False, True], "PASSWORD": ['string', False], "BIRTH_DATE": ['date', False],
                "JOIN_DATE": ['date', False]},
 
     'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False, True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],

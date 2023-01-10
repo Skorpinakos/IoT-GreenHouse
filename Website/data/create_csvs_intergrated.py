@@ -6,6 +6,7 @@ import shutil
 from faker import Faker
 from unidecode import unidecode
 import os
+import string
 
 
 def create_all():
@@ -14,7 +15,7 @@ def create_all():
 
     entities_properties = {
 
-        'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "BIRTH_DATE": ['date', False],
+        'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "USERNAME": ['string', False, True], "PASSWORD": ['string', False], "BIRTH_DATE": ['date', False],
                    "JOIN_DATE": ['date', False]},
 
         'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False, True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
@@ -30,6 +31,19 @@ def create_all():
         'PLANT_MEASUREMENT': {"ID": ['integer', True], "PLANT_ID": ['integer', False, 'PLANT', 'ID'], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "SIZE": ['float', False],
                               "GROWTH": ['float', False], "HEALTH": ['float', False], "LEAF_DENSITY": ['float', False], "MEASUREMENT_PHOTO": ['string', False]},
     }
+
+    def get_random_string(self, letters_count, digits_count=0):
+        letters = ''.join((random.choice(string.ascii_letters)
+                           for i in range(letters_count)))
+        digits = ''.join((random.choice(string.digits)
+                          for i in range(digits_count)))
+
+        # Convert resultant string to list and shuffle it to mix letters and digits
+        sample_list = list(letters + digits)
+        random.shuffle(sample_list)
+        # convert list to string
+        final_string = ''.join(sample_list)
+        return final_string
 
     def get_relevant(entity, attribute):
         df = pd.read_csv("data\\temp\\{}.csv".format(entity))
@@ -75,6 +89,12 @@ def create_all():
                             else:
                                 sname = unidecode(fake.last_name_female())
                             temp_dict[attribute] = unidecode(sname)
+                        elif attribute == 'USERNAME':
+                            temp_dict[attribute] = sname + \
+                                fname + str(random.randint(0, 1000))
+                        elif attribute == 'PASSWORD':
+                            temp_dict[attribute] = get_random_string(
+                                random.randint(4, 8), random.randint(2, 4))
                     elif typos == 'date':
                         if attribute == 'BIRTH_DATE':
                             temp_dict[name] = fake.date_of_birth(

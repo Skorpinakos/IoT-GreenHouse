@@ -2,15 +2,18 @@
 import express from 'express'
 import { engine } from 'express-handlebars';
 import * as model from './model/model.js';
+import * as logInController from './controller/login_controller.mjs'
 import multer from 'multer';
 import path from 'path';
 import bodyParser from 'body-parser'
 import fs from 'fs'
+import taskListSession from './app-setup/app-setup-session.mjs'
 const app = express(); //make app object
 let port = process.env.PORT || '4000'; //set port
 const router = express.Router(); //make a router object
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); 
+app.use(taskListSession)
 
 
 const storage = multer.diskStorage({
@@ -43,17 +46,16 @@ app.engine('hbs', engine({ extname: 'hbs' })); //for using 'hbs' file extension 
 app.set('view engine', 'hbs'); //set rendering engine the handlebars
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// backend functions
-let giveHomePage = function(req,res){
+let giveRecentsPage = function(req,res){
     //Serves the main page
     let displayedRecents = 3;
-    let client_id = 15;
+    let client_id = req.session.loggedUserId;
     model.getPlantRecents(displayedRecents, client_id, (err, plant_rows) => {  
       model.getGreenhouseRecents(displayedRecents, client_id, (err, greenhouse_rows) => { 
         if (err){
           console.log(err.message);
         } 
         for (let i in plant_rows){
-          // console.log(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN)
           get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
           plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
           plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
@@ -64,7 +66,7 @@ let giveHomePage = function(req,res){
           greenhouse_rows[i].HUMIDITY = (greenhouse_rows[i].HUMIDITY.toFixed(2) * 100).toFixed(2) + '%'
         }
 
-        res.render('home_page', {layout : 'layout', plant_recents:plant_rows, greenhouse_recents:greenhouse_rows });
+        res.render('recents', {layout : 'layout', plant_recents:plant_rows, greenhouse_recents:greenhouse_rows, loged:req.session.loggedUserId });
       })});
 };
 
@@ -89,18 +91,23 @@ let givePlantPage = function(req,res){
             const max_size = 38.0;
             for (let i = 0; i < plants[0].ROWS; i++){
               for (let j = 0; j < plants[0].COLUMNS; j++){
-                plants[i * plants[0].COLUMNS + j].CELL_VALUE = (plants[i * plants[0].COLUMNS + j].SIZE / max_size).toFixed(2);
+                if(plants[i * plants[0].COLUMNS + j] != undefined){
+                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = (plants[i * plants[0].COLUMNS + j].SIZE / max_size).toFixed(2);
+                }
+                else{
+                  plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
+                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = 'no data';              
+                }
               }
               rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
             }
-            console.log(rows_plants);
           get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
           measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
           plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
-          res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants});
+          res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});
         });
       }
       else{
@@ -123,9 +130,8 @@ let givePlantPage = function(req,res){
             }
             rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
           }
-          console.log(rows_plants);
         plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
-        res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants});
+        res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});
       });
       }
     });
@@ -150,7 +156,14 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
                 for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
                   for (let j = 0; j < plants[0].COLUMNS; j++){
-                    plants[i * plants[0].COLUMNS + j].CELL_VALUE = (plants[i * plants[0].COLUMNS + j].SIZE / max_size).toFixed(2);
+                    if(plants[i * plants[0].COLUMNS + j] != undefined){
+                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = (plants[i * plants[0].COLUMNS + j].SIZE / max_size).toFixed(2);
+                    }
+                    else{
+                      plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
+                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = 'no data';
+
+                    }
                   }
                   rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
                 }
@@ -160,7 +173,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});  
+                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
             }
             else{
               model.getGreenhousePlantsWithoutInfo(greenhouse_id, (err,plants) => {
@@ -180,7 +193,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});  
+                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
               });
             }
           });
@@ -203,7 +216,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
           greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
           greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
           greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-          res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants});  
+          res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
         });
 
       }
@@ -214,7 +227,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
 };
 
 let giveClientGreenhouses = function(req,res){
-  let client_id = 15;
+  let client_id = req.session.loggedUserId;
   model.getClientGreenhouseMeasurements(client_id, (err, measurements) => { 
     model.getClientGreenhouses(client_id, (err, greenhouses) => { 
     for(let i = 0; i < greenhouses.length; i++){
@@ -236,28 +249,25 @@ let giveClientGreenhouses = function(req,res){
       greenhouses[i].MEASUREMENT_TIME = '-';
 
     }
-    // console.log(greenhouses)
 
   }
-    // console.log(greenhouses)
     if (err){
       console.log(err.message);
     } 
-    // console.log(greenhouses)
 
-    res.render('greenhouses', {layout : 'layout', greenhouses:greenhouses});
+    res.render('greenhouses', {layout : 'layout', greenhouses:greenhouses, loged:req.session.loggedUserId});
     });
   });
 };
 
 let addGreenhouse = function(req,res){  
-    res.render('add_greenhouse', {layout : 'layout'});
+    res.render('add_greenhouse', {layout : 'layout', loged:req.session.loggedUserId});
 };
 
 let storeNewMeasurement = function(req,res){ 
   res.statusCode=200;
-  res.send("Received package.");
   console.log(req.body)
+  res.send("Received package.");
   model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
     if (err){
       console.log(err.message);
@@ -266,7 +276,6 @@ let storeNewMeasurement = function(req,res){
     let measurement_datetime = req.body.START_DATETIME.split(" ");
     let greenhouse_measurement_id = last_greenhouse_measurement[0].ID + 1;
     greenhouse_measurement.push(greenhouse_measurement_id, measurement_datetime[0], measurement_datetime[1], req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
-    console.log(greenhouse_measurement)
     model.storeGreenhouseMeasurement(greenhouse_measurement, (err) => {
       if (err){
         console.log(err.message);
@@ -278,10 +287,13 @@ let storeNewMeasurement = function(req,res){
           }; 
           const last_measurement_id = last_plant_measurement[0].ID;
           const seperated_measurement_date = measurement_datetime[0].split('-');
+          for (let i = 0; i < seperated_measurement_date.length; i++){
+            if(seperated_measurement_date[i] .length==1){
+              seperated_measurement_date[i] = '0' + seperated_measurement_date[i];
+            }
+          }
           const seperated_measurement_time = measurement_datetime[1].split(':');
-          console.log(seperated_measurement_date, seperated_measurement_time);
-          const measurement_start_datetime = new Date(seperated_measurement_date[0],seperated_measurement_date[2],seperated_measurement_date[1],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
-          console.log(measurement_start_datetime)
+          const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
           for (let i = 0; i < req.body.measurements.length; i++){
             model.getPlantMeasurementInfo(first_greenhouse_plant[0].ID + i, (err, measurement_rows) => { 
             let plant_measurement = [];
@@ -289,10 +301,17 @@ let storeNewMeasurement = function(req,res){
             let plant_id = first_greenhouse_plant[0].ID + i;
             let size = req.body.measurements[i][1];
             let growth = req.body.measurements[i][1];
-            measurement_start_datetime.setTime(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000));
-            let measurement_date = measurement_start_datetime.toLocaleDateString().replaceAll('/','-');
-            let measurement_time = measurement_start_datetime.toLocaleTimeString().split(' ')[0];
-            console.log(measurement_date, measurement_time);
+            let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
+            console.log(measurement_start_datetime, measurement_datetime)
+            let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
+            for (let i = 0; i < measurement_date.length; i++){
+              if(measurement_date[i].length==1){
+                measurement_date[i] = '0' + measurement_date[i];
+              }
+            }
+            measurement_date = measurement_date.join('-');
+            let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0];
+            console.log(measurement_date, measurement_time)
             if(measurement_rows.length == 1){
               growth = req.body.measurements[i][1] - measurement_rows[0].SIZE;
             }
@@ -312,6 +331,7 @@ let storeNewMeasurement = function(req,res){
       });
     });
   });
+  
 };
 
 let startNewMeasurement = async function(req,res){ 
@@ -321,7 +341,6 @@ let startNewMeasurement = async function(req,res){
   const response = await fetch(url);
   console.log(response)
   const data = response.text();
-  // console.log(data);
   res.json({"status":'ok'});
 };
 
@@ -349,11 +368,17 @@ let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
-router.route('/').get(giveHomePage);
-router.route('/greenhouses').get(giveClientGreenhouses);
-router.route('/plant').get(givePlantPage);
-router.route('/greenhouse').get(giveGreenhousePage);
-router.route('/add_greenhouse').get(addGreenhouse);
+router.route('/').get((req, res) => { res.redirect('/recents') });
+router.route('/login').get(logInController.checkAuthenticated, logInController.showLogInForm);
+router.route('/login').post(logInController.doLogin);
+router.route('/logout').get(logInController.doLogout);
+router.route('/register').get(logInController.checkAuthenticated, logInController.showRegisterForm);
+router.post('/register', logInController.doRegister);
+router.route('/recents').get(logInController.checkAuthenticated, giveRecentsPage);
+router.route('/greenhouses').get(logInController.checkAuthenticated, giveClientGreenhouses);
+router.route('/plant').get(logInController.checkAuthenticated, givePlantPage);
+router.route('/greenhouse').get(logInController.checkAuthenticated, giveGreenhousePage);
+router.route('/add_greenhouse').get(logInController.checkAuthenticated, addGreenhouse);
 router.route('/start_new_measurement').get(startNewMeasurement);
 router.route('/store_new_measurement').post(storeNewMeasurement);
 
