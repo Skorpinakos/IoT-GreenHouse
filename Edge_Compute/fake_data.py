@@ -9,7 +9,7 @@ import time,sys
 random.seed(0)
 
 def dt2datetime(dt):
-    return dt[0:9].replace("_","-")+' '+dt[11:-1].replace("_",":")
+    return dt[0:9].replace("_","-")+' '+dt[11:].replace("_",":")
 def datetime2dt(dt):
     return str(dt).replace(":","_").replace(" ","_").replace("-","_")
 
@@ -96,6 +96,7 @@ config_dict = json.load(f)
 #make_multiple_fakes(config_dict)
 
 dt=sys.argv[1]
+print(dt)
 time.sleep(5)
 datetime_object = datetime.datetime.strptime(dt, "%Y_%m_%d_%H_%M_%S")
 unix_time=int(time.mktime(datetime_object.timetuple()))
