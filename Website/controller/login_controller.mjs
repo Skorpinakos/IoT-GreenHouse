@@ -2,6 +2,7 @@
  * Οι συναρτήσεις του controller που χρειάζονται για την αυθεντικοποίηση 
 */
 import bcrypt from 'bcrypt'
+import e from 'express';
 import * as model from '../model/model.js';
 
 export let showLogInForm = function (req, res) {
@@ -33,11 +34,9 @@ export let doLogin = function (req, res) {
     //συνάρτηση επιστροφής authenticated
 
     model.getClientByUsername(req.body.username, (err, client) => {
-        //if (user == undefined) {
-            //res.render('login', {layout : 'layout', message: 'User not found' });
-        //}
-        //else {
-            
+
+        if(client != undefined){
+            console.log(client)
             const match = bcrypt.compare(req.body.password, client.PASSWORD, (err, match) => {
                 if (match) {
                     //Θέτουμε τη μεταβλητή συνεδρίας "loggedUserId"
@@ -48,14 +47,15 @@ export let doLogin = function (req, res) {
                     res.redirect(redirectTo);
                 }
                 else {
-                    if (client == undefined) {
-                        //res.render('login', {layout : 'layout', message: 'User not found' });
-                        console.log('User not found')
-                    }
                     res.render("login", {layout : 'layout', message: 'Incorrect username or password.'})
                 }
             })
+        }
+        else{
+            console.log('User not found')
+        }
         })
+        
     //})
 }
 
