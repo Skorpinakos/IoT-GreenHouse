@@ -56,7 +56,17 @@ body {
   margin-top: 2%;
   margin-bottom: 2%;
   min-width: 30%;
-  min-width: 30%;
+  min-height: 30%;
+}
+
+.stat_plot{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  max-width: 100%;
+  height: auto;
 }
 
   

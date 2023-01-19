@@ -1,16 +1,17 @@
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <div class="container-fluid">   
 
-    <div class="row my-5" >
+    <div class="row mt-4 mb-2" >
         <div class = "col-2"></div>
         <div class="col-8"> 
             {{#with plant_info}}
-            <div class="row recent rounded mb-3">
+            <div class="row recent rounded">
                 <div class="row rounded mb-3">
-                    <h4 class='text-center   mt-1 mb-3'>Plant Info</h4>
+                    <h4 class='text-center   my-3'>Plant Info</h4>
                 </div>
                 <div class="row text-center">  
                     <div class="col-4"> 
-                    <p class='plant_id'>ID : {{ID}}</p>
+                    <p id="plant_id" class='plant_id'>ID : {{ID}}</p>
                     <p class='greenhouse_id'>Greenhouse : {{GREENHOUSE_ID}}</p>
                     </div>
                     <div class="col-4"> 
@@ -22,11 +23,11 @@
                     <p class='y'>Column : {{COLUMN}}</p>
                     </div>
               </div>
-                              <div class="row">
+            <div class="row">
                     <div class = "col-1"></div>
                     <div class = "col-10">
-            {{/with}}
-            <table class="table table-bordered">
+                    {{/with}}
+                    <table class="table table-bordered">
                         <thead>
                           <tr>
                              <th scope="col"></th>
@@ -64,13 +65,13 @@
     </div>
 
   {{#with measurement_info}}
-    <div class="row my-5" >
+    <div class="row my-2" >
         <div class = "col-2"></div>
         <div class="col-8"> 
-            <div class="row recent rounded mb-3">
-                <dir class="row">
+            <div class="row recent rounded">
+                <div class="row">
                     <h4 class='text-center my-2'>Last Measurement</h4>
-                </dir>
+                </div>
                 <div class="row mt-1 mb-3">
                     <div class="col-4 text-end">
                         <p class='greenhouse_id'>ID : {{ID}}</p>
@@ -95,7 +96,20 @@
                     <div class="col-2"></div>
                 </div>
             </div>
+
+            <div class="row recent rounded my-2">
+                <div class="row">
+                    <h4 class='text-center mt-3'>Statistics</h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div id="stat_plot" class="col-8 stat_plot"> 
+                        <script src="scripts/plot_stats.js"></script>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div>
             {{/with}}
         </div>
     </div>
-</div>

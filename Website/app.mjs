@@ -300,9 +300,8 @@ let storeNewMeasurement = function(req,res){
             let id = last_measurement_id + i + 1;
             let plant_id = first_greenhouse_plant[0].ID + i;
             let size = req.body.measurements[i][1];
-            let growth = req.body.measurements[i][1];
+            let growth = 0;
             let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
-            console.log(measurement_start_datetime, measurement_datetime)
             let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
             for (let i = 0; i < measurement_date.length; i++){
               if(measurement_date[i].length==1){
@@ -311,9 +310,8 @@ let storeNewMeasurement = function(req,res){
             }
             measurement_date = measurement_date.join('-');
             let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0];
-            console.log(measurement_date, measurement_time)
-            if(measurement_rows.length == 1){
-              growth = req.body.measurements[i][1] - measurement_rows[0].SIZE;
+            if(measurement_rows.length == 2){
+              growth = size - measurement_rows[0].SIZE;
             }
             let health = req.body.measurements[i][3];
             const max_leaf_density = 3000;
@@ -346,9 +344,7 @@ let startNewMeasurement = async function(req,res){
 
 
 let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c) {
-  if(p_id<9401 || p_id>9498){
-    ip = 'localhost:3000'
-  }
+  ip = 'localhost:3000'
   let url = 'http://' + ip + '/get_recent_photo' + '?x=' + r + '&y=' + c
   const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }
 });
@@ -366,6 +362,15 @@ let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c
   }
   
 }
+
+let getPlantStats = async function(req,res){ 
+  let id = req['query'].ID; 
+  console.log('aaaa' + id)
+  model.getPlantMeasurementStats(id, (err, plant_stats) => {
+  console.log(plant_stats)
+  res.send(plant_stats);
+});
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
 router.route('/').get((req, res) => { res.redirect('/recents') });
@@ -380,6 +385,7 @@ router.route('/plant').get(logInController.checkAuthenticated, givePlantPage);
 router.route('/greenhouse').get(logInController.checkAuthenticated, giveGreenhousePage);
 router.route('/add_greenhouse').get(logInController.checkAuthenticated, addGreenhouse);
 router.route('/start_new_measurement').get(startNewMeasurement);
+router.route('/get_plant_stats').get(getPlantStats);
 router.route('/store_new_measurement').post(storeNewMeasurement);
 
 // router.route('/push_greenhouse').post(upload.any(), pushGreenhouse);
