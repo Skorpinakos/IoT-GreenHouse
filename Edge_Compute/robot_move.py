@@ -45,7 +45,7 @@ step=0
 while True:
 
     step=step+1
-    #print(step)
+    print("STARTING STEP:",step)
     
     ret=sim.take_photo()
     if ret!=False:
@@ -54,7 +54,7 @@ while True:
         print("scan finished!")
         break
 
-    lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,sim.config,diagnostics_mode='full')
+    lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,sim.config,diagnostics_mode='full')
     #returns sorted "y dimension" list of lines (floats)
     #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
     #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
@@ -71,6 +71,7 @@ while True:
         signal_history_file.close()
         signal_history_file=open('sig.txt','a',encoding='utf-8')
         position=0
+        total_lines=len(lines_y)
         for intensity in signal:
             signal_history_file.write(str(intensity)+'\n')
         signal_history_file.close()
@@ -81,7 +82,7 @@ while True:
         signal_history=list(map(float,list(map(str,signal_history))))
         signal_history_file.close()
         #max_deviation=40
-        total_signal,total_lines=figure_out_position(signal_history,signal,diagnostics="sig+full")
+        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="sig+full")
         position=total_lines-len(lines_y)
         #print("total lines seen: ",total_lines)
         signal_history_file=open('sig.txt','w',encoding='utf-8')
@@ -92,7 +93,7 @@ while True:
             signal_history_file.write(str(intensity)+'\n')
         signal_history_file.close()
 
-    print("position",position)
+    print("position : ",position)
     print("lines in sight",len(lines_y))
     for i,line in enumerate(lines_y):
         centers=lines[line].copy()
@@ -112,5 +113,9 @@ while True:
 
 
 
+    
+    print("FINISHED STEP:",step)
+    input("Press Enter to continue...")
     sim.make_move(dx)
+    
 

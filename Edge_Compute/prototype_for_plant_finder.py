@@ -50,7 +50,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
     if diagnostics_mode=='full' or 'final' in diagnostics_mode:
         plot_image_with_centers_lines(img,path,out_path,centers_x,centers_y,lines_x,lines_y,y1,y2) #show image
-    if diagnostics_mode=='full' or 'time' in diagnostics_mode:
+    if diagnostics_mode=='fullERROR' or 'time' in diagnostics_mode:
         print('time for edge filter:              ',t2-t1)
         print('time to find errors for test cases:',t4-t3)
         print('time to find final centroids:      ',t6-t5)
@@ -104,7 +104,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(lines)
 
 
-    return sorted(list(lines.keys())),lines,centroids,signal,y1 
+    return sorted(list(lines.keys())),lines,centroids,signal,y1,y2
 
 #returns sorted "y dimension" list of lines (floats)
 #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)

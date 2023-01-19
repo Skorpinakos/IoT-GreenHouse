@@ -72,7 +72,9 @@ def detect_cutt_offs(weight_image,diagnostics_mode):
     signal=[]
     for line in weight_image[0:-1]:
         signal.append(sum(line))
-    ####IMPORTANT following algorithm has to be the same used in mapper.py where it detects position
+
+
+    ####IMPORTANT following algorithm has to be the same used in mapper.py where it detects position#######################################################
     high_noise_thres=int(40*len(signal)/1000)
     #print(high_noise_thres)
     #plt.plot(signal)
@@ -102,6 +104,7 @@ def detect_cutt_offs(weight_image,diagnostics_mode):
 
 
     signal_filtered = np.fft.ifft(fhat_clean) #inverse fourier transform
+    #############################################################################################################################################
     signal_filtered=abs(signal_filtered)
     plant_edge=cut_factor*(min(signal_filtered)+max(signal_filtered))/2
     if "full" in diagnostics_mode or "sig" in diagnostics_mode:

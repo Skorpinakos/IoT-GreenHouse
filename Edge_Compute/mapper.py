@@ -2,7 +2,7 @@ from fnmatch import translate
 import numpy as np
 from matplotlib import pyplot as plt
 
-def figure_out_position(signal_history,signal,diagnostics='full'):
+def figure_out_position(signal_history,signal,y1,y2,diagnostics='full'):
     window_size=70
     signal_size=len(signal)
     to_compare_history=np.array(signal_history[-window_size:])
@@ -44,7 +44,7 @@ def figure_out_position(signal_history,signal,diagnostics='full'):
         plt.plot(total_signal)
 
         plt.show()
-        ####IMPORTANT following algorithm has to be the same used in image_utils.py where it detects lines
+    ####IMPORTANT following algorithm has to be the same used in image_utils.py where it detects lines
     high_noise_thres=int(40*len(total_signal)/1000)
     #print(high_noise_thres)
     #plt.plot(signal)
@@ -92,17 +92,27 @@ def figure_out_position(signal_history,signal,diagnostics='full'):
 
     #existance=np.sign(normalized_signal)
     zero_crossings = list(np.where(np.diff(np.sign(normalized_signal)))[0])
-    diffs=np.diff(normalized_signal)
     #print(zero_crossings)
-    if diffs[zero_crossings[0]]>0:
+    
+    diffs=np.diff(normalized_signal)
+    zero_crossings_cut=[]
+    current_frame_offset=len(total_signal)-len(signal)-1
+    #print(y1+current_frame_offset)
+    #print(y2+current_frame_offset)
+    wiggle=3
+    for crossing in zero_crossings:
+        if crossing<=y2+current_frame_offset+wiggle:
+            zero_crossings_cut.append(crossing)
+    
+    if diffs[zero_crossings_cut[0]]>0:
         pass
     else:
-        zero_crossings=zero_crossings[1:]
-    if diffs[zero_crossings[-1]]<0:
+        zero_crossings_cut=zero_crossings_cut[1:]
+    if diffs[zero_crossings_cut[-1]]<0:
         pass 
     else:
-        zero_crossings=zero_crossings[:-1]
+        zero_crossings_cut=zero_crossings_cut[:-1]
         
-
-    return total_signal,int(len(zero_crossings)/2)
+    #print(zero_crossings_cut)
+    return total_signal,int(len(zero_crossings_cut)/2)
 #figure_out_position([0,1,2,3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3],[3,5,1,1,0,1,2,3,4,5,6,7,0,1,2,3,9,12],5)
