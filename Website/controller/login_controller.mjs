@@ -1,8 +1,8 @@
 /** 
  * Οι συναρτήσεις του controller που χρειάζονται για την αυθεντικοποίηση 
-**/
-import pkg from 'sqlite3';
-const { OPEN_READWRITE } = pkg;
+*/
+import bcrypt from 'bcrypt'
+import e from 'express';
 import * as model from '../model/model.js';
 
 export let showLogInForm = function (req, res) {
@@ -36,28 +36,27 @@ export let doLogin = function (req, res) {
     model.getClientByUsername(req.body.username, (err, client) => {
 
         if(client != undefined){
-            //console.log(client["PASSWORD"]);
-            console.log(req.body.password);
-            
-            if (client.PASSWORD==req.body.password) {
-                console.log("match true");
-                //Θέτουμε τη μεταβλητή συνεδρίας "loggedUserId"
-                req.session.loggedUserId = client.ID;
-                //Αν έχει τιμή η μεταβλητή req.session.originalUrl, αλλιώς όρισέ τη σε "/" 
-                const redirectTo = req.session.originalUrl || "/recents";
-                // res.redirect("/");
-                res.redirect(redirectTo);
-            }
-            else {
-                res.render("login", {layout : 'layout', message: 'Incorrect username or password.'})
-            }
-        
+            console.log(client)
+            const match = bcrypt.compare(req.body.password, client.PASSWORD, (err, match) => {
+                if (match) {
+                    //Θέτουμε τη μεταβλητή συνεδρίας "loggedUserId"
+                    req.session.loggedUserId = client.ID;
+                    //Αν έχει τιμή η μεταβλητή req.session.originalUrl, αλλιώς όρισέ τη σε "/" 
+                    const redirectTo = req.session.originalUrl || "/recents";
+                    // res.redirect("/");
+                    res.redirect(redirectTo);
+                }
+                else {
+                    res.render("login", {layout : 'layout', message: 'Incorrect username or password.'})
+                }
+            })
         }
         else{
             console.log('User not found')
         }
         })
         
+    //})
 }
 
 export let doLogout = (req, res) => {
