@@ -67,7 +67,14 @@ let start_greenhouse_measurement = function(req,res){
       return console.error(failure);
     }
     if (activity!=''){ 
-      let failure ='There is already an on-goig measurement from  '+activity;
+      let split_datetime = activity.split('_');
+      for (let i = 0; i < split_datetime.length; i++){
+        if(split_datetime[i].length==1){
+          split_datetime[i] = '0' + split_datetime[i];
+        }
+      }
+      let datetime_to_send = split_datetime[0] + '-' + split_datetime[1] + '-' + split_datetime[2] + ' ' + split_datetime[3] + ':' + split_datetime[4] + ':' + split_datetime[5];
+      let failure ='There is already an on-goig measurement from  ' + datetime_to_send;
       res.statusCode = 406;
       res.send(failure);
       return console.error(failure);
@@ -86,7 +93,15 @@ let start_greenhouse_measurement = function(req,res){
       let python_process = spawn('python', ['fake_data.py',datetime]);
       console.log('No on-going measurement, starting new.');
       res.statusCode = 200;
-      res.send('A new measurement has started at '+datetime);
+      let split_datetime = datetime.split('_');
+      for (let i = 0; i < split_datetime.length; i++){
+        if(split_datetime[i].length==1){
+          split_datetime[i] = '0' + split_datetime[i];
+        }
+      }
+      console.log(split_datetime);
+      let datetime_to_send = split_datetime[0] + '-' + split_datetime[1] + '-' + split_datetime[2] + ' ' + split_datetime[3] + ':' + split_datetime[4] + ':' + split_datetime[5];
+      res.send('A new measurement has started at ' + datetime_to_send);
       // collect data from script
       python_process.stdout.on('data', function (data) {
        //console.log('Pipe data from python_process script ...');
