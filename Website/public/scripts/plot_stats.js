@@ -1,24 +1,3 @@
-
-// var xArray = [50,60,70,80,90,100,110,120,130,140,150];
-// var yArray = [7,8,8,9,9,9,10,11,14,14,15];
-// console.log(xArray)
-// // Define Data
-// var data = [{
-//   x:xArray,
-//   y:yArray,
-//   mode:"markers"
-// }];
-
-// // Define Layout
-// var layout = {
-//   xaxis: {range: [40, 160], title: "Square Meters"},
-//   yaxis: {range: [5, 16], title: "Price in Millions"},  
-//   title: "House Prices vs. Size"
-// };
-
-// // Display using Plotly
-// Plotly.newPlot("myPlot", data, layout);
-
 let id = document.getElementById("plant_id").textContent.split(' ')[2];
 fetch('http://localhost:4000/get_plant_stats?ID='+id).then(response => response.json()).then(response => {
     console.log(response);

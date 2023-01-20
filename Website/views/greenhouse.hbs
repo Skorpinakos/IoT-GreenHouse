@@ -1,6 +1,7 @@
 <div class="container-fluid">   
 
     <div class="row my-5" >
+
         <div class = "col-2"></div>
         <div class="col-8"> 
             {{#with greenhouse_info}}
@@ -18,7 +19,7 @@
                 
                 <div class="row text-center">  
                     <div class="col-4 text-center">
-                        <p class='greenhouse_id'>Greenhouse : {{ID}}</p>
+                        <p id = 'greenhouse_id' class='greenhouse_id'>Greenhouse : {{ID}}</p>
                         <p class='client_id'>Client : {{CLIENT_ID}}</p>
                         <p class='x_coords'>Coordinates (X) : {{COORDS_X}}</p>
                         
@@ -53,9 +54,9 @@
                                   <th scope="row">{{@index}}</th>
                                   {{#each this}}
                                   {{#if ID}}
-                                  <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}</a></td>
+                                  <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}%</a></td>
                                   {{else}}
-                                    <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><p>{{CELL_VALUE}}</p></td>
+                                    <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><p>{{CELL_VALUE}}%</p></td>
                                     {{/if}}
                                   {{/each}}
                               </tr>
@@ -93,7 +94,7 @@
 
     <div class="row my-4">
         <div class="col-6">
-            <form>
+            <form class="ms-4">
                 <div class="row">
                     <legend>Update Greenhouse Image</legend>
                     <input  type="file" name="image" required>
@@ -108,16 +109,19 @@
         </div>
         <div class="col-6 text-end">
             {{#with greenhouse_info}}
-                <a  id="new_button" class="btn btn-success btn-lg active" role="button" aria-pressed="true">Start New Measurement</a>
-                <a  id="new_button_hidden" class="btn btn-success btn-lg active" style="display: none" role="button" aria-pressed="true">{{IP}}</a>
+                <a class="btn btn-success btn-lg" href="/start_new_measurement?IP={{IP}}&ID={{ID}}" role="button">Start new measurement</a>
             {{/with}}
-
+            <div class="row">
+                <div class="col-9 text-center offset-3 my-2">
+                {{#if message}}
+                    <div class="alert alert-info" role="alert">{{message}}</div>
+                {{/if}}
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 </div>    
 </div>
 </div>
 </div>
-<script src="scripts/start_new_measurement.js"></script>

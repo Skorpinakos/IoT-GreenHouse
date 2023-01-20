@@ -53,6 +53,8 @@ export let doLogin = function (req, res) {
         }
         else{
             console.log('User not found')
+            res.render("login", {layout : 'layout', message: 'Incorrect username or password.'})
+
         }
         })
         
