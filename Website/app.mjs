@@ -139,7 +139,12 @@ let givePlantPage = function(req,res){
 };
 
 let giveGreenhousePage = function(req,res){
-let greenhouse_id=req.query['ID']
+console.log(req.query)
+let greenhouse_id = req.query['ID'];
+let message = "";
+if (Object.keys(req.query).length==2){
+  message = req.query.message;
+}
 model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
   model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
         if(measurement_rows.length){
@@ -173,7 +178,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+                res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
 
               }
             else{
@@ -194,7 +199,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+                res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
              });
             }
           });
@@ -217,7 +222,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
           greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
           greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
           greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-          res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+          res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
           });
       }
     });
@@ -339,89 +344,7 @@ let startNewMeasurement = async function(req,res){
   // const data = response.text();
   console.log(text)
   res.statusCode = 200;
-  model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
-    model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
-          if(measurement_rows.length){
-              model.getGreenhousePlantsWithInfo(greenhouse_id, (err,plants) => {
-                if (err){
-                  console.log(err.message);
-                } 
-                if (plants.length){
-                let rows_plants = [];
-                const max_size = 38.0;
-                  measurement_rows[0].TEMPERATURE = measurement_rows[0].TEMPERATURE.toFixed(2) + ' C'
-                  measurement_rows[0].HUMIDITY = measurement_rows[0].HUMIDITY.toFixed(2) + ' %'
-                  measurement_rows[0].SUNLIGHT = measurement_rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
-                  measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
-                  for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
-                    for (let j = 0; j < plants[0].COLUMNS; j++){
-                      if(plants[i * plants[0].COLUMNS + j] != undefined){
-                        plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1);
-                      }
-                      else{
-                        plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
-                        plants[i * plants[0].COLUMNS + j].CELL_VALUE = 'no data';
-  
-                      }
-                    }
-                    rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
-                  }
-                  greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
-                  greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
-                  greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
-                  greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
-                  greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
-                  greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                  
-                  res.render('greenhouse', {layout : 'layout', message:text, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
-                  console.log('Whyyyyyyy')
-                }
-              else{
-                model.getGreenhousePlantsWithoutInfo(greenhouse_id, (err,plants) => {
-                  if (err){
-                    console.log(err.message);
-                  } 
-                  let rows_plants = [];
-                  for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
-                    for (let j = 0; j < plants[0].COLUMNS; j++){
-                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = plants[i * plants[0].COLUMNS + j].ID;
-                    }
-                    rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
-                  }
-                  greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
-                  greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
-                  greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
-                  greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
-                  greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
-                  greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                  res.render('greenhouse', {layout : 'layout', message:text, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
-               });
-              }
-            });
-          }
-          else{
-            model.getGreenhousePlantsWithoutInfo(greenhouse_id, (err,plants) => {
-              if (err){
-                console.log(err.message);
-              } 
-              let rows_plants = [];
-            for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
-              for (let j = 0; j < plants[0].COLUMNS; j++){
-                plants[i * plants[0].COLUMNS + j].CELL_VALUE = plants[i * plants[0].COLUMNS + j].ID;
-              }
-              rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
-            }
-            greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
-            greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
-            greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
-            greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
-            greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
-            greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-            res.render('greenhouse', {layout : 'layout', message:text, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
-            });
-        }
-      });
-    });
+  res.redirect('/greenhouse?ID='+greenhouse_id+'&message='+text)
 };
 
 
