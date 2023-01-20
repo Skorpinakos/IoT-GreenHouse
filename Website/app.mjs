@@ -349,8 +349,9 @@ let startNewMeasurement = async function(req,res){
 
 
 let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c) {
-  ip = 'localhost:3000'
+  //ip = 'localhost:3000'
   let url = 'http://' + ip + '/get_recent_photo' + '?x=' + r + '&y=' + c
+  console.log(url);
   const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }
 });
   const arrayBuffer = await response.arrayBuffer();

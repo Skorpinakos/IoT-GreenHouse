@@ -8,17 +8,21 @@ from unidecode import unidecode
 import os
 import string
 
+random.seed(0)
+Faker.seed(0)
+
 
 def create_all():
     # path = str(pathlib.Path(__file__).parent.resolve())+'\\images\\'
     fake = Faker('el_GR')
+    
 
     entities_properties = {
 
         'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "USERNAME": ['string', False, True], "PASSWORD": ['string', False], "BIRTH_DATE": ['date', False],
                    "JOIN_DATE": ['date', False]},
 
-        'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False, True], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
+        'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
                        "HEIGHT": ['float', False], "LENGTH": ['float', False], "GREENHOUSE_PHOTO": ['string', False], "CLIENT_ID": ['integer', False, 'CLIENT', 'ID']},
 
         'GREENHOUSE_MEASUREMENT': {"ID": ['integer', True], "MEASUREMENT_DATE": ['date', False], "MEASUREMENT_TIME": ['time', False], "TEMPERATURE": ['float', False],
@@ -130,9 +134,9 @@ def create_all():
             greenhouse_paths = glob.glob("public\\images\\House\\*")
             print(greenhouse_paths)
         end = random.randint(100, 200)
-        ip_localhost = 3000 - 12
+        ip_localhost = 3000
         for i in range(1, end):
-            ip_localhost += 1
+           # ip_localhost = 3000
             temp_dict = {}
             for attribute in entity_diction.keys():
                 typos = entity_diction[attribute][0]
@@ -209,7 +213,7 @@ def create_all():
                         elif typos == 'date':
                             if attribute == 'MEASUREMENT_DATE':
                                 temp_dict[name] = fake.date_between(
-                                    start_date='-15y')
+                                    start_date='-1y')
                         elif typos == 'time':
                             if attribute == 'MEASUREMENT_TIME':
                                 temp_dict[name] = fake.time()

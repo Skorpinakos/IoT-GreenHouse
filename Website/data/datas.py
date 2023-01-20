@@ -272,7 +272,7 @@ class DataModel():
                 self.executeSQL(query)
                 for row in reader:
                     self.insertRow(tableName, row)
-            #remove(csvFile)
+            remove(csvFile)
             return True
         except:
             print(f"Failed to load table {tableName}")

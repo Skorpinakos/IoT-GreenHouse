@@ -6,7 +6,7 @@ import shutil
 import time,sys
 
 
-random.seed(0)
+random.seed(time.time())
 
 def dt2datetime(dt):
     return dt[0:9].replace("_","-")+' '+dt[11:].replace("_",":")
