@@ -67,8 +67,6 @@ def create_all():
         primaries = []
         if entity == 'CLIENT':
             end = random.randint(30, 50)
-        if entity == 'GREENHOUSE':
-            end = random.randint(10, 20)
         for i in range(1, end):
             temp_dict = {}
             for attribute in entity_diction.keys():
@@ -93,8 +91,10 @@ def create_all():
                             temp_dict[attribute] = sname + \
                                 fname + str(random.randint(0, 1000))
                         elif attribute == 'PASSWORD':
-                            temp_dict[attribute] = get_random_string(
-                                random.randint(4, 8), random.randint(2, 4))
+                            # temp_dict[attribute] = get_random_string(
+                            #     random.randint(4, 8), random.randint(2, 4))
+                            # The hash of 1234
+                            temp_dict[attribute] = '$2b$10$myWMjyceztjvnyGPdVppfuFjs7NJysEjFdTydvKYUI.KEmpPm.aoa'
                     elif typos == 'date':
                         if attribute == 'BIRTH_DATE':
                             temp_dict[name] = fake.date_of_birth(
@@ -126,21 +126,28 @@ def create_all():
         entity_diction = leksiko[entity]
         list_of_dicts = []
         primaries = []
-        if entity == 'PLANT_MEASUREMENT':
-            measurement_paths = glob.glob("public\\images\\Lettuce\\*")
-        elif entity == 'GREENHOUSE':
+        if entity == 'GREENHOUSE':
             greenhouse_paths = glob.glob("public\\images\\House\\*")
             print(greenhouse_paths)
         end = random.randint(100, 200)
-
+        ip_localhost = 3000 - 12
         for i in range(1, end):
+            ip_localhost += 1
             temp_dict = {}
             for attribute in entity_diction.keys():
                 typos = entity_diction[attribute][0]
                 primary = entity_diction[attribute][1]
                 name = attribute
                 if len(entity_diction[attribute]) < 4:
-                    if primary == False:
+                    if primary == True:
+                        while True:
+                            temp = primaryKey
+                            primaryKey += 1
+                            if temp not in primaries:
+                                temp_dict[name] = temp
+                                primaries.append(temp)
+                                break
+                    else:
                         if typos == 'integer':
                             if name == 'ROWS':
                                 temp_dict[name] = 6
@@ -148,19 +155,12 @@ def create_all():
                                 temp_dict[name] = 12
                         if typos == 'string':
                             if name == 'MEASUREMENT_PHOTO':
-                                # temp_dict[name] = str(temp_dict['ID']) + '.jpg'
-                                # image_path = random.choice(measurement_paths)
-                                # cwd = os.path.abspath(os.getcwd())
-                                # print(image_path)
-                                # shutil.copyfile(
-                                #     cwd + '\\' + image_path, cwd + "\\public\\images\\measurements\\" +
-                                #     str(temp_dict['ID']) + '.jpg')
                                 temp_dict[name] = 'null'
 
                             elif name == 'IP':
-                                temp_dict[name] = fake.ipv4_public()
-                                if temp_dict['ID'] == 184:
-                                    temp_dict[name] = 'localhost:4000'
+                                # temp_dict[name] = fake.ipv4_public()
+                                temp_dict[name] = 'localhost:' + \
+                                    str(ip_localhost)
                             elif name == 'GREENHOUSE_PHOTO':
                                 temp_dict[name] = str(
                                     temp_dict['ID']) + '.jpg'
@@ -214,14 +214,6 @@ def create_all():
                             if attribute == 'MEASUREMENT_TIME':
                                 temp_dict[name] = fake.time()
 
-                    else:
-                        while True:
-                            temp = primaryKey
-                            primaryKey += 1
-                            if temp not in primaries:
-                                temp_dict[name] = temp
-                                primaries.append(temp)
-                                break
                 elif len(entity_diction[attribute]) == 4:
                     if primary == True:
                         while True:
@@ -250,7 +242,6 @@ def create_all():
         entity_diction = leksiko['PLANT']
         list_of_dicts = []
         primaries = []
-        end = random.randint(100, 200)
         greenhouses = loadNonForeign('GREENHOUSE', 'ID')
         rows = loadNonForeign('GREENHOUSE', 'ROWS')
         columns = loadNonForeign('GREENHOUSE', 'COLUMNS')

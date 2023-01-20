@@ -334,7 +334,6 @@ let storeNewMeasurement = function(req,res){
 
 let startNewMeasurement = async function(req,res){ 
   let ip = req['query'].IP; 
-  ip = 'localhost:3000'
   let url = 'http://' + ip + '/start_greenhouse_measurement'
   const response = await fetch(url);
   console.log(response)
