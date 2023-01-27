@@ -12,7 +12,7 @@
                 <div class="row text-center">  
                     <div class="col-4"> 
                     <p id="plant_id" class='plant_id'>ID : {{ID}}</p>
-                    <p class='greenhouse_id'>Greenhouse : {{GREENHOUSE_ID}}</p>
+                    <a style = "text-decoration: none" href="/greenhouse?ID={{GREENHOUSE_ID}}">Greenhouse : {{GREENHOUSE_ID}}</a>
                     </div>
                     <div class="col-4"> 
                     <p class='type'>Type : {{TYPE}}</p>
@@ -45,10 +45,10 @@
                                         {{#if current_plant}}
                                         <td class="table-info" style="text-align: center;">{{CELL_VALUE}}%</td>
                                         {{else}}
-                                            <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}%</a></td>
+                                            <td style="text-align: center;"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}%</a></td>
                                         {{/if}}
                                     {{else}}
-                                        <td style="text-align: center; background-color:rgb(calc(255*(1-{{HEALTH}})),calc(255*{{HEALTH}}),0)"><p>{{CELL_VALUE}}%</p></td>
+                                        <td style="text-align: center;"><p>{{CELL_VALUE}}%</p></td>
 
                                     {{/if}}
                                     
@@ -58,6 +58,9 @@
                         </tbody>
                       </table>
                     </div>
+                    {{#with rows_plants.[0].[0]}}
+                        <script src="scripts/create_health_heatmap.js" rows="{{ROWS}}" columns="{{COLUMNS}}"></script>
+                    {{/with}}
                     <div class = "col-1"></div>
                 </div>
             </div>

@@ -107,6 +107,7 @@ let givePlantPage = function(req,res){
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
           plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
+          console.log(rows_plants)
           res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});
         });
       }
@@ -178,6 +179,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
+                console.log(greenhouse_rows[0], measurement_rows[0], rows_plants,);
                 res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
 
               }
