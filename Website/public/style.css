@@ -33,8 +33,8 @@ body {
   
   .facility_map {
     margin-top: 1%;  
-    width: 95%;
-    height: 95%;
+    width: 90%;
+    height: 90%;
     margin-top: 1%;  
 
   }
@@ -60,7 +60,6 @@ body {
 }
 
 .stat_plot{
-  display: block;
   margin-left: auto;
   margin-right: auto;
   margin-top: 2%;

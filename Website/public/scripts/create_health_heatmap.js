@@ -5,7 +5,6 @@ let rows = script.getAttribute('rows');
 let columns = script.getAttribute('columns');
 let n = rows * columns;
 for (let i = cells.length - n; i < cells.length; i++){
-    console.log(cells[i].innerHTML);
     let plant_health = "";
     if(cells[i].innerHTML.includes('>')){
         plant_health = (Number(cells[i].innerHTML.split('>')[1].split('%')[0])/100).toFixed(2);
@@ -16,5 +15,11 @@ for (let i = cells.length - n; i < cells.length; i++){
     let red = (255*(1-plant_health)).toFixed(2);
     let green = (255*plant_health).toFixed(2);
     let bgColor = "rgba(" + String(red) + "," + String(green) + ", 0, 0.5)";
-    cells[i].style.backgroundColor = bgColor;
+    if (cells[i].className != 'current_plant'){
+        cells[i].style.backgroundColor = bgColor;
+    }
+    else{
+        cells[i].style.backgroundColor = "rgba(0, 161, 228, 0.5)";
+
+    }
 }  

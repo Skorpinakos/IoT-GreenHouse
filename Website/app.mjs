@@ -92,7 +92,7 @@ let givePlantPage = function(req,res){
             for (let i = 0; i < plants[0].ROWS; i++){
               for (let j = 0; j < plants[0].COLUMNS; j++){
                 if(plants[i * plants[0].COLUMNS + j] != undefined){
-                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1);
+                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1) + '%';
                 }
                 else{
                   plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
@@ -142,10 +142,6 @@ let givePlantPage = function(req,res){
 let giveGreenhousePage = function(req,res){
 console.log(req.query)
 let greenhouse_id = req.query['ID'];
-let message = "";
-if (Object.keys(req.query).length==2){
-  message = req.query.message;
-}
 model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
   model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
         if(measurement_rows.length){
@@ -163,7 +159,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
                   for (let j = 0; j < plants[0].COLUMNS; j++){
                     if(plants[i * plants[0].COLUMNS + j] != undefined){
-                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1);
+                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1) + '%';
                     }
                     else{
                       plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
@@ -180,7 +176,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
                 console.log(greenhouse_rows[0], measurement_rows[0], rows_plants,);
-                res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
 
               }
             else{
@@ -201,7 +197,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+                res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
              });
             }
           });
@@ -224,7 +220,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
           greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
           greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
           greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-          res.render('greenhouse', {layout : 'layout', message:message, greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
+          res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
           });
       }
     });
@@ -339,14 +335,13 @@ let storeNewMeasurement = function(req,res){
 
 let startNewMeasurement = async function(req,res){ 
   let ip = req['query'].IP; 
-  let greenhouse_id = req['query'].ID; 
   let url = 'http://' + ip + '/start_greenhouse_measurement'
   const response = await fetch(url);
   const text = await response.text();
   // const data = response.text();
   console.log(text)
   res.statusCode = 200;
-  res.redirect('/greenhouse?ID='+greenhouse_id+'&message='+text)
+  res.send(text)
 };
 
 

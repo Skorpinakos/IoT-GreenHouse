@@ -43,12 +43,12 @@
                                   {{#each this}}
                                     {{#if ID}}
                                         {{#if current_plant}}
-                                        <td class="table-info" style="text-align: center;">{{CELL_VALUE}}%</td>
+                                        <td class="current_plant" style="text-align: center;">{{CELL_VALUE}}</td>
                                         {{else}}
-                                            <td style="text-align: center;"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}%</a></td>
+                                            <td class = "plant_with_data" style="text-align: center;"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}</a></td>
                                         {{/if}}
                                     {{else}}
-                                        <td style="text-align: center;"><p>{{CELL_VALUE}}%</p></td>
+                                        <td class = "plant_without_data" style="text-align: center;"><p>{{CELL_VALUE}}</p></td>
 
                                     {{/if}}
                                     
@@ -107,7 +107,7 @@
 
                 <div class="row">
                     <div class="col-2"></div>
-                    <div id="stat_plot" class="col-8 stat_plot"> 
+                    <div id="stat_plot" class="col-8 stat_plot d-flex justify-content-center"> 
                         <script src="scripts/plot_stats.js"></script>
                     </div>
                     <div class="col-2"></div>
