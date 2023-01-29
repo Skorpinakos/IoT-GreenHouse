@@ -7,6 +7,7 @@ import multer from 'multer';
 import path from 'path';
 import bodyParser from 'body-parser'
 import fs from 'fs'
+import mqtt from 'mqtt'
 import taskListSession from './app-setup/app-setup-session.mjs'
 const app = express(); //make app object
 let port = process.env.PORT || '4000'; //set port
@@ -14,6 +15,21 @@ const router = express.Router(); //make a router object
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); 
 app.use(taskListSession)
+
+// MQTT
+// Options only for authenticated users
+// let options={
+//   clientId:"mqttjs01",
+//   username:"GreenhouseMonitorApp",
+//   password:"password",
+//   clean:true};
+let client = mqtt.connect("mqtt://test.mosquitto.org")
+client.on("connect",function(){	
+  console.log("Connected to broker");
+})
+client.on("error",function(error){
+  console.log("Can't connect to broker: " + error);
+  });
 
 
 const storage = multer.diskStorage({
@@ -324,6 +340,15 @@ let storeNewMeasurement = function(req,res){
                 console.log(err.message);
               }; 
             });
+          
+            if (i == req.body.measurements.length - 1){
+              let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
+              let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + id;
+              console.log(message)
+              if (client.connected==true){
+                client.publish(topic, message);
+                }
+            }
           });
           }
         });
