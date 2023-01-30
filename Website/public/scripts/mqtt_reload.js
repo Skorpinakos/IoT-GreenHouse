@@ -6,6 +6,19 @@ let reconnectionTimeout = 2000;
 let host = "test.mosquitto.org";
 let port = 8080 ;
 let topic = 'GreenhouseMonitor' + greenhouse_id;
+
+window.onload = function(message) {
+    var reloading = sessionStorage.getItem("reloading");
+    if (reloading) {
+        sessionStorage.removeItem("reloading");
+        let message = sessionStorage.getItem("measurement_message")
+        let close_button = "\n<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
+        let alert = "<div class='alert alert-info alert-dismissible fade show' role='alert'>" + message + close_button + "</div>";
+        document.getElementById("pop-up message").innerHTML = alert;
+        sessionStorage.removeItem("measurement_message")
+    }
+}
+
 function onConnect(){
     mqtt.subscribe(topic);
     console.log('Subscribed to topic ' + topic)
@@ -18,7 +31,9 @@ function onFailure(){
 
 function onMessageArrived(message){
     console.log("Received message for topic " + message.destinationName + ":\n" + message.payloadString);
-    location.reload()
+    sessionStorage.setItem("reloading", "true");
+    sessionStorage.setItem("measurement_message", message.payloadString);
+    document.location.reload();
 }
 
 function MQTTconnect(){

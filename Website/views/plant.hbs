@@ -1,8 +1,6 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
-{{#with plant_info}}
-    <script src="scripts/mqtt_reload.js" greenhouse_id="{{GREENHOUSE_ID}}"></script>
-{{/with}}  
+
 <div class="container-fluid">   
 
     <div class="row mt-4 mb-2" >
@@ -79,6 +77,9 @@
                 <div class="row">
                     <h4 class='text-center my-2'>Last Measurement</h4>
                 </div>
+                <div class="row">
+                    <div id="pop-up message" class="col-8 text-center offset-2 my-2"></div>
+                </div>
                 <div class="row mt-1 mb-3">
                     <div class="col-4 text-end">
                         <p class='greenhouse_id'>ID : {{ID}}</p>
@@ -120,3 +121,8 @@
             {{/with}}
         </div>
     </div>
+    {{#with plant_info}}
+        <script src="scripts/mqtt_reload.js" greenhouse_id="{{GREENHOUSE_ID}}"></script>
+    {{/with}}  
+    </div>
+</div>
