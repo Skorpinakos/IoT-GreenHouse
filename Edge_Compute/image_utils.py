@@ -3,10 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 
-def dt2datetime(dt):
-    return dt[0:9].replace("_","-")+' '+dt[11:-1].replace("_",":")
-def datetime2dt(dt):
-    return str(dt).replace(":","_").replace(" ","_").replace("-","_")
+
 
 
 

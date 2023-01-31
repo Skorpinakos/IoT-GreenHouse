@@ -9,7 +9,10 @@ import time,sys
 random.seed(time.time())
 
 def dt2datetime(dt):
-    return dt[0:9].replace("_","-")+' '+dt[11:].replace("_",":")
+    def find(s, ch):
+        return [i for i, ltr in enumerate(s) if ltr == ch]
+    index_of_3rd_underscore=find(dt,"_")[2]
+    return dt[0:index_of_3rd_underscore].replace("_","-")+' '+dt[index_of_3rd_underscore+1:].replace("_",":")
 def datetime2dt(dt):
     return str(dt).replace(":","_").replace(" ","_").replace("-","_")
 
@@ -31,7 +34,7 @@ def make_measurement(dt,config_dict,moment):
                 "TEMPERATURE": random.randint(120,350)/10,
                 "HUMIDITY": random.randint(5,100)/100,
                 "CO2": random.randint(200,400)/10,
-                "SUNLIGHT": (random.randint(45,100)/100)*(int(dt.split("_")[-3]) in range(7,19)),
+                "SUNLIGHT": (random.randint(45,100)/100),
                 "START_DATETIME":dt2datetime(dt),
                 "measurements":[]
     }
@@ -97,8 +100,8 @@ config_dict = json.load(f)
 
 dt=sys.argv[1]
 print(dt)
-exit()
-print(dt)
+#exit()
+#print(dt)
 time.sleep(5)
 datetime_object = datetime.datetime.strptime(dt, "%Y_%m_%d_%H_%M_%S")
 unix_time=int(time.mktime(datetime_object.timetuple()))
