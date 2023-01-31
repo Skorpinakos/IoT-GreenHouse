@@ -8,7 +8,7 @@ let port ='3000'; //set port
 const router = express.Router(); //make a router object
 
 
-let inform_db = function(datetime){
+let inform_db = async function(datetime){
 
   let rawdata = fs.readFileSync('greenhouse_config.json');
   let greenhouse_config = JSON.parse(rawdata);
@@ -16,12 +16,19 @@ let inform_db = function(datetime){
   rawdata = fs.readFileSync('images/measurements/measurement_at_'+datetime+'/data.json');
   let data_to_send = JSON.parse(rawdata);
 
-  fetch(greenhouse_config['server_url']+'/store_new_measurement', {
+  try{
+    await fetch(greenhouse_config['server_url']+'/store_new_measurement', {
     method: 'POST',
     body: JSON.stringify(data_to_send),
     headers: { 'Content-Type': 'application/json' }
     });
+       
     console.log('Posted the data.json from measurement at '+datetime);
+  }catch (error) {
+    console.log("Failed to post back the results to main database! Main server is propably offline !");
+    //console.log(error);
+
+  }
 }
 
 let get_datetime = function(){
