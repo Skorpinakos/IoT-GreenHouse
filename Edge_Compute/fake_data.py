@@ -97,6 +97,8 @@ config_dict = json.load(f)
 
 dt=sys.argv[1]
 print(dt)
+exit()
+print(dt)
 time.sleep(5)
 datetime_object = datetime.datetime.strptime(dt, "%Y_%m_%d_%H_%M_%S")
 unix_time=int(time.mktime(datetime_object.timetuple()))
