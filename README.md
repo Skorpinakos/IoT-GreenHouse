@@ -1,5 +1,6 @@
 # IoT-2022
-A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT and Cloud infrastructure working on RPI4's
+A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud & hardware infrastructure working on RPI4's
 
+Credentials:
 Greenhouse 12 belongs to SpanokhristodoulouErato911
 Everyone's password is 1234
