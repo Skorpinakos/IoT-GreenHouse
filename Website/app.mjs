@@ -37,7 +37,6 @@ const storage = multer.diskStorage({
         callback(null,'public/images') // path to store images
     },
     filename: (req, file, callback) => {
-        //console.log(file)
         let filename = Date.now() + file.originalname.replaceAll(' ', '_');
         callback(null, filename)
     }
@@ -123,7 +122,6 @@ let givePlantPage = function(req,res){
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
           plant_rows[0].LIFESPAN = plant_rows[0].LIFESPAN + ' months'
-          console.log(rows_plants)
           res.render('plant', {layout : 'layout',plant_info:plant_rows[0], measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});
         });
       }
@@ -156,7 +154,6 @@ let givePlantPage = function(req,res){
 };
 
 let giveGreenhousePage = function(req,res){
-console.log(req.query)
 let greenhouse_id = req.query['ID'];
 model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {  
   model.getGreenhouseMeasurementInfo(greenhouse_id, (err, measurement_rows) => { 
@@ -191,7 +188,6 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
                 greenhouse_rows[0].LENGTH = greenhouse_rows[0].LENGTH.toFixed(2) + ' m'
                 greenhouse_rows[0].HEIGHT = greenhouse_rows[0].HEIGHT.toFixed(2) + ' m'
-                console.log(greenhouse_rows[0], measurement_rows[0], rows_plants,);
                 res.render('greenhouse', {layout : 'layout', greenhouse_info:greenhouse_rows[0], greenhouse_measurement_info:measurement_rows[0], rows_plants:rows_plants, loged:req.session.loggedUserId});  
 
               }
@@ -283,7 +279,6 @@ let addGreenhouse = function(req,res){
 
 let storeNewMeasurement = function(req,res){ 
   res.statusCode=200;
-  console.log(req.body)
   res.send("Received package.");
   model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
     if (err){
@@ -320,15 +315,20 @@ let storeNewMeasurement = function(req,res){
             let growth = 0;
             let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
             let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
-            for (let i = 0; i < measurement_date.length; i++){
+            let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
+            for (let i = 0; i < 3; i++){
+              if(measurement_time[i].length==1){
+                measurement_time[i] = '0' + measurement_time[i];
+              }
               if(measurement_date[i].length==1){
                 measurement_date[i] = '0' + measurement_date[i];
               }
             }
             measurement_date = measurement_date.join('-');
-            let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0];
-            if(measurement_rows.length == 2){
-              growth = size - measurement_rows[0].SIZE;
+            measurement_time = measurement_time.join(':');
+
+            if(measurement_rows.length){
+              growth = (size - measurement_rows[0].SIZE).toFixed(2);
             }
             let health = req.body.measurements[i][3];
             const max_leaf_density = 3000;
@@ -361,40 +361,46 @@ let storeNewMeasurement = function(req,res){
 let startNewMeasurement = async function(req,res){ 
   let ip = req['query'].IP; 
   let url = 'http://' + ip + '/start_greenhouse_measurement'
-  const response = await fetch(url);
-  const text = await response.text();
-  // const data = response.text();
-  console.log(text)
-  res.statusCode = 200;
-  res.send(text)
+  try{
+    const response = await fetch(url);
+    const text = await response.text();
+    // const data = response.text();
+    console.log(text)
+    res.statusCode = 200;
+    res.send(text)
+  }
+  catch(err) {
+    console.log("Failed to initiate a new measurement.\n" + err)
+  }
 };
 
 
 let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c) {
   //ip = 'localhost:3000'
   let url = 'http://' + ip + '/get_recent_photo' + '?x=' + r + '&y=' + c
-  console.log(url);
-  const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }
-});
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  //const fileType = await fileType.fromBuffer(buffer);
-  if (1) {
-      const dir = path.resolve() + '\\public\\'
-      const outputFileName = 'images\\measurements\\' +  p_id + '.png';
-      // console.log(dir + outputFileName)
-      fs.createWriteStream(dir + outputFileName).write(buffer);
-      model.updateMeasurementPhoto(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
-  } else {
-      console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
+  try{
+    const response = await fetch(url, {credentials:'include', headers: { 'Content-Type': 'image/png' }});
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    //const fileType = await fileType.fromBuffer(buffer);
+    if (1) {
+        const dir = path.resolve() + '\\public\\'
+        const outputFileName = 'images\\measurements\\' +  p_id + '.png';
+        fs.createWriteStream(dir + outputFileName).write(buffer);
+        model.updateMeasurementPhoto(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
+    } else {
+        console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
+    }
   }
-  
+  catch(err){
+    console.log("Failed to retrieve the most recent image for the plant " + p_id + " from the greenhouse with IP " + ip + " .\n" + err);
+  }
 }
 
 let getPlantStats = async function(req,res){ 
   let id = req['query'].ID; 
   model.getPlantMeasurementStats(id, (err, plant_stats) => {
-  console.log(plant_stats)
   res.send(plant_stats);
 });
 }

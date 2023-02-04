@@ -15,7 +15,6 @@ export let showRegisterForm = function (req, res) {
 
 export let doRegister = function (req, res) {
     model.registerClient(req.body.username, req.body.password, (err, result, message) => {
-        console.log(message)
         if (err) {
             console.error('registration error: ' + err);
             res.render('register', {layout : 'layout', message: message.message });
@@ -36,7 +35,6 @@ export let doLogin = function (req, res) {
     model.getClientByUsername(req.body.username, (err, client) => {
 
         if(client != undefined){
-            console.log(client)
             const match = bcrypt.compare(req.body.password, client.PASSWORD, (err, match) => {
                 if (match) {
                     //Θέτουμε τη μεταβλητή συνεδρίας "loggedUserId"
