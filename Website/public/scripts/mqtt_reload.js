@@ -15,6 +15,8 @@ window.onload = function(message) {
         let close_button = "\n<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
         let alert = "<div class='alert alert-info alert-dismissible fade show' role='alert'>" + message + close_button + "</div>";
         document.getElementById("pop-up message").innerHTML = alert;
+        document.getElementById("modal-message").innerHTML = "<p>" + message + "</p>";
+        $("#myModal").modal("show")
         sessionStorage.removeItem("measurement_message")
     }
 }
@@ -33,7 +35,8 @@ function onMessageArrived(message){
     console.log("Received message for topic " + message.destinationName + ":\n" + message.payloadString);
     sessionStorage.setItem("reloading", "true");
     sessionStorage.setItem("measurement_message", message.payloadString);
-    document.location.reload();
+    setTimeout(() => {  document.location.reload(); }, 5000);
+    
 }
 
 function MQTTconnect(){

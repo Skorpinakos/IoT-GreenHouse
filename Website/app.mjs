@@ -305,6 +305,7 @@ let storeNewMeasurement = function(req,res){
             }
           }
           const seperated_measurement_time = measurement_datetime[1].split(':');
+          console.log(seperated_measurement_date)
           const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
           for (let i = 0; i < req.body.measurements.length; i++){
             model.getPlantMeasurementInfo(first_greenhouse_plant[0].ID + i, (err, measurement_rows) => { 
@@ -317,7 +318,7 @@ let storeNewMeasurement = function(req,res){
             let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
             let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
             for (let i = 0; i < 3; i++){
-              if(measurement_time[i].length==1){
+              if(measurement_time[i].length==1){ 
                 measurement_time[i] = '0' + measurement_time[i];
               }
               if(measurement_date[i].length==1){
@@ -343,7 +344,7 @@ let storeNewMeasurement = function(req,res){
           
             if (i == req.body.measurements.length - 1){
               let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
-              let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + id;
+              let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + id + '.';
               console.log(message)
               if (client.connected==true){
                 client.publish(topic, message);
