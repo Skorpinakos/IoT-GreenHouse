@@ -57,5 +57,5 @@ A greenhouse digital twin project using unsupervised machine learning for image 
     - sqlite3 (5.0.8)
 
 ### Website Credentials:
-+Greenhouse 12 belongs to SpanokhristodoulouErato911
-+Everyone's password is 1234
++ Greenhouse 12 belongs to SpanokhristodoulouErato911
++ Everyone's password is 1234
