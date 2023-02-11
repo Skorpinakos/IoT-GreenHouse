@@ -1,9 +1,6 @@
 # IoT-2022
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud & hardware infrastructure working on RPI4's
 
----
-This document contains the basic information for the structure and the installation process of the website de(elope)d for the Greenhouse Monitor project by Ioannis Tsabras and Sta(ros K)anias (Patra, 2023).
----
 # Censor device
 
 # Edge Computing
