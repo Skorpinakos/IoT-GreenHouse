@@ -1,5 +1,6 @@
-# IoT-2022
-A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud & hardware infrastructure working on RPI4's
+# Greenhouse Monitor (IoT project)
+A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud, Website and Hardware infrastructure, working on RPI4's.
+Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
 
 ## Censor device
 
@@ -16,10 +17,10 @@ A greenhouse digital twin project using unsupervised machine learning for image 
 ### Features
 
 + Secure login with encrypted passwords in the database
-+ See the most recent greenhouse and plant measurement
-+ Full o(er(i)ew o)f e(ery g)reenhouse including a digital twin (table of plants with colored cells corresponding to the plant's health)
++ View the most recent greenhouse and plant measurements
++ Full overview of every greenhouse including a digital twin (table of plants with colored cells corresponding to the plant's health)
 + Plot showing the growth (size and leaf density) of each plant with time
-+ Automatic reload of the plant and greenhouse page as soon as a new measurement arri(es, u)sing a public MQTT broker and the node.js MQTT interface
++ Automatic reload of the plant and greenhouse page as soon as a new measurement arrives, using a public MQTT broker and the node.js MQTT interface
 + Email notification to the user after the completion of each new measurement
 + Create custom test database with Python
 + Start a new measurement in a remote greenhouse with the press of a button 
@@ -56,6 +57,32 @@ A greenhouse digital twin project using unsupervised machine learning for image 
     - plotly.js-dist-min (2.17.1)
     - sqlite3 (5.0.8)
 
-### Website Credentials:
-+ Greenhouse 12 belongs to SpanokhristodoulouErato911
-+ Everyone's password is 1234
+### Installation and setup
+
+1) Clone the repo
+2) Install node.js (https://nodejs.org/en/download/)
+3) To install the dependencies 
+   + cd into the Website directory
+   + Run
+  
+      ```
+      npm install
+      ```
+4) In a terminal 
+   + cd into the Edge_Compute directory
+   + Start greenhouse device service (on port 3000) by running
+
+      ```
+      node controller.mjs
+      ```
+5) In another terminal 
+   + cd into the Website directory
+   + Start the website service (on port 4000) by running
+  
+      ```
+      npm run watch
+      ```
+6) Open your browser (on port 4000) and login with the following credentials
+
+  + Username: SpanokhristodoulouErato911
+  + Password: 1234
