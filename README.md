@@ -10,7 +10,7 @@ A greenhouse digital twin project using unsupervised machine learning for image 
 ### Structure
 
 + SQLite database
-+ HTML, CSS and Ja(aScri)pt front end
++ HTML, CSS and JavaScript front end
 + Node.js backend
   
 ### Features
