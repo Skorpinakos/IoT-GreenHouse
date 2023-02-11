@@ -1,19 +1,19 @@
 # IoT-2022
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud & hardware infrastructure working on RPI4's
 
-# Censor device
+## Censor device
 
-# Edge Computing
+## Edge Computing
 
-# Website
+## Website
 
-## Structure
+### Structure
 
 + SQLite database
 + HTML, CSS and Ja(aScri)pt front end
 + Node.js backend
   
-## Features
+### Features
 
 + Secure login with encrypted passwords in the database
 + See the most recent greenhouse and plant measurement
@@ -27,7 +27,7 @@ A greenhouse digital twin project using unsupervised machine learning for image 
 + Automate the measurement process by setting a standard measurement frequency (to be implemented)
 
   
-## Dependencies
+### Dependencies
 + Front end  
 
   + Bootstrap (5.2)
@@ -56,6 +56,6 @@ A greenhouse digital twin project using unsupervised machine learning for image 
     - plotly.js-dist-min (2.17.1)
     - sqlite3 (5.0.8)
 
-## Website Credentials:
+### Website Credentials:
 +Greenhouse 12 belongs to SpanokhristodoulouErato911
 +Everyone's password is 1234
