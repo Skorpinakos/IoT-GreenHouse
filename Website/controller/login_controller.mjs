@@ -2,7 +2,6 @@
  * Οι συναρτήσεις του controller που χρειάζονται για την αυθεντικοποίηση 
 */
 import bcrypt from 'bcrypt'
-import e from 'express';
 import * as model from '../model/model.js';
 
 export let showLogInForm = function (req, res) {
