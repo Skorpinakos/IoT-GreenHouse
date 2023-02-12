@@ -1,34 +1,34 @@
 # Greenhouse Monitor (IoT project)
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud, Website and Hardware infrastructure, working on RPI4's.
-Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
+Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
 
-## Censor device
-
-## Edge Computing
-
-## Website
-
-### Structure
-
-+ SQLite database
-+ HTML, CSS and JavaScript front end
-+ Node.js backend
-  
-### Features
-
-+ Secure login with encrypted passwords in the database
-+ View the most recent greenhouse and plant measurements
-+ Full overview of every greenhouse including a digital twin (table of plants with colored cells corresponding to the plant's health)
-+ Plot showing the growth (size and leaf density) of each plant with time
-+ Automatic reload of the plant and greenhouse page as soon as a new measurement arrives, using a public MQTT broker and the node.js MQTT interface
-+ Email notification to the user after the completion of each new measurement
-+ Create custom test database with Python
-+ Start a new measurement in a remote greenhouse with the press of a button 
-+ Register new greenhouses (to be implemented)
-+ Automate the measurement process by setting a standard measurement frequency (to be implemented)
-
-  
 ### Dependencies
+
++ Edge Controller
+  + Node.js (18.12.1)
+    - body-parser (1.20.1)
+    - express (4.18.2)
+    - express-handlebar (6.0.6) [Will be removed]
+    - file-type (18.0.0)
+    - fs (0.0.1-security)
+    - node-fetch (3.3.0)
+    
+  + Python (3.10.4)
+    - json
+    - datetime
+    - os
+    - random
+    - shutil
+    - time
+    - sys
+    - cv2
+    - numpy
+    - matplotlib
+    - sklearn
+    - math
+    
+    
+  
 + Front end  
 
   + Bootstrap (5.2)
@@ -38,7 +38,6 @@ Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
     
 + Backend
 
-  + Python (3.10.10)
   + Node.js (18.12.1)
     - assert (2.0.0)
     - bcrypt (5.0.1)
