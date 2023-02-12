@@ -35,12 +35,13 @@ Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
   + Ajax
     - paho-mqtt (1.0.1)
     - jquery (3.6.1)
+    
 + Backend
 
   + Python (3.10.10)
   + Node.js (18.12.1)
     - assert (2.0.0)
-    -  bcrypt (5.0.1)
+    - bcrypt (5.0.1)
     - better-sqlite3 (7.5.3)
     - body-parser (1.20.1)
     - express (4.18.1)
