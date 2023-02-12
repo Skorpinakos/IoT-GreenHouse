@@ -7,25 +7,43 @@ Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
 +Edge Controller
   + Node.js (18.12.1)
     -body-parser (1.20.1)
+    
     -express (4.18.2)
+    
     -express-handlebar (6.0.6) [Will be removed]
+    
     -file-type (18.0.0)
+    
     -fs (0.0.1-security)
+    
     -node-fetch (3.3.0)
+    
   + Python (3.10.4)
+  
     -json
+    
     -datetime
+    
     -os
+    
     -random
+    
     -shutil
+    
     -time
+    
     -sys
+    
     -cv2
+    
     -numpy
+    
     -matplotlib
+    
     -sklearn
+    
     -math
-    -
+    
     
   
 + Front end  
