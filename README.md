@@ -2,7 +2,7 @@
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud, Website and Hardware infrastructure, working on RPI4's.
 Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
 
-### Dependencies
+## Dependencies
 
 + Edge Controller
   + Node.js (18.12.1)
@@ -57,7 +57,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - plotly.js-dist-min (2.17.1)
     - sqlite3 (5.0.8)
 
-### Installation and setup
+## Installation and setup
 
 1) Clone the repo
 2) Install node.js (https://nodejs.org/en/download/)
@@ -87,7 +87,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
   + Username: SpanokhristodoulouErato911
   + Password: 1234
 
-### A basic Measurement Use Case
+## A basic Measurement Use Case
 
 To initiate a simple measurement:
 
