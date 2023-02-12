@@ -43,6 +43,7 @@ class Simulation:
         self.cropped_image='no image yet'
         f = open('greenhouse_config.json')
         self.config = json.load(f)
+        f.close()
         self.step=0
         
 
@@ -51,7 +52,8 @@ class Simulation:
         self.pos+=self.step
         if self.pos+self.cam_height>=self.view.shape[0]:
             print("reached end,breaking...")
-            exit()
+            return "finished"
+            #pass
         img1=self.view[0:(self.pos),0:self.cam_width]
         img2=self.view[self.pos:(self.pos+self.cam_height),0:self.cam_width]
         img3=self.view[(self.pos+self.cam_height):,0:self.cam_width]
@@ -70,8 +72,8 @@ class Simulation:
             return False
         cv2.imwrite("images/temp_img_taken.png",self.cropped_image)
         #print(type(self.cropped_image))
-        cv2.imshow("photo",self.cropped_image)
-        cv2.waitKey()
+        #cv2.imshow("photo",self.cropped_image)
+        #cv2.waitKey()
         #print(cropped_image)
         
         

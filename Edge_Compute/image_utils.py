@@ -31,10 +31,10 @@ def save_center(row,column,center,points,path,filename,path_to):
 
     #print(top,bottom,left,right)
     #exit()
-    #top=60
-    #bottom=60
-    #right=60
-    #left=60
+    top=50
+    bottom=50
+    right=50
+    left=50
     #print(row,column,center,points[0:6],"...",path,filename)
     #print("_________________________________")
     try:
@@ -58,7 +58,7 @@ def save_center(row,column,center,points,path,filename,path_to):
     width = source.shape[1]
 
     cropped_image = source[max(0,center[0]-top):min(height,center[0]+bottom), max(0,center[1]-left):min(width,center[1]+right)] 
-    #JUST FOR SIMPLICITY OF THE WEBSITE DEVELOPEMENT THIS IS A COMMENT cv2.imwrite(dst, cropped_image)
+    cv2.imwrite(dst, cropped_image)
     #cv2.imshow('test', cropped_image)
     #cv2.waitKey(1000)
     #exit()

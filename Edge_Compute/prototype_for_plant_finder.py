@@ -92,8 +92,12 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     lines={}
     for line in list(clustered_centers.keys()):
         heights=[]
+        if len(clustered_centers)==0:
+            continue
         for center in clustered_centers[line]:
             heights.append(center[0])
+        if len(heights)==0:
+            continue
         lines[sum(heights)/len(heights)]=clustered_centers[line] #keep in mind that the average y might slightly differ from what kmeans returned as center
     #print(lines)
 

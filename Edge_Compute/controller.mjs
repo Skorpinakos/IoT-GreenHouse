@@ -97,7 +97,7 @@ let start_greenhouse_measurement = function(req,res){
       }
       let ingestion_controller_output;
       // spawn new child process to call the python_process script
-      let python_process = spawn('python', ['fake_data.py',datetime]);
+      let python_process = spawn('python', ['robot_move_deployed.py',datetime]);
       console.log('No on-going measurement, starting new.');
       res.statusCode = 200;
       let split_datetime = datetime.split('_');

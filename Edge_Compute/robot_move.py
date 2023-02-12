@@ -6,6 +6,9 @@ from image_utils import save_center
 import sys
 import os
 from datetime import datetime
+import json
+from fake_data import make_measurement, dt2datetime
+import time
 
 
 
@@ -22,7 +25,11 @@ dt=datetime2dt(datetime.now())
 print("starting at: ",dt)
 #exit()
 
-sim=Simulation(view="images\Capture4.png",camera_dimensions=[589,310])
+date_time_for_unix = datetime(*list(map(int,dt.split("_"))))
+#print(date_time_for_unix)
+unix_time=int(time.mktime(date_time_for_unix.timetuple()))
+#print(unix_time)
+sim=Simulation(view="images\Capture6.png",camera_dimensions=[589,310])
 path="images/"
 out_path="diagnostics/"
 
@@ -41,6 +48,9 @@ end=0
 dx=default_distance
 lines_multitude=[0]
 step=0
+f = open('greenhouse_config.json')
+greenhouse_config=json.load(f)
+
 
 while True:
 
@@ -54,7 +64,7 @@ while True:
         print("scan finished!")
         break
 
-    lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,sim.config,diagnostics_mode='full')
+    lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,sim.config,diagnostics_mode='none')
     #returns sorted "y dimension" list of lines (floats)
     #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
     #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
@@ -82,8 +92,14 @@ while True:
         signal_history=list(map(float,list(map(str,signal_history))))
         signal_history_file.close()
         #max_deviation=40
-        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="sig+full")
-        position=total_lines-len(lines_y)
+        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="none")
+        position_new=total_lines-len(lines_y)
+        if position_new<position:
+            position=position
+        else:
+            position=position_new
+        if position<0:
+            position=0
         #print("total lines seen: ",total_lines)
         signal_history_file=open('sig.txt','w',encoding='utf-8')
         signal_history_file.write("")
@@ -100,7 +116,11 @@ while True:
         centers.sort(key=lambda x: x[1], reverse=False)
         #print(centers)
         row=i+position
+        if len(centers)>greenhouse_config['columns']:
+            continue
         for column,center in enumerate(centers):
+            if column>=greenhouse_config['columns'] or row>=greenhouse_config['rows']:
+                continue
             save_center(row,column,center,centroids[tuple(center)],path,filename,path_to)
             #break
         #break
@@ -115,7 +135,9 @@ while True:
 
     
     print("FINISHED STEP:",step)
-    input("Press Enter to continue...")
-    sim.make_move(dx)
+    #input("Press Enter to continue...")
+    if(sim.make_move(dx)=="finished"):
+        break
+make_measurement(dt,greenhouse_config,unix_time,False)
     
 
