@@ -1,6 +1,6 @@
 # Greenhouse Monitor (IoT project)
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud, Website and Hardware infrastructure, working on RPI4's.
-Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
+Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
 
 ### Dependencies
 
