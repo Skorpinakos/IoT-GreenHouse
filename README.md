@@ -4,7 +4,7 @@ Developed by Ioannis Tsabras and Stavros Kanias (Patra, 2023).
 
 ### Dependencies
 
-+Edge Controller
++ Edge Controller
   + Node.js (18.12.1)
     -body-parser (1.20.1)
     
