@@ -2,7 +2,7 @@
 
 import time
 import json
-from turtle import distance
+
 from s_clustering_utils import check_cluster_multitudes,find_elbow,find_centroids,plot_cluster_graph,plot_image_with_centers_lines,find_lines
 from image_utils import detect_edges,edge_image_to_edge_points_np_list,detect_thres,detect_cutt_offs
 
