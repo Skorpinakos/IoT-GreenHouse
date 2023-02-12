@@ -73,7 +73,6 @@ export const getPlantMeasurementStats = (id, callback) => {
 
     let sql='SELECT MEASUREMENT_DATE, MEASUREMENT_TIME, LEAF_DENSITY, SIZE FROM PLANT_MEASUREMENT WHERE PLANT_ID=? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC';
     const db = new sqlite3.Database(db_name);
-    console.log(id)
     db.all(sql,[id], (err, rows) => {
     if (err) {
         db.close();
@@ -81,7 +80,6 @@ export const getPlantMeasurementStats = (id, callback) => {
         console.log(err);
     }
     db.close();
-    console.log(rows)
     callback(null, rows); // επιστρέφει array
     });
 }
