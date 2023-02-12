@@ -71,8 +71,10 @@ let giveRecentsPage = function(req,res){
           console.log(err.message);
         } 
         for (let i in plant_rows){
-          get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
-          plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
+          if (plant_rows[i].MEASUREMENT_PHOTO == 'null'){
+            get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
+          }
+            plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
           plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
         }
         for(let i in greenhouse_rows){
@@ -116,7 +118,9 @@ let givePlantPage = function(req,res){
               }
               rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
             }
-          get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
+            if (measurement_rows[0].MEASUREMENT_PHOTO == 'null'){
+              get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
+            }
           measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
@@ -305,7 +309,6 @@ let storeNewMeasurement = function(req,res){
             }
           }
           const seperated_measurement_time = measurement_datetime[1].split(':');
-          console.log(seperated_measurement_date)
           const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
           for (let i = 0; i < req.body.measurements.length; i++){
             model.getPlantMeasurementInfo(first_greenhouse_plant[0].ID + i, (err, measurement_rows) => { 
@@ -345,7 +348,6 @@ let storeNewMeasurement = function(req,res){
             if (i == req.body.measurements.length - 1){
               let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
               let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + id + '.';
-              console.log(message)
               if (client.connected==true){
                 client.publish(topic, message);
                 }
@@ -365,8 +367,6 @@ let startNewMeasurement = async function(req,res){
   try{
     const response = await fetch(url);
     const text = await response.text();
-    // const data = response.text();
-    console.log(text)
     res.statusCode = 200;
     res.send(text)
   }
