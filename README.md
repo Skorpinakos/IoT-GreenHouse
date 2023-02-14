@@ -29,14 +29,14 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     
     
   
-+ Front end  
++ Website frontend  
 
   + Bootstrap (5.2)
   + Ajax
     - paho-mqtt (1.0.1)
     - jquery (3.6.1)
     
-+ Backend
++ Website backend
 
   + Node.js (18.12.1)
     - assert (2.0.0)
