@@ -84,6 +84,21 @@ export const getPlantMeasurementStats = (id, callback) => {
     });
 }
 
+export const getClientEmail = (id, callback) => {
+
+    let sql='SELECT DISTINCT EMAIL FROM CLIENT AS C JOIN GREENHOUSE AS G on C.ID = G.CLIENT_ID WHERE G.ID = ?';
+    const db = new sqlite3.Database(db_name);
+    db.all(sql,[id], (err, rows) => {
+    if (err) {
+        db.close();
+        callback(err, null);
+        console.log(err);
+    }
+    db.close();
+    callback(null, rows[0]); // επιστρέφει array
+    });
+}
+
 export const getAllPlantMeasurementInfo = (id, callback) => {
 
     let sql='SELECT ID, MEASUREMENT_DATE, MEASUREMENT_TIME, LEAF_DENSITY, HEALTH, SIZE, GROWTH, MEASUREMENT_PHOTO FROM PLANT_MEASUREMENT WHERE PLANT_ID=? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC';
@@ -131,7 +146,7 @@ export const getGreenhouseMeasurementInfo = (id, callback) => {
 
 export const getGreenhousePlantsWithInfo = (id, callback) => {
 
-    let sql='SELECT P.ID, ROWS, COLUMNS, HEALTH, SIZE FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
+    let sql='SELECT P.ID, ROWS, COLUMNS, ROW, COLUMN, HEALTH, SIZE FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id], (err, rows) => {
     if (err) {

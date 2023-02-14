@@ -15,11 +15,10 @@ Faker.seed(0)
 def create_all():
     # path = str(pathlib.Path(__file__).parent.resolve())+'\\images\\'
     fake = Faker('el_GR')
-    
 
     entities_properties = {
 
-        'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "USERNAME": ['string', False, True], "PASSWORD": ['string', False], "BIRTH_DATE": ['date', False],
+        'CLIENT': {"ID": ['integer', True], "FIRSTNAME": ['string', False], "LASTNAME": ['string', False], "EMAIL": ['string', False], "USERNAME": ['string', False, True], "PASSWORD": ['string', False], "BIRTH_DATE": ['date', False],
                    "JOIN_DATE": ['date', False]},
 
         'GREENHOUSE': {"ID": ['integer', True], "IP": ['string', False], "COORDS_X": ['float', False], "COORDS_Y": ['float', False], "ROWS": ['integer', False], "COLUMNS": ['integer', False], "WIDTH": ['float', False],
@@ -99,6 +98,10 @@ def create_all():
                             #     random.randint(4, 8), random.randint(2, 4))
                             # The hash of 1234
                             temp_dict[attribute] = '$2b$10$myWMjyceztjvnyGPdVppfuFjs7NJysEjFdTydvKYUI.KEmpPm.aoa'
+                        elif attribute == 'EMAIL':
+                            temp_dict[attribute] = fname.lower(
+                            ) + sname.lower() + '@gmail.com'
+
                     elif typos == 'date':
                         if attribute == 'BIRTH_DATE':
                             temp_dict[name] = fake.date_of_birth(

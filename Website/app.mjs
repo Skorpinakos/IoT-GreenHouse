@@ -8,6 +8,7 @@ import path from 'path';
 import bodyParser from 'body-parser'
 import fs from 'fs'
 import mqtt from 'mqtt'
+import nodemailer from 'nodemailer'
 import taskListSession from './app-setup/app-setup-session.mjs'
 const app = express(); //make app object
 let port = process.env.PORT || '4000'; //set port
@@ -15,6 +16,15 @@ const router = express.Router(); //make a router object
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); 
 app.use(taskListSession)
+
+// Mailing
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'unireportuniversityofpatras@gmail.com',
+    pass: 'zqegiddfnqglegok'
+  }
+});
 
 // MQTT
 // Options only for authenticated users
@@ -104,20 +114,26 @@ let givePlantPage = function(req,res){
                   p['current_plant'] = 0;
                 }
             }
+            let first_plant_id = plants[0].ID - (plants[0].ROW * plants[0].ROWS + plants[0].COLUMN)
+            let last_plant_id = first_plant_id + plants[0].ROWS * plants[0].COLUMNS
             let rows_plants = [];
+            let all_plants = [];
+            let greenhouse_rows = plants[0].ROWS;
+            let greenhouse_columns = plants[0].COLUMNS;
             const max_size = 38.0;
-            for (let i = 0; i < plants[0].ROWS; i++){
-              for (let j = 0; j < plants[0].COLUMNS; j++){
-                if(plants[i * plants[0].COLUMNS + j] != undefined){
-                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1) + '%';
-                }
-                else{
-                  plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
-                  plants[i * plants[0].COLUMNS + j].CELL_VALUE = 'no data';              
-                }
+            for (let i = first_plant_id; i < last_plant_id; i++){
+              if(plants.length && plants[0].ID == i){
+                plants[0].CELL_VALUE = ((plants[0].SIZE / max_size) * 100).toFixed(1) + '%';
+                let current_plant = plants.shift();
+                all_plants.push(current_plant);
               }
-              rows_plants.push(plants.slice(i * plants[0].COLUMNS, (i+1) * plants[0].COLUMNS))
-            }
+              else{
+                all_plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null, CELL_VALUE : 'no data'})
+              }
+          }
+          for (let i = 0; i < greenhouse_rows; i++){
+            rows_plants.push(all_plants.slice(i * greenhouse_columns, (i+1) * greenhouse_columns))
+          }
             if (measurement_rows[0].MEASUREMENT_PHOTO == 'null'){
               get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
             }
@@ -167,25 +183,29 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                 console.log(err.message);
               } 
               if (plants.length){
+              let first_plant_id = plants[0].ID - (plants[0].ROW * plants[0].ROWS + plants[0].COLUMN)
+              let last_plant_id = first_plant_id + plants[0].ROWS * plants[0].COLUMNS
               let rows_plants = [];
+              let all_plants = [];
               const max_size = 38.0;
                 measurement_rows[0].TEMPERATURE = measurement_rows[0].TEMPERATURE.toFixed(2) + ' C'
                 measurement_rows[0].HUMIDITY = measurement_rows[0].HUMIDITY.toFixed(2) + ' %'
                 measurement_rows[0].SUNLIGHT = measurement_rows[0].SUNLIGHT.toFixed(2) + ' Wm-2'
                 measurement_rows[0].CO2 = measurement_rows[0].CO2.toFixed(2) + ' ppm'
-                for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
-                  for (let j = 0; j < plants[0].COLUMNS; j++){
-                    if(plants[i * plants[0].COLUMNS + j] != undefined){
-                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = ((plants[i * plants[0].COLUMNS + j].SIZE / max_size) * 100).toFixed(1) + '%';
+                for (let i = first_plant_id; i < last_plant_id; i++){
+                    if(plants.length && plants[0].ID == i){
+                      plants[0].CELL_VALUE = ((plants[0].SIZE / max_size) * 100).toFixed(1) + '%';
+                      let current_plant = plants.shift();
+                      all_plants.push(current_plant);
                     }
                     else{
-                      plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null})
-                      plants[i * plants[0].COLUMNS + j].CELL_VALUE = 'no data';
-
+                      all_plants.push({ID: null, ROWS: 6, COLUMNS: 12, HEALTH: null, SIZE: null, CELL_VALUE : 'no data'})
                     }
-                  }
-                  rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
                 }
+                for (let i = 0; i < greenhouse_rows[0].ROWS; i++){
+                  rows_plants.push(all_plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
+                }
+
                 greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
                 greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
                 greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
@@ -351,6 +371,25 @@ let storeNewMeasurement = function(req,res){
               if (client.connected==true){
                 client.publish(topic, message);
                 }
+                model.getClientEmail(req.body.GREENHOUSE_ID, (err, cmail) =>{
+                  console.log(cmail)
+                  let mailOptions = {
+                    from: 'unireportuniversityofpatras@gmail.com',
+                    to: cmail.EMAIL,
+                    subject: 'Ολοκλήρωση μέτρησης',
+                    text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η μέτρηση που ξεκίνησε στις " +  req.body.START_DATETIME + " ολοκληρώθηκε και καταχωρήθηκε με κωδικό " + id + " ."
+                  };
+                  
+                if(mailOptions.to){
+                  transporter.sendMail(mailOptions, function(error, info){
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        console.log('Email sent: ' + info.response);
+                      }
+                    }); 
+                }
+              })
             }
           });
           }
