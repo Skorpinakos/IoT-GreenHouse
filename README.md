@@ -96,4 +96,4 @@ To initiate a simple measurement:
 3) Choose the greenhouse for which you want to start a new measurement (greenhouse ID:12 is operational)
 4) Once the greenhouse page opens click on the 'New Measurement' button on the bottom right of the screen
 5) A small written message will appear beside the button and notify you of the begining of the new measurement
-6) When the measurement ends and its data is stored in the database a full screen popup message will notify you about the event and the page will be refreshed in order for the new data to be served to the front end.
+6) When the measurement ends (after approximately half a minute depending on the processor) and its data is stored in the database a full screen popup message will notify you about the event and the page will be refreshed in order for the new data to be served to the front end.
