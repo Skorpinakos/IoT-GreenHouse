@@ -24,7 +24,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - cv2
     - numpy
     - matplotlib
-    - sklearn
+    - scikit-learn
     - math
     
     
