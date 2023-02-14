@@ -1,15 +1,18 @@
-from prototype_for_plant_finder import process_image #process_image takes the path where take_photo stores and the current photo filaname and returns
-# a list of th y dimension pixel height where lines occur and also centers_x and centers_y which are the x,y coordinates for each plant
-from simulation import Simulation
-from mapper import figure_out_position
-from image_utils import save_center
-import sys
-import os
-from datetime import datetime
-import json
-from fake_data import make_measurement, dt2datetime
-import time
-
+try:
+    from prototype_for_plant_finder import process_image #process_image takes the path where take_photo stores and the current photo filaname and returns
+    # a list of th y dimension pixel height where lines occur and also centers_x and centers_y which are the x,y coordinates for each plant
+    from simulation import Simulation
+    from mapper import figure_out_position
+    from image_utils import save_center
+    import sys
+    import os
+    from datetime import datetime
+    import json
+    from fake_data import make_measurement, dt2datetime
+    import time
+except:
+    print("Either Edge AI misses important packets/bad Python Version (check project requirements and dependencies for edge controller's Python installation at 'https://github.com/Skorpinakos/IoT-2022') or controller.mjs was not run in correct sub-directory: Edge_Compute")
+    exit(1)
 
 
 
