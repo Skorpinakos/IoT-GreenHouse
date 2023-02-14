@@ -33,7 +33,7 @@ try:
     #print(date_time_for_unix)
     unix_time=int(time.mktime(date_time_for_unix.timetuple()))
     #print(unix_time)
-    sim=Simulation(view="images\Capture6.png",camera_dimensions=[589,310])
+    sim=Simulation(view="images/Capture6.png",camera_dimensions=[589,310])
     path="images/"
     out_path="diagnostics/"
 
