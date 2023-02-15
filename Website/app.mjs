@@ -312,8 +312,20 @@ let storeNewMeasurement = function(req,res){
     };
     let greenhouse_measurement = [];
     let measurement_datetime = req.body.START_DATETIME.split(" ");
+    const seperated_measurement_date = measurement_datetime[0].split('-');
+    const seperated_measurement_time = measurement_datetime[1].split(':');
+    for (let i = 0; i < seperated_measurement_date.length; i++){
+      if(seperated_measurement_date[i].length==1){
+        seperated_measurement_date[i] = '0' + seperated_measurement_date[i];
+      }
+      if(seperated_measurement_time[i].length==1){
+        seperated_measurement_time[i] = '0' + seperated_measurement_time[i];
+      }
+    }
+    let measurement_date = seperated_measurement_date.join('-');
+    let measurement_time = seperated_measurement_time.join(':');
     let greenhouse_measurement_id = last_greenhouse_measurement[0].ID + 1;
-    greenhouse_measurement.push(greenhouse_measurement_id, measurement_datetime[0], measurement_datetime[1], req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
+    greenhouse_measurement.push(greenhouse_measurement_id, measurement_date, measurement_time, req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
     model.storeGreenhouseMeasurement(greenhouse_measurement, (err, rows) => {
       if (err){
         console.log(err.message);
@@ -324,13 +336,6 @@ let storeNewMeasurement = function(req,res){
             console.log(err.message);
           }; 
           const last_measurement_id = last_plant_measurement[0].ID;
-          const seperated_measurement_date = measurement_datetime[0].split('-');
-          for (let i = 0; i < seperated_measurement_date.length; i++){
-            if(seperated_measurement_date[i].length==1){
-              seperated_measurement_date[i] = '0' + seperated_measurement_date[i];
-            }
-          }
-          const seperated_measurement_time = measurement_datetime[1].split(':');
           const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
           for (let i = 0; i < req.body.measurements.length; i++){
 
