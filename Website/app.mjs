@@ -339,9 +339,9 @@ let storeNewMeasurement = function(req,res){
             let size = req.body.measurements[i][1];
             let growth = 0;
             let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
-            console.log(measurement_datetime);
+            //console.log(measurement_datetime);
             let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
-            console.log(measurement_date);
+            //console.log(measurement_date);
             let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
             for (let i = 0; i < 3; i++){
               if(measurement_time[i].length==1){ 
@@ -368,7 +368,7 @@ let storeNewMeasurement = function(req,res){
                 console.log("hi\n"+err.message);
               }; 
               console.log("its ok\n");
-              console.log(plant_measurement.ID);
+              console.log(plant_measurement.id);
             });
           
             if (i == req.body.measurements.length - 1){
