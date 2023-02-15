@@ -21,7 +21,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - shutil
     - time
     - sys
-    - cv2
+    - opencv-python
     - numpy
     - matplotlib
     - scikit-learn
