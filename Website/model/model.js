@@ -220,12 +220,13 @@ const getUpdateQuery = (entity, info) =>{
 export const storePlantMeasurement = (info,callback) => {
 
     let sql="INSERT INTO PLANT_MEASUREMENT (ID, PLANT_ID, MEASUREMENT_DATE, MEASUREMENT_TIME, SIZE, GROWTH, HEALTH, LEAF_DENSITY, MEASUREMENT_PHOTO) VALUES (?,?,?,?,?,?,?,?,?)";
-    const db = new sqlite3.Database(db_name);
+    let db = new sqlite3.Database(db_name);
     db.all(sql, info, (err, rows) => {
     if (err) {
+        console.log("from model:\n"+err);
         db.close();
         callback(err, null);
-        console.log(err);
+        
     }
     db.close();
     callback(null); // επιστρέφει array
@@ -236,7 +237,7 @@ export const storeGreenhouseMeasurement = (info,callback) => {
 
     let sql="INSERT INTO GREENHOUSE_MEASUREMENT (ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY, CO2, GREENHOUSE_ID) VALUES (?,?,?,?,?,?,?,?)";
     const db = new sqlite3.Database(db_name);
-    db.all(sql, info, (err, rows) => {
+    db.run(sql, info, (err) => {
     if (err) {
         db.close();
         callback(err, null);
