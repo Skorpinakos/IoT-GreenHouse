@@ -1,8 +1,8 @@
 import sqlite3 from "sqlite3";
 import path from "path";
 import { fileURLToPath } from 'url';
-import bcrypt from 'bcrypt'
-
+import bcrypt, { compareSync } from 'bcrypt'
+import { open } from 'sqlite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -217,34 +217,59 @@ const getUpdateQuery = (entity, info) =>{
     return sql
 }
 
-export const storePlantMeasurement = (info,callback) => {
+export const storePlantMeasurement =  (i, last_measurement_id, first_greenhouse_plant, measurement_start_datetime, plant_measurement_delay, size, ld, health) => {
+    let sql1='SELECT ID, MEASUREMENT_DATE, MEASUREMENT_TIME, LEAF_DENSITY, HEALTH, SIZE, GROWTH, MEASUREMENT_PHOTO FROM PLANT_MEASUREMENT WHERE PLANT_ID=? ORDER BY MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC LIMIT 2';
+    let plant_id = first_greenhouse_plant[0].ID + i;
+    open({
+        filename: db_name,
+        driver: sqlite3.Database
+      }).then(async (db) => {
+        let measurement_rows = await db.all(sql1,[plant_id]);
+        let plant_measurement = [];
+        let id = last_measurement_id + i + 1;
+        let growth = 0;
+        let measurement_datetime = new Date(measurement_start_datetime.getTime() + (plant_measurement_delay *  1000))
+        let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
+        let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
+        for (let i = 0; i < 3; i++){
+            if(measurement_time[i].length==1){ 
+            measurement_time[i] = '0' + measurement_time[i];
+            }
+            if(measurement_date[i].length==1){
+            measurement_date[i] = '0' + measurement_date[i];
+            }
+        }
+        measurement_date = measurement_date.join('-');
+        measurement_time = measurement_time.join(':');
 
-    let sql="INSERT INTO PLANT_MEASUREMENT (ID, PLANT_ID, MEASUREMENT_DATE, MEASUREMENT_TIME, SIZE, GROWTH, HEALTH, LEAF_DENSITY, MEASUREMENT_PHOTO) VALUES (?,?,?,?,?,?,?,?,?)";
-    let db = new sqlite3.Database(db_name);
-    db.run(sql, info, (err) => {
-    if (err) {
-        console.log("id:"+info.id+"\nfrom model:\n"+err);
-        db.close();
-        callback(err, null);
+        if(measurement_rows.length){
+            growth = (size - measurement_rows[0].SIZE).toFixed(2);
+        }
+        const max_leaf_density = 3000;
+        let leaf_density = (ld / max_leaf_density).toFixed(2);
+
+        plant_measurement.push(id, plant_id, measurement_date, measurement_time, size, growth, health, leaf_density, 'null');
         
-    }
-    db.close();
-    callback(null); // επιστρέφει array
-    });
+        let sql2="INSERT INTO PLANT_MEASUREMENT (ID, PLANT_ID, MEASUREMENT_DATE, MEASUREMENT_TIME, SIZE, GROWTH, HEALTH, LEAF_DENSITY, MEASUREMENT_PHOTO) VALUES (?,?,?,?,?,?,?,?,?)";
+        let result = await db.run(sql2, plant_measurement);
+        // console.log(result)
+        db.close();
+    })
+    
 }
 
 export const storeGreenhouseMeasurement = (info,callback) => {
 
     let sql="INSERT INTO GREENHOUSE_MEASUREMENT (ID, MEASUREMENT_DATE, MEASUREMENT_TIME, TEMPERATURE, SUNLIGHT, HUMIDITY, CO2, GREENHOUSE_ID) VALUES (?,?,?,?,?,?,?,?)";
     const db = new sqlite3.Database(db_name);
-    db.run(sql, info, (err) => {
+    db.all(sql, info, (err, rows) => {
     if (err) {
         db.close();
         callback(err, null);
-        console.log(err);
+        console.log(err, rows);
     }
     db.close();
-    callback(null); // επιστρέφει array
+    callback(null, rows); // επιστρέφει array
     });
 }
 

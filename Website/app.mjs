@@ -10,6 +10,7 @@ import fs from 'fs'
 import mqtt from 'mqtt'
 import nodemailer from 'nodemailer'
 import taskListSession from './app-setup/app-setup-session.mjs'
+
 const app = express(); //make app object
 let port = process.env.PORT || '4000'; //set port
 const router = express.Router(); //make a router object
@@ -313,7 +314,7 @@ let storeNewMeasurement = function(req,res){
     let measurement_datetime = req.body.START_DATETIME.split(" ");
     let greenhouse_measurement_id = last_greenhouse_measurement[0].ID + 1;
     greenhouse_measurement.push(greenhouse_measurement_id, measurement_datetime[0], measurement_datetime[1], req.body.TEMPERATURE, req.body.SUNLIGHT, req.body.HUMIDITY, req.body.CO2, req.body.GREENHOUSE_ID);
-    model.storeGreenhouseMeasurement(greenhouse_measurement, (err) => {
+    model.storeGreenhouseMeasurement(greenhouse_measurement, (err, rows) => {
       if (err){
         console.log(err.message);
       }; 
@@ -332,78 +333,41 @@ let storeNewMeasurement = function(req,res){
           const seperated_measurement_time = measurement_datetime[1].split(':');
           const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
           for (let i = 0; i < req.body.measurements.length; i++){
-            model.getPlantMeasurementInfo(first_greenhouse_plant[0].ID + i, (err, measurement_rows) => { 
-            let plant_measurement = [];
-            let id = last_measurement_id + i + 1;
-            let plant_id = first_greenhouse_plant[0].ID + i;
-            let size = req.body.measurements[i][1];
-            let growth = 0;
-            let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
-            //console.log(measurement_datetime);
-            let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
-            //console.log(measurement_date);
-            let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
-            for (let i = 0; i < 3; i++){
-              if(measurement_time[i].length==1){ 
-                measurement_time[i] = '0' + measurement_time[i];
-              }
-              if(measurement_date[i].length==1){
-                measurement_date[i] = '0' + measurement_date[i];
-              }
-            }
-            measurement_date = measurement_date.join('-');
-            measurement_time = measurement_time.join(':');
 
-            if(measurement_rows.length){
-              growth = (size - measurement_rows[0].SIZE).toFixed(2);
-            }
-            let health = req.body.measurements[i][3];
-            const max_leaf_density = 3000;
-            let leaf_density = (req.body.measurements[i][2] / max_leaf_density).toFixed(2);
-
-            plant_measurement.push(id, plant_id, measurement_date, measurement_time, size, growth, health, leaf_density, 'null');
-            //console.log(plant_measurement);
-            model.storePlantMeasurement(plant_measurement,(err) => {
-              if (err){
-                console.log("hi\n"+err.message);
-              }; 
-              console.log("its ok\n");
-              console.log(plant_measurement.id);
-            });
+            setTimeout(() => {model.storePlantMeasurement(i, last_measurement_id, first_greenhouse_plant, measurement_start_datetime, req.body.measurements[i][0], req.body.measurements[i][1], req.body.measurements[i][2], req.body.measurements[i][3])},50*i);
           
             if (i == req.body.measurements.length - 1){
-              let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
-              let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + id + '.';
-              if (client.connected==true){
-                client.publish(topic, message);
-                }
-                model.getClientEmail(req.body.GREENHOUSE_ID, (err, cmail) =>{
-                  console.log(cmail)
-                  let mailOptions = {
-                    from: 'unireportuniversityofpatras@gmail.com',
-                    to: cmail.EMAIL,
-                    subject: 'Ολοκλήρωση μέτρησης',
-                    text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η μέτρηση που ξεκίνησε στις " +  req.body.START_DATETIME + " ολοκληρώθηκε και καταχωρήθηκε με κωδικό " + id + " ."
-                  };
-                  
-                if(mailOptions.to){
-                  transporter.sendMail(mailOptions, function(error, info){
-                      if (error) {
-                        console.log(error);
-                      } else {
-                        console.log('Email sent: ' + info.response);
-                      }
-                    }); 
-                }
-              })
+              setTimeout(() => {
+                let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
+                let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + greenhouse_measurement_id + '.';
+                if (client.connected==true){
+                  client.publish(topic, message);
+                  }
+                  model.getClientEmail(req.body.GREENHOUSE_ID, (err, cmail) =>{
+                    console.log(cmail)
+                    let mailOptions = {
+                      from: 'unireportuniversityofpatras@gmail.com',
+                      to: cmail.EMAIL,
+                      subject: 'Ολοκλήρωση μέτρησης',
+                      text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η μέτρηση που ξεκίνησε στις " +  req.body.START_DATETIME + " ολοκληρώθηκε και καταχωρήθηκε με κωδικό " + greenhouse_measurement_id + " ."
+                    };
+                    
+                  if(mailOptions.to){
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                          console.log(error);
+                        } else {
+                          console.log('Email sent: ' + info.response);
+                        }
+                      }); 
+                  }
+                })}, 4000);
+              }
             }
-          });
-          }
+            })
         });
       });
     });
-  });
-  
 };
 
 let startNewMeasurement = async function(req,res){ 
