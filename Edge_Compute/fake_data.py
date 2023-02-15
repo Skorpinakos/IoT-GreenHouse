@@ -27,7 +27,9 @@ def make_measurement(dt,config_dict,moment,with_file):
 
     try:
         os.mkdir(path_to)
-    except:
+    except Exception as e:
+        print(e)
+        exit(1)
         pass
 
     json_dict={ "GREENHOUSE_ID": config_dict['id'],

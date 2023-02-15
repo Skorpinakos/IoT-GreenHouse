@@ -141,6 +141,8 @@ while True:
     #input("Press Enter to continue...")
     if(sim.make_move(dx)=="finished"):
         break
+print('manifesting metrics')
 make_measurement(dt,greenhouse_config,unix_time,False)
+print('metrics done')
     
 
