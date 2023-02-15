@@ -28,8 +28,8 @@ def make_measurement(dt,config_dict,moment,with_file):
     try:
         os.mkdir(path_to)
     except Exception as e:
-        print(e)
-        exit(1)
+        #print(e)
+        #exit(1)
         pass
 
     json_dict={ "GREENHOUSE_ID": config_dict['id'],
@@ -62,9 +62,10 @@ def make_measurement(dt,config_dict,moment,with_file):
                     shutil.copyfile(src,dst)
                     
             dt2=datetime.datetime.fromtimestamp(unix_time)
-            date,time=str(dt2).split(" ")
+            #date,time=str(dt2).split(" ")
             metrics=[unix_time-moment,random.randint(80,380)/10,random.randint(400,3000),random.randint(60,100)/100]
             json_dict['measurements'].append(metrics)
+    print("got to final step before creating json")
     with open("images/measurements/last_measurement.txt",'w',encoding='utf-8') as file:
         file.write(path_to.replace("images/measurements/",''))
     #print(json_dict)
