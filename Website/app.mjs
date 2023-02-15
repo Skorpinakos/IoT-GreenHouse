@@ -84,7 +84,7 @@ let giveRecentsPage = function(req,res){
           if (plant_rows[i].MEASUREMENT_PHOTO == 'null'){
             get_measurement_image(plant_rows[i].P_ID, plant_rows[i].PM_ID, plant_rows[i].IP, plant_rows[i].ROW, plant_rows[i].COLUMN);
           }
-            plant_rows[i].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[i].P_ID + '.png';
+            plant_rows[i].MEASUREMENT_PHOTO = 'images/measurements/' +  plant_rows[i].P_ID + '.png';
           plant_rows[i].HEALTH = (plant_rows[i].HEALTH.toFixed(2) * 100).toFixed(2) + '%'
         }
         for(let i in greenhouse_rows){
@@ -137,7 +137,7 @@ let givePlantPage = function(req,res){
             if (measurement_rows[0].MEASUREMENT_PHOTO == 'null'){
               get_measurement_image(plant_rows[0].ID, measurement_rows[0].ID, plant_rows[0].IP, plant_rows[0].ROW, plant_rows[0].COLUMN);
             }
-          measurement_rows[0].MEASUREMENT_PHOTO = 'images\\measurements\\' +  plant_rows[0].ID + '.png';
+          measurement_rows[0].MEASUREMENT_PHOTO = 'images/measurements/' +  plant_rows[0].ID + '.png';
           measurement_rows[0].HEALTH = (measurement_rows[0].HEALTH.toFixed(2) * 100).toFixed(2) + ' %'
           measurement_rows[0].GROWTH = measurement_rows[0].GROWTH + ' cm'
           measurement_rows[0].measurement_rows = measurement_rows[0].SIZE.toFixed(2) + ' cm'
@@ -206,7 +206,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                   rows_plants.push(all_plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
                 }
 
-                greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+                greenhouse_rows[0].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouse_rows[0].GREENHOUSE_PHOTO;
                 greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
                 greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
@@ -227,7 +227,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
                   }
                   rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
                 }
-                greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+                greenhouse_rows[0].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouse_rows[0].GREENHOUSE_PHOTO;
                 greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
                 greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
                 greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
@@ -250,7 +250,7 @@ model.getGreenhouseInfo(greenhouse_id, (err, greenhouse_rows) => {
             }
             rows_plants.push(plants.slice(i * greenhouse_rows[0].COLUMNS, (i+1) * greenhouse_rows[0].COLUMNS))
           }
-          greenhouse_rows[0].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouse_rows[0].GREENHOUSE_PHOTO;
+          greenhouse_rows[0].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouse_rows[0].GREENHOUSE_PHOTO;
           greenhouse_rows[0].COORDS_X = greenhouse_rows[0].COORDS_X.toFixed(5)
           greenhouse_rows[0].COORDS_Y = greenhouse_rows[0].COORDS_Y.toFixed(5)
           greenhouse_rows[0].WIDTH = greenhouse_rows[0].WIDTH.toFixed(2) + ' m'
@@ -270,7 +270,7 @@ let giveClientGreenhouses = function(req,res){
     for(let i = 0; i < greenhouses.length; i++){
       for(let j = 0; j < measurements.length; j++){
         if (greenhouses[i].ID == measurements[j].GREENHOUSE_ID){
-          greenhouses[i].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouses[i].GREENHOUSE_PHOTO;
+          greenhouses[i].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouses[i].GREENHOUSE_PHOTO;
           greenhouses[i].TEMPERATURE = measurements[j].TEMPERATURE.toFixed(2) + ' C'
           greenhouses[i].HUMIDITY = measurements[j].HUMIDITY.toFixed(2) + ' %'
           greenhouses[i].MEASUREMENT_DATE = measurements[j].MEASUREMENT_DATE;
@@ -279,7 +279,7 @@ let giveClientGreenhouses = function(req,res){
 
     }
     if(Object.keys(greenhouses[i]).length == 2){
-      greenhouses[i].GREENHOUSE_PHOTO = 'images\\greenhouses\\' + greenhouses[i].GREENHOUSE_PHOTO;
+      greenhouses[i].GREENHOUSE_PHOTO = 'images/greenhouses/' + greenhouses[i].GREENHOUSE_PHOTO;
       greenhouses[i].TEMPERATURE = '-';
       greenhouses[i].HUMIDITY = '-';
       greenhouses[i].MEASUREMENT_DATE = '-';
@@ -302,7 +302,7 @@ let addGreenhouse = function(req,res){
 };
 
 let storeNewMeasurement = function(req,res){ 
-  console.log('this is body:\n'+req.body);
+  console.log('this is test:\n'+req.body.TEMPERATURE);
   res.statusCode=200;
   res.send("Received package.");
   model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
@@ -426,8 +426,8 @@ let get_measurement_image = async function savePhotoFromAPI(p_id, m_id, ip, r, c
 
     //const fileType = await fileType.fromBuffer(buffer);
     if (1) {
-        const dir = path.resolve() + '\\public\\'
-        const outputFileName = 'images\\measurements\\' +  p_id + '.png';
+        const dir = path.resolve() + '/public/'
+        const outputFileName = 'images/measurements/' +  p_id + '.png';
         fs.createWriteStream(dir + outputFileName).write(buffer);
         model.updateMeasurementPhoto(m_id, ['MEASUREMENT_PHOTO'], [outputFileName])
     } else {
