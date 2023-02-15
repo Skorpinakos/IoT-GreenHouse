@@ -68,7 +68,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
       ```
       npm install
       ```
-      If installation hangs downgrade to npm v6 (this is a known npm problem https://stackoverflow.com/questions/66893199/hanging-stuck-reifyprettier-timing-reifynodenode-modules-nrwl-workspace-comp)
+      (If installation hangs this is a known npm problem https://stackoverflow.com/questions/66893199/hanging-stuck-reifyprettier-timing-reifynodenode-modules-nrwl-workspace-comp)
 4) In a terminal 
    + cd into the Edge_Compute directory
    + Start greenhouse device service (on port 3000) by running
