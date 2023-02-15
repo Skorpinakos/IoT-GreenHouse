@@ -362,11 +362,13 @@ let storeNewMeasurement = function(req,res){
             let leaf_density = (req.body.measurements[i][2] / max_leaf_density).toFixed(2);
 
             plant_measurement.push(id, plant_id, measurement_date, measurement_time, size, growth, health, leaf_density, 'null');
-            console.log(plant_measurement);
+            #console.log(plant_measurement);
             model.storePlantMeasurement(plant_measurement,(err) => {
               if (err){
-                console.log(err.message);
+                console.log("hi\n"+err.message);
               }; 
+              console.log("its ok\n");
+              console.log(plant_measurement.ID);
             });
           
             if (i == req.body.measurements.length - 1){
