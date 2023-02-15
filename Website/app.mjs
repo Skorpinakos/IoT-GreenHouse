@@ -302,6 +302,7 @@ let addGreenhouse = function(req,res){
 };
 
 let storeNewMeasurement = function(req,res){ 
+  console.log('this is body:\n'+req.body);
   res.statusCode=200;
   res.send("Received package.");
   model.getLastGreenhouseMeasurementId((err, last_greenhouse_measurement) => { 
