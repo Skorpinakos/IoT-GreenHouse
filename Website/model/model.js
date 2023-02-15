@@ -223,7 +223,7 @@ export const storePlantMeasurement = (info,callback) => {
     let db = new sqlite3.Database(db_name);
     db.run(sql, info, (err) => {
     if (err) {
-        console.log("from model:\n"+err);
+        console.log("id:"+info.id+"\nfrom model:\n"+err);
         db.close();
         callback(err, null);
         
