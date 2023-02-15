@@ -339,7 +339,9 @@ let storeNewMeasurement = function(req,res){
             let size = req.body.measurements[i][1];
             let growth = 0;
             let measurement_datetime = new Date(measurement_start_datetime.getTime() + (req.body.measurements[i][0] *  1000))
+            console.log(measurement_datetime);
             let measurement_date = measurement_datetime.toLocaleDateString().split('/').reverse();
+            console.log(measurement_date);
             let measurement_time = measurement_datetime.toLocaleTimeString().split(' ')[0].split(':');
             for (let i = 0; i < 3; i++){
               if(measurement_time[i].length==1){ 
@@ -360,6 +362,7 @@ let storeNewMeasurement = function(req,res){
             let leaf_density = (req.body.measurements[i][2] / max_leaf_density).toFixed(2);
 
             plant_measurement.push(id, plant_id, measurement_date, measurement_time, size, growth, health, leaf_density, 'null');
+            console.log(plant_measurement);
             model.storePlantMeasurement(plant_measurement,(err) => {
               if (err){
                 console.log(err.message);
