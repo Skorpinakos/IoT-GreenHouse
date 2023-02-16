@@ -337,11 +337,18 @@ let storeNewMeasurement = function(req,res){
           }; 
           const last_measurement_id = last_plant_measurement[0].ID;
           const measurement_start_datetime = new Date(seperated_measurement_date[0],parseInt(seperated_measurement_date[1])-1,seperated_measurement_date[2],seperated_measurement_time[0],seperated_measurement_time[1],seperated_measurement_time[2]);
+          let unhealthy_plants = 0;
+          let average_health = 0;
           for (let i = 0; i < req.body.measurements.length; i++){
-
+            let plant_health = req.body.measurements[i][3]
+            average_health += plant_health;
+            if (plant_health < 0.6){
+              unhealthy_plants += 1;
+            }
             setTimeout(() => {model.storePlantMeasurement(i, last_measurement_id, first_greenhouse_plant, measurement_start_datetime, req.body.measurements[i][0], req.body.measurements[i][1], req.body.measurements[i][2], req.body.measurements[i][3])},50*i);
           
             if (i == req.body.measurements.length - 1){
+              average_health = (average_health / (first_greenhouse_plant[0].ROWS * first_greenhouse_plant[0].COLUMNS)).toFixed(2)
               setTimeout(() => {
                 let topic = 'GreenhouseMonitor' + req.body.GREENHOUSE_ID;
                 let message = 'The measurement that started on ' + req.body.START_DATETIME + ' has finished and has been stored successfully with ID ' + greenhouse_measurement_id + '.';
@@ -349,12 +356,11 @@ let storeNewMeasurement = function(req,res){
                   client.publish(topic, message);
                   }
                   model.getClientEmail(req.body.GREENHOUSE_ID, (err, cmail) =>{
-                    console.log(cmail)
                     let mailOptions = {
                       from: 'unireportuniversityofpatras@gmail.com',
                       to: cmail.EMAIL,
                       subject: 'Ολοκλήρωση μέτρησης',
-                      text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η μέτρηση που ξεκίνησε στις " +  req.body.START_DATETIME + " ολοκληρώθηκε και καταχωρήθηκε με κωδικό " + greenhouse_measurement_id + " ."
+                      text: "Αυτή η απάντηση είναι αυτοματοποιημένη. Η μέτρηση που ξεκίνησε στις " +  req.body.START_DATETIME + " ολοκληρώθηκε και καταχωρήθηκε με κωδικό " + greenhouse_measurement_id + " ." + "Βρέθηκαν " + unhealthy_plants + " μη υγιή φυτά και ο μέσος όρος υγείας του θερμοκηπίου είναι " + average_health + " ." 
                     };
                     
                   if(mailOptions.to){

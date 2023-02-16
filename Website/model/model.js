@@ -146,7 +146,7 @@ export const getGreenhouseMeasurementInfo = (id, callback) => {
 
 export const getGreenhousePlantsWithInfo = (id, callback) => {
 
-    let sql='SELECT P.ID, ROWS, COLUMNS, ROW, COLUMN, HEALTH, SIZE FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME ASC;';
+    let sql='SELECT P.ID, ROWS, COLUMNS, ROW, COLUMN, HEALTH, SIZE FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) JOIN PLANT_MEASUREMENT ON P.ID = PLANT_ID  WHERE GREENHOUSE_ID = ? GROUP BY P. ID ORDER BY ROW ASC, COLUMN ASC, MEASUREMENT_DATE DESC, MEASUREMENT_TIME DESC;';
     const db = new sqlite3.Database(db_name);
     db.all(sql, [id], (err, rows) => {
     if (err) {
@@ -290,7 +290,7 @@ export const getLastPlantMeasurementId = (callback) => {
 
 export const getFirstGreenhousePlantId = (greenhouse_id, callback) => {
 
-    let sql="SELECT P.ID FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) WHERE G.ID = ? ORDER BY P.ID ASC LIMIT 1";
+    let sql="SELECT P.ID, G.ROWS, G.COLUMNS FROM (PLANT AS P JOIN GREENHOUSE AS G ON GREENHOUSE_ID = G.ID) WHERE G.ID = ? ORDER BY P.ID ASC LIMIT 1";
     console.log(greenhouse_id)
     const db = new sqlite3.Database(db_name);
     db.all(sql, [greenhouse_id], (err, rows) => {
