@@ -11,7 +11,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - express-handlebar (6.0.6) [Will be removed]
     - file-type (18.0.0)
     - fs (0.0.1-security)
-    - node-fetch (3.3.0)
+    - node-fetch (3.3.0) [Will be removed]
     
   + Python (3.10.4)
     - json
@@ -21,10 +21,10 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - shutil
     - time
     - sys
-    - opencv-python
-    - numpy
-    - matplotlib
-    - scikit-learn
+    - cv2 (non-included, install with "pip install opencv-python")
+    - numpy (non-included, install with "pip install numpy")
+    - matplotlib (non-included, install with "pip install matplotlib")
+    - sklearn (non-included, install with "pip install scikit-learn")
     - math
     
     
@@ -50,7 +50,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
     - fs (0.0.1-security)
     - mqtt (4.3.7)
     - multer (1.4.4-lts.1)
-    - node-fetch (3.3.0)
+    - node-fetch (3.3.0) [Will be removed]
     - nodemailer (6.7.5)
     - nodemon (2.0.3)
     - path (0.12.7)
@@ -59,8 +59,8 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
 
 ## Installation and setup
 
-1) Clone the repo
-2) Install node.js (https://nodejs.org/en/download/)
+1) Clone the repo from "https://github.com/Skorpinakos/IoT-2022" or export the "GitHub-Repo.zip" 
+2) Install node.js (https://nodejs.org/en/download/) version (18.12.1) and Python version (3.10.4)
 3) To install the dependencies 
    + cd into the Website directory
    + Run
@@ -68,7 +68,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
       ```
       npm install
       ```
-      (If installation hangs this is a known npm problem https://stackoverflow.com/questions/66893199/hanging-stuck-reifyprettier-timing-reifynodenode-modules-nrwl-workspace-comp)
+      (If installation hangs this is a known npm problem https://stackoverflow.com/questions/66893199/hanging-stuck-reifyprettier-timing-reifynodenode-modules-nrwl-workspace-comp we suggest re-trying a few times and giving it some time. This bug has nothing to do with our project and appears since npm version 7.0.0)
 4) In a terminal 
    + cd into the Edge_Compute directory
    + Start greenhouse device service (on port 3000) by running
@@ -83,7 +83,7 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
       ```
       npm run watch
       ```
-6) Open your browser (on port 4000) and login with the following credentials
+6) Open your browser on port 4000 (http://localhost:4000/) and login with the following credentials
 
   + Username: SpanokhristodoulouErato911
   + Password: 1234
