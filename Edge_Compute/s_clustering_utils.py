@@ -8,7 +8,7 @@ def check_cluster_multitudes(test_cases,edge_point_list):
     #print(edge_point_list)
     wcss = []
     for i in test_cases:
-        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=60, n_init=1, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
+        kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=120, n_init=5, random_state=0)  #increase max_iter and n_init for more accurate error results for elbow graph and elbow finding, decrease for faster 'find errors for test cases' time
         #print(edge_point_list)
         kmeans.fit(edge_point_list)
         wcss.append(kmeans.inertia_)
@@ -34,7 +34,7 @@ def find_elbow(wcss,test_cases):
     return n
 
 def find_centroids(edge_point_list,n):
-    kmeans = KMeans(n_clusters=n, init='k-means++', max_iter=60, n_init=1, random_state=0) #increase max_iter and n_init for better clustering , decrease for faster 'find final centroids' time
+    kmeans = KMeans(n_clusters=n, init='k-means++', max_iter=150, n_init=8, random_state=0) #increase max_iter and n_init for better clustering , decrease for faster 'find final centroids' time
     kmeans.fit(edge_point_list)
     #print(kmeans.cluster_centers_)
 
