@@ -67,7 +67,7 @@ while True:
         print("scan finished!")
         break
 
-    lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,sim.config,diagnostics_mode='none')
+    lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,sim.config,diagnostics_mode='full')
     #returns sorted "y dimension" list of lines (floats)
     #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
     #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
@@ -95,7 +95,7 @@ while True:
         signal_history=list(map(float,list(map(str,signal_history))))
         signal_history_file.close()
         #max_deviation=40
-        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="none")
+        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="full")
         position_new=total_lines-len(lines_y)
         if position_new<position:
             position=position

@@ -74,11 +74,12 @@ def detect_cutt_offs(weight_image,diagnostics_mode):
     ####IMPORTANT following algorithm has to be the same used in mapper.py where it detects position#######################################################
     high_noise_thres=int(40*len(signal)/1000)
     #print(high_noise_thres)
-    #plt.plot(signal)
-    #plt.title('vertical scan signal')
-    #plt.xlabel('line')
-    #plt.ylabel('intensity')
-    #plt.show()
+    if 'full' in diagnostics_mode:
+        plt.plot(signal)
+        plt.title('vertical scan signal')
+        plt.xlabel('line')
+        plt.ylabel('intensity')
+        plt.show()
 
         ## Compute Fourier Transform
     n = len(signal)
