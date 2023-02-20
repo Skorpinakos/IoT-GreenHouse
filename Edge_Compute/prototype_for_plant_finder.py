@@ -119,7 +119,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
 f = open('greenhouse_config.json')
 config_dict = json.load(f)
-lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,config_dict,"full")
+#lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,config_dict,"full")
 #print(lines_y)
 #print(lines)
 #print(centroids)
