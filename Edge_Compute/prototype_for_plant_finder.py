@@ -8,7 +8,7 @@ from image_utils import detect_edges,edge_image_to_edge_points_np_list,detect_th
 
 path="images/"
 out_path="diagnostics/"
-filename='Capture1.png' #set image to test
+filename='Capture1_b.png' #set image to test
 
 def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(config)
@@ -22,7 +22,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     t2=time.time()
     edge_point_list_good=edge_image_to_edge_points_np_list(edge_image_good,y1,y2)
     edge_point_list_simple=edge_image_to_edge_points_np_list(edge_image_simple,y1,y2) #takes filtered image and returns a list of all the white pixels (so any coordinate where part of an edge is present)
-    test_cases=range((lines-1)*column_multitude,(lines+1)*column_multitude) #set the possible cases for plant multitude (the algorithm will check for each number and find the best match, use as smaller range as possible and preferably weighted to the left to improve performance)
+    test_cases=range(max(4,int((lines-1.5)*column_multitude)),int((lines+1.5)*column_multitude)) #set the possible cases for plant multitude (the algorithm will check for each number and find the best match, use as smaller range as possible and preferably weighted to the left to improve performance)
     t3=time.time()
     wcss=check_cluster_multitudes(test_cases,edge_point_list_simple) #gets error list from trying all possible test cases
     if diagnostics_mode=='full' or 'elbow' in diagnostics_mode:
@@ -119,7 +119,7 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
 f = open('greenhouse_config.json')
 config_dict = json.load(f)
-#lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,config_dict,"final")
+lines_y,lines,centroids,signal,y1=process_image(filename,path,out_path,config_dict,"full")
 #print(lines_y)
 #print(lines)
 #print(centroids)

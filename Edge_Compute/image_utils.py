@@ -134,6 +134,14 @@ def detect_cutt_offs(weight_image,diagnostics_mode):
 
     #existance=np.sign(normalized_signal)
     zero_crossings = list(np.where(np.diff(np.sign(normalized_signal)))[0])
+    
+
+    #fix for fft smoothing edge bug
+    size=len(normalized_signal)
+    if zero_crossings[0]<=(3/100)*size:
+        zero_crossings=zero_crossings[1:]
+    if zero_crossings[-1]>=(97/100)*size:
+        zero_crossings=zero_crossings[0:-1]
     diffs=np.diff(normalized_signal)
     #print(zero_crossings)
     if diffs[zero_crossings[0]]>0:
