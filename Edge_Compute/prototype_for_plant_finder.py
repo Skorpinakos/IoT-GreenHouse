@@ -1,14 +1,20 @@
 
-
+### imports
 import time
-import json
-
 from s_clustering_utils import check_cluster_multitudes,find_elbow,find_centroids,plot_cluster_graph,plot_image_with_centers_lines,find_lines
 from image_utils import detect_edges,edge_image_to_edge_points_np_list,detect_thres,detect_cutt_offs
+###
 
-path="images/"
-out_path="diagnostics/"
-filename='Capture1_b.png' #set image to test
+### packeting class
+class Packet_of_Processing_Results():
+    def __innit__(self,lines_y,lines,centroids,signal,y1,y2):
+        self.lines_y=lines_y
+        self.lines=lines
+        self.centroids=centroids
+        self.signal=signal
+        self.y1=y1
+        self.y2=y2
+###
 
 def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(config)
@@ -108,18 +114,10 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
     #print(lines)
 
 
-    return sorted(list(lines.keys())),lines,centroids,signal,y1,y2
+    return Packet_of_Processing_Results(sorted(list(lines.keys())),lines,centroids,signal,y1,y2)
 
 #returns sorted "y dimension" list of lines (floats)
 #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
 #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
 #returns signal from cropping process
 #returns top cropping height
-
-
-f = open('greenhouse_config.json')
-config_dict = json.load(f)
-#lines_y,lines,centroids,signal,y1,y2=process_image(filename,path,out_path,config_dict,"full")
-#print(lines_y)
-#print(lines)
-#print(centroids)

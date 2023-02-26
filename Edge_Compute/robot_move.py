@@ -93,7 +93,7 @@ while True:
     ###
 
     ### Processing of current photo
-    lines_y,lines,centroids,signal,y1,y2=process_image(filename,images_path ,diagnostics_path ,Sim.config,diagnostics_mode='none')
+    results=process_image(filename,images_path ,diagnostics_path ,Sim.config,diagnostics_mode='none')
     #returns sorted "y dimension" list of lines (floats)
     #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
     #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
@@ -107,7 +107,7 @@ while True:
     if step==1:
         position=0
         clear_signal_file()
-        write_signal_to_signal_file(signal)
+        write_signal_to_signal_file(results.signal)
     
     ###
 
@@ -118,11 +118,11 @@ while True:
         ###
 
         ### Attach new-found signal to signal-history and Calculate the amount of individual lines we have encountered
-        total_signal,total_lines=figure_out_position(signal_history,signal,y1,y2,diagnostics="none")
+        total_signal,total_lines=figure_out_position(signal_history,results.signal,results.y1,results.y2,diagnostics="none")
         ###
 
         ###This is cheap fix for current image processing based bugs where new position ends up smaller than old one (propably the fft smoothing bug)
-        position_new=total_lines-len(lines_y)
+        position_new=total_lines-len(results.lines_y)
         if position_new<position:
             position=position
         else:
@@ -138,19 +138,19 @@ while True:
 
     ### report to stdout 
     print("position : ",position)
-    print("lines in sight",len(lines_y))
+    print("lines in sight",len(results.lines_y))
     ###
 
     ### Store plant images in correct folders
-    for i,line in enumerate(lines_y):
-        centers=lines[line].copy() #for a given line (a float representing the height of the line) in lines_y get the list of corresponding centers from the "lines" dict where e.g. "134.72" yields a list of 2 element lists representing corresponding centers in that line in [y_int,x_int] format
+    for i,line in enumerate(results.lines_y):
+        centers=results.lines[line].copy() #for a given line (a float representing the height of the line) in results.lines_y get the list of corresponding centers from the "lines" dict where e.g. "134.72" yields a list of 2 element lists representing corresponding centers in that line in [y_int,x_int] format
         centers.sort(key=lambda center: center[1], reverse=False) #sort centers based on their second element (their x dimension)
         #centers=[[y1,x1],[y2,x2]....]
         row=i+position #use our position (offset) and our local row index to add up to the real row number
         if len(centers)!=greenhouse_config['columns']: #fix for when image processing finds more (or less) plants in one row than expected, discards whole row snapshot instead of storing it
             continue
         for column,center in enumerate(centers):
-            save_center(row,column,center,centroids[tuple(center)],images_path ,filename,path_to )
+            save_center(row,column,center,results.centroids[tuple(center)],images_path ,filename,path_to )
             # row-> integre, column->integer, center->[y,x] where y,x integers, centroids -> dict where (center_y,center_x) yields a list like [[y1,x1],[y2,x2]...] reprsanting all corresponding detected pixels of the plant implied by that center
             # paths -> self explanatory
 
@@ -159,8 +159,9 @@ while True:
     print("FINISHED STEP:",step)
     if(Sim.make_move(dx)=="finished"):
         break
+    ###
 
-### Make mock metrics 
+### Make mock metrics after run
 print('manifesting metrics')
 make_measurement(dt,greenhouse_config,unix_time,False)
 print('metrics done')
