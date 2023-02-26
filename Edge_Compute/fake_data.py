@@ -65,10 +65,10 @@ def make_measurement(dt,config_dict,moment,with_file):
             #date,time=str(dt2).split(" ")
             metrics=[unix_time-moment,random.randint(80,380)/10,random.randint(400,3000),random.randint(60,100)/100]
             json_dict['measurements'].append(metrics)
-    print("got to final step before creating json")
+    #print("got to final step before creating json")
     with open("images/measurements/last_measurement.txt",'w',encoding='utf-8') as file:
         file.write(path_to.replace("images/measurements/",''))
-    print(json_dict)
+    #print(json_dict)
     json_object= json.dumps(json_dict,indent=4)
     with open("{}/data.json".format(path_to), "w") as outfile:
         outfile.write(json_object)

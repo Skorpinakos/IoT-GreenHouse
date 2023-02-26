@@ -32,7 +32,9 @@ def decrease_brightness(img, value=70):
 
 
 class Simulation:
-    def __init__(self,view,camera_dimensions):
+    def __init__(self,view,camera_dimensions,directory_images,directory_diagnostics):
+        self.directory_images=directory_images
+        self.directory_diagnostics=directory_diagnostics
         self.view_path=view
         self.view=cv2.imread(self.view_path)
         self.pos=0
@@ -61,22 +63,17 @@ class Simulation:
         img3=decrease_brightness(img3)
         birds_view=np.vstack((img1,img2,img3))
         
-        cv2.imwrite("diagnostics/birds_eye_view.png",birds_view)
+        cv2.imwrite(self.directory_diagnostics+"birds_eye_view.png",birds_view)
 
     def take_photo(self):
-        #print(self.pos,self.cam_height,self.cam_width)
         try:
             self.cropped_image = self.view[self.pos:(self.pos+self.cam_height),0:self.cam_width]
         except:
             return False
-        cv2.imwrite("images/temp_img_taken.png",self.cropped_image)
-        #print(type(self.cropped_image))
-        #cv2.imshow("photo",self.cropped_image)
-        #cv2.waitKey()
-        #print(cropped_image)
+        cv2.imwrite(self.directory_images+"temp_img_taken.png",self.cropped_image)
         
         
-        return "images/","temp_img_taken.png"
+        return self.directory_images,"temp_img_taken.png"
 
 
 
