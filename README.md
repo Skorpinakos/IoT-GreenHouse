@@ -1,3 +1,4 @@
+
 # Greenhouse Monitor (IoT project)
 A greenhouse digital twin project using unsupervised machine learning for image processing complete with IoT, Cloud, Website and Hardware infrastructure, working on RPI4's.
 Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
@@ -70,6 +71,10 @@ Developed by Ioannis Tsampras and Stavros Kanias (Patra, 2023).
       ```
       (If installation hangs this is a known npm problem https://stackoverflow.com/questions/66893199/hanging-stuck-reifyprettier-timing-reifynodenode-modules-nrwl-workspace-comp we suggest re-trying a few times and giving it some time. This bug has nothing to do with our project and appears since npm version 7.0.0)
 4) In a terminal 
+
+https://user-images.githubusercontent.com/82767099/222234645-dc5e18da-7a0e-4793-8653-fe6160680893.mp4
+
+
    + cd into the Edge_Compute directory
    + Start greenhouse device service (on port 3000) by running
 
