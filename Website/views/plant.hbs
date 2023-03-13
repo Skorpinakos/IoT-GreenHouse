@@ -1,0 +1,128 @@
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+
+<div class="container-fluid">   
+
+    <div class="row mt-4 mb-2" >
+        <div class = "col-2"></div>
+        <div class="col-8"> 
+            {{#with plant_info}}
+            <div class="row recent rounded">
+                <div class="row rounded mb-3">
+                    <h4 class='text-center   my-3'>Plant Info</h4>
+                </div>
+                <div class="row text-center">  
+                    <div class="col-4"> 
+                    <p id="plant_id" class='plant_id'>ID : {{ID}}</p>
+                    <a style = "text-decoration: none" href="/greenhouse?ID={{GREENHOUSE_ID}}">Greenhouse : {{GREENHOUSE_ID}}</a>
+                    </div>
+                    <div class="col-4"> 
+                    <p class='type'>Type : {{TYPE}}</p>
+                    <p class='lifespan'>Lifespan : {{LIFESPAN}}</p>
+                    </div>
+                    <div class="col-4"> 
+                    <p class='x'>Row : {{ROW}}</p>
+                    <p class='y'>Column : {{COLUMN}}</p>
+                    </div>
+              </div>
+            <div class="row">
+                    <div class = "col-1"></div>
+                    <div class = "col-10">
+                    {{/with}}
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                             <th scope="col"></th>
+                            {{#each rows_plants.[0]}}
+                              <th scope="col">{{@index}}</th>
+                            {{/each}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each rows_plants}}
+                              <tr> 
+                                  <th scope="row">{{@index}}</th>
+                                  {{#each this}}
+                                    {{#if ID}}
+                                        {{#if current_plant}}
+                                        <td class="current_plant" style="text-align: center;">{{CELL_VALUE}}</td>
+                                        {{else}}
+                                            <td class = "plant_with_data" style="text-align: center;"><a style = "text-decoration: none" href="/plant?ID={{ID}}">{{CELL_VALUE}}</a></td>
+                                        {{/if}}
+                                    {{else}}
+                                        <td class = "plant_without_data" style="text-align: center;"><p>{{CELL_VALUE}}</p></td>
+
+                                    {{/if}}
+                                    
+                                  {{/each}}
+                              </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    </div>
+                    {{#with rows_plants.[0].[0]}}
+                        <script src="scripts/create_health_heatmap.js" rows="{{ROWS}}" columns="{{COLUMNS}}"></script>
+                    {{/with}}
+                    <div class = "col-1"></div>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+  {{#with measurement_info}}
+    <div class="row my-2" >
+        <div class = "col-2"></div>
+        <div class="col-8"> 
+            <div class="row recent rounded">
+                <div class="row">
+                    <h4 class='text-center my-2'>Last Measurement</h4>
+                </div>
+                <div class="row">
+                    <div id="pop-up message" class="col-8 text-center offset-2 my-2"></div>
+                </div>
+                <div class="row mt-1 mb-3">
+                    <div class="col-4 text-end">
+                        <p class='greenhouse_id'>ID : {{ID}}</p>
+                        <p class='health'>Health : {{HEALTH}}</p>
+                    </div>
+                    <div class="col-4 text-center"> 
+                        <p class='measurement_date'>Date : {{MEASUREMENT_DATE}}</p>
+                        <p class='measurement_time'>Time : {{MEASUREMENT_TIME}}</p>
+                    </div>
+                    <div class="col-4 text-start"> 
+                        <p class='size'>Size : {{SIZE}}</p>
+                        <p class='leaf_density'>Leaf Density : {{LEAF_DENSITY}}</p>
+                    </div>
+                    
+
+                </div>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8"> 
+                        <img class='plant_measurement_image rounded' src={{MEASUREMENT_PHOTO}}>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div>
+
+            <div class="row recent rounded my-2">
+                <div class="row">
+                    <h4 class='text-center mt-3'>Statistics</h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div id="stat_plot" class="col-8 stat_plot d-flex justify-content-center"> 
+                        <script src="scripts/plot_stats.js"></script>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div>
+            {{/with}}
+        </div>
+    </div>
+    {{#with plant_info}}
+        <script src="scripts/mqtt_reload.js" greenhouse_id="{{GREENHOUSE_ID}}"></script>
+    {{/with}}  
+    </div>
+</div>

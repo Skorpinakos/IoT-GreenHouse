@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title style="font-weight: bold;">Greenhouse Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+
+
+  <div class="mt-2 p-3">
+    <div class="container text-center">
+      <h1 class = "display-3">Greenhouse Monitor</h1>      
+      <p class="fs-4">The IoT Solution for Farmers</p>
+    </div>
+  </div>
+  <nav class="navbar nav navbar-expand-lg navbar-custom rounded">
+    {{#if loged}}
+    <div class="container-fluid">
+      <div class="d-flex justify-content-start">
+          <img class="rounded" src="images/logo.png" width="150" height="50">
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/">Recents</a>
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/greenhouses">Greenhouses</a>
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/add_greenhouse">Add Greenhouse</a>
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/logout">Logout</a>
+      </div>
+      <div class="d-flex justify-content-end">
+        <form class="d-flex" method="GET" action='/search'>
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="input_text">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+      {{else}}
+          <div class="container-fluid">
+      <div class="d-flex justify-content-start">
+          <img class="rounded" src="images/logo.png" width="150" height="50">
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/">Recents</a>
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/greenhouses">Greenhouses</a>
+      </div>
+      <div class="d-flex justify-content-center">
+        <a class="nav-item nav-link text-primary" href="/add_greenhouse">Add Greenhouse</a>
+      </div>
+      <div class="d-flex justify-content-end">
+        <form class="d-flex" method="GET" action='/search'>
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="input_text">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+      {{/if}} 
+    </div>
+  </nav>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+{{{body}}}
+</body>
+
+<footer class="text-center mt-auto footer-custom">
+    <ul class="list-unstyled text-center">
+    <li>Technical Support</li>
+    <li>ioannis.tsampras@upnet.gr | up1066563@upnet.gr</li>
+    </ul>
+</footer>
+
+</html>

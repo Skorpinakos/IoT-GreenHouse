@@ -1,0 +1,102 @@
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+
+    <div class="container-fluid">
+
+        <h1 class = 'd-flex justify-content-center my-4'><strong> New Greenhouse Info</strong></h1>
+
+        <div class="row">
+        <div class="col-3"> </div>
+        <div class="col-6"> 
+        <div class="d-flex justify-content-center mt-3 mb-3">
+          <img class='facility_map rounded img-fluid' src="images/farmland.jpg"></img>
+        </div>
+      </div>
+        </div>
+
+    <div class="row">
+        <div class="col-2 my-3"></div>
+
+        <div class="col-8 my-3">
+            <form method="POST" action="/report_complete" enctype="multipart/form-data">
+            {{#with error}}
+                <p class="fst-italic">{{message}}</p>
+                <p class="fst-italic">{{e_type}}</p>
+            {{/with}}
+
+                <h3 class="my-1">Location</h3>
+                <div class="row">
+                    <em class="mb-1"> Insert precise location by clicking on the map above.</em>
+                    <div class="col-6 my-2" hidden>
+                        <label for="coords"> Δυτικά </label>
+                        <input type="text" class="form-control" size="30"  id="West" name="West" placeholder="" required>
+                    </div>
+                    <div class="col-6 my-2" hidden>
+                        <label for="coords"> Βόρεια </label>
+                        <input type="text" class="form-control" size="30"  id="North" name="North" placeholder="" required>
+                    </div>
+
+                    <div class="col-12 my-2">
+                        <select class="form-control" id = "building" name="building" required>
+                            {{#each buildings}}
+                                <option value="{{{name}}}"> {{name}} </option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="my-2"> Structure </h3>
+                    <div class="row">
+                        <div class="col-6 my-2">
+                            <legend for="height"> Width </legend>
+                            <input class="form-control"size="30" id="height" name="height" placeholder="" required>
+                        </div>
+                        <div class="col-6 my-2">
+                            <legend for="length"> Length </legend>
+                            <input class="form-control"size="30" id="length" name="length" placeholder="" required>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-6 my-2">
+                            <legend for="Rows"> Rows </legend>
+                            <input class="form-control"size="30" id="rows" name="rows" placeholder="" required>
+                        </div>
+                        <div class="col-6 my-2">
+                            <legend for="columns"> Columns </legend>
+                            <input class="form-control"size="30" id="columns" name="columns" placeholder="" required>
+                        </div>
+                    </div>
+
+
+                <h3 class="my-2"> Network </h3>
+                    <div class="row">
+                        <div class="col-6 my-2">
+                            <legend for="ip"> IP </legend>
+                            <input class="form-control" size="30" id="ip" name="ip" placeholder="" required>
+                        </div>
+                    </div>
+
+                <h3 class="my-2"> Details </h3>
+                    <div class="row my-2">
+                        <textarea rows="10" class="form-control" type="text" size="200" id="description" name="description" placeholder="" required></textarea>
+                    </div>
+                
+                <div class="row my-4">
+                    <div class="col-11">
+                        <legend>Select Image File</legend>
+                        <input type="file" name="image" required>
+                    </div>
+
+                    <div class="col-1 mt-4">
+                        <button type="submit" class="btn btn-primary"> Add </button>
+                    </div>
+                </div>           
+            </form>
+        </div>
+
+        <div class="col-2 my-3"></div>
+
+    </div>
+
+
+

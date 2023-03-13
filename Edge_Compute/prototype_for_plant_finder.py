@@ -7,7 +7,7 @@ from image_utils import detect_edges,edge_image_to_edge_points_np_list,detect_th
 
 ### packeting class
 class Packet_of_Processing_Results():
-    def __innit__(self,lines_y,lines,centroids,signal,y1,y2):
+    def __init__(self,lines_y,lines,centroids,signal,y1,y2):
         self.lines_y=lines_y
         self.lines=lines
         self.centroids=centroids
