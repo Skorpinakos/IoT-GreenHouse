@@ -1,4 +1,0 @@
-motor driver L298N board
-dev board raspberry pi 4 B+ 4GB
-motor https://www.sparkfun.com/products/13258
-battery for dev board https://www.amazon.eg/-/en/Xiaomi-20000mAh-2C-charger-charging/dp/B01FJBMBCY
