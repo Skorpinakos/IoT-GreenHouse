@@ -1,0 +1,3 @@
+got docker-compose.yml from https://github.com/FIWARE/context.Orion-LD/blob/develop/doc/manuals-ld/installation-guide-docker.md or https://hub.docker.com/r/fiware/orion-ld
+run with "docker compose up" (it will automatically pull versions specified in file, no need to pull them seperately)
+context broker will be exposed at localhost:1026

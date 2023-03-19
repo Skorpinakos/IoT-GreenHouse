@@ -8,7 +8,7 @@ for registering:
 here https://github.com/smart-data-models/dataModel.Device/blob/master/Device/doc/spec.md
 example at: Device NGSI-LD key-values Example
 
-for launching broker locally:
+for launching broker locally: ###DONE
 https://hub.docker.com/r/fiware/orion-ld
 
 good reference: https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.06.01_60/gs_CIM009v010601p.pdf
