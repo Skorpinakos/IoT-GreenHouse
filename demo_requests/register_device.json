@@ -7,9 +7,10 @@
     "controlledProperty": [  
         "humidity",  
         "temperature",
-        "light"
+        "light",
+        "carbon-dioxide"
     ],
-    "value": "H68.1T24.7L95.7",  
+    "value": "H68.1T24.7L95.7C23.7",  
     "@context": [  
         "https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/context.jsonld"  
     ]  
