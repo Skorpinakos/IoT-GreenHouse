@@ -1,2 +1,3 @@
 found this guide https://github.com/FIWARE/context.Orion-LD/blob/develop/doc/manuals-ld/quick-start-guide.md
 BE CAREFULL here https://github.com/FIWARE/context.Orion-LD/blob/develop/doc/manuals-ld/quick-start-guide.md at "Retrieval of Entities" you need to use the full name when working with SDM (instead of Device use https://smartdatamodels.org/dataModel.Device/Device)
+found this to clear confusion between IoT Core and greengrass in AWS https://repost.aws/questions/QUIjM4EmPWQiGjkniBJ19CdA/greengrass-vs-io-t-core
