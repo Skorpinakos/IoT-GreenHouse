@@ -12,25 +12,34 @@ var CronJob = cron.CronJob;
 
 
 
-let inform_db = async function(datetime){
+let inform_broker = async function(datetime){
 
   let rawdata = fs.readFileSync('greenhouse_config.json');
   let greenhouse_config = JSON.parse(rawdata);
 
-  rawdata = fs.readFileSync('images/measurements/measurement_at_'+datetime+'/data.json');
-  let data_to_send = JSON.parse(rawdata);
+  
+  
 
   try{
-    await fetch(greenhouse_config['server_url']+'/store_new_measurement', {
-    method: 'POST',
+    let entity_id=greenhouse_config['id']
+    rawdata = fs.readFileSync('images/measurements/measurement_at_'+datetime+'/data.json');
+    let json_from_measurement = JSON.parse(rawdata);
+    let temperature =json_from_measurement["TEMPERATURE"];
+    let humidity=json_from_measurement["HUMIDITY"];
+    let co2=json_from_measurement["CO2"];
+    let light=json_from_measurement["SUNLIGHT"];
+    let data_to_send = {"value":"H"+humidity+"T"+temperature+"L"+light+"C"+co2,    "@context": ["https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/context.jsonld"]  };
+    console.log(data_to_send);
+    await fetch(greenhouse_config['server_url']+'/ngsi-ld/v1/entities/'+entity_id+'/attrs/', {
+    method: 'PATCH',
     body: JSON.stringify(data_to_send),
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/ld+json' }
     });
        
-    console.log('Posted the data.json from measurement at '+datetime);
+    console.log('Posted the greenhouse data from measurement at '+datetime);
   }catch (error) {
     console.log("Failed to post back the results to main database! Main server is propably offline !");
-    //console.log(error);
+    console.log(error);
 
   }
 }
@@ -135,7 +144,7 @@ let start_greenhouse_measurement = function(){
             return console.error(failure);
           }
           // measurement has finished, have to inform the db with fetch api 
-          inform_db(datetime);
+          inform_broker(datetime);
         });
       });
 
@@ -210,6 +219,8 @@ let give_recent_photo = function(req,res){
 app.use(router);
 router.route('/get_recent_photo').get(give_recent_photo);
 
+//// clear active unfinished measurements
+fs.writeFileSync('images/measurements/active_measurement.txt', '');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
