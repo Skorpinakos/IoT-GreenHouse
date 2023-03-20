@@ -2,14 +2,10 @@
 import express, { query } from 'express'
 import fs from 'fs'
 import {spawn} from 'child_process';
-import cron from 'cron'
 
 const app = express(); //make app object
 let port ='3000'; //set port
 const router = express.Router(); //make a router object
-var CronJob = cron.CronJob;
-
-
 
 
 let inform_db = async function(datetime){
@@ -67,13 +63,14 @@ let get_datetime = function(){
   //console.log(hours + ":" + minutes);
 }
 
-let start_greenhouse_measurement = function(){
+let start_greenhouse_measurement = function(req,res){
   console.log("\n\n\n____________________________________________\nA new measurement was requested.");
   fs.readFile('images/measurements/active_measurement.txt', 'utf8', function (err,activity) { //read the file containing the datetime of the active measurement or nothing
     
     if (err) {
       let failure = err;
-
+      res.statusCode = 503;
+      res.send(failure);
       return console.error(failure);
     }
     if (activity!=''){ 
@@ -85,7 +82,8 @@ let start_greenhouse_measurement = function(){
       }
       let datetime_to_send = split_datetime[0] + '-' + split_datetime[1] + '-' + split_datetime[2] + ' ' + split_datetime[3] + ':' + split_datetime[4] + ':' + split_datetime[5];
       let failure ='There is already an on-goig measurement from  ' + datetime_to_send;
-
+      res.statusCode = 406;
+      res.send(failure);
       return console.error(failure);
     }
     //if no measurement under process start new
@@ -93,14 +91,15 @@ let start_greenhouse_measurement = function(){
     fs.writeFile('images/measurements/active_measurement.txt', datetime, err => {   //write at the file containing activity to indicate that a measurement is under process
       if (err) {
         let failure = err;
-
+        res.statusCode = 507;
+        res.send(failure);
         return console.error(failure);
       }
       let ingestion_controller_output;
       // spawn new child process to call the python_process script
       let python_process = spawn('python', ['robot_move_deployed.py',datetime]);
       console.log('No on-going measurement, starting new.');
-
+      res.statusCode = 200;
       let split_datetime = datetime.split('_');
       for (let i = 0; i < split_datetime.length; i++){
         if(split_datetime[i].length==1){
@@ -109,7 +108,7 @@ let start_greenhouse_measurement = function(){
       }
       console.log(split_datetime);
       let datetime_to_send = split_datetime[0] + '-' + split_datetime[1] + '-' + split_datetime[2] + ' ' + split_datetime[3] + ':' + split_datetime[4] + ':' + split_datetime[5];
-
+      res.send('A new measurement has started at ' + datetime_to_send);
       // collect data from script
       python_process.stdout.on('data', function (data) {
        //console.log('Pipe data from python_process script ...');
@@ -125,13 +124,15 @@ let start_greenhouse_measurement = function(){
       fs.writeFile('images/measurements/active_measurement.txt', '', err => {
         if (err) {
           let failure = err;
-
+          res.statusCode = 507;
+          res.send(failure);
           return console.error(failure);
         }
         fs.writeFile('images/measurements/last_measurement.txt', "measurement_at_"+datetime, err => {
           if (err) {
             let failure = err;
-
+            res.statusCode = 507;
+            res.send(failure);
             return console.error(failure);
           }
           // measurement has finished, have to inform the db with fetch api 
@@ -209,16 +210,8 @@ let give_recent_photo = function(req,res){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////// express routes
 app.use(router);
 router.route('/get_recent_photo').get(give_recent_photo);
+router.route('/start_greenhouse_measurement').get(start_greenhouse_measurement);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////// initializing server
 app.listen(port, () => console.log(`App listening to port ${port}`));
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////// schedule measurements
-var job = new CronJob('0/2 * * * *', function() {
-  console.log('Time for measurement!');
-  start_greenhouse_measurement();
-});
-job.start();

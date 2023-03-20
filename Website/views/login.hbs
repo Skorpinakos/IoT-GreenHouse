@@ -1,0 +1,36 @@
+<div class="row mt-5">
+    <div class="col-4 offset-4">
+        <form action="/login" method="post">
+            <h2 class="text-center">WELCOME</h2>
+            <div class="form-group  my-4">
+                <div>
+                    <legend class="text-start">Username</legend>
+                    <input type="text" class="form-control" name="username" placeholder="Username"
+                        required="required" autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group my-4">
+                    <legend class="text-start">Password</legend>
+                    <input type="password" class="form-control" name="password" placeholder="Password"
+                        required="required">
+                </div>
+            </div>
+            {{#if message}}
+                <div class="alert alert-primary" role="alert">
+                    {{message}}
+                </div>
+            {{/if}}
+            <div class="form-group">
+                <div class="row mt-5">
+                    <div class="col-5">
+                        <button type="submit" class="btn btn-lg d-grid gap-2 col-12 mx-auto btn-primary login-btn">LOGIN</button>
+                    </div>
+                    <div class="col-5 offset-2">
+                        <a class="text-center btn btn-lg d-grid gap-2 col-12 mx-auto btn-primary login-btn" href="/register">REGISTER</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

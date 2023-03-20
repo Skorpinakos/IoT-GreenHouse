@@ -10,7 +10,7 @@ try:
     import json
     from fake_data import make_measurement
     import time
-except :
+except:
     print("Either Edge AI misses important packets (check project requirements and dependencies for edge controller's Python installation at 'https://github.com/Skorpinakos/IoT-2022') or controller.mjs was not run in correct sub-directory: Edge_Compute")
     exit(1)
 

@@ -1,0 +1,33 @@
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+
+    <div class="container-fluid">
+
+    <h1 class = 'd-flex justify-content-center my-3'><strong> Your Greenhouses </strong></h1>
+
+    <div class="row">
+        <div class="col-4"></div>
+
+      <div class="col-4"> 
+            {{#each greenhouses}}
+            <div class="row recent rounded my-3">
+              <h4 class='text-center mb-3'> <a href="/greenhouse?ID={{ID}}"> Greenhouse {{ID}}</a></h4>
+              <div class="col-6"> 
+                <img class='image_recent rounded img-fluid my-2' src={{GREENHOUSE_PHOTO}}>
+              </div>
+              <div class="col-6 text-center"> 
+                  <h5 class='text-center my-1'>Last Measurement</h5>
+                  <p class='measurement_date'>Date : {{MEASUREMENT_DATE}}</p>
+                  <p class='measurement_time'>Time : {{MEASUREMENT_TIME}}</p>
+                  <p class='temperature'>Temperature : {{TEMPERATURE}}</p>
+                  <p class='humidity'>Humidity : {{HUMIDITY}}</p>
+              </div>
+            </div>
+            {{/each}}
+      </div>
+
+        <div class="col-4 my-3"></div>
+
+    </div>
+
+
+

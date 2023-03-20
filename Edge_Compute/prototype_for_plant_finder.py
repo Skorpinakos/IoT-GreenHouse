@@ -113,18 +113,9 @@ def process_image(filename,path,out_path,config,diagnostics_mode='none'):
 
     #print(lines)
 
-    pack=Packet_of_Processing_Results(sorted(list(lines.keys())),lines,centroids,signal,y1,y2)
-    return pack
 
+    return Packet_of_Processing_Results(sorted(list(lines.keys())),lines,centroids,signal,y1,y2)
 
-#### testing
-#images_path ="images/"                                                          #set relative path for image folder
-#diagnostics_path ="diagnostics/"   
-#f = open('greenhouse_config.json')
-#import json
-#config = json.load(f)
-#f.close()
-#process_image("Capture1.png",images_path,diagnostics_path,config,diagnostics_mode='none')
 #returns sorted "y dimension" list of lines (floats)
 #returns lines dict where key is y dimension of line and value is list of cluster centers as 2 element lists [y,x]  y and x are integers representing pixels (floats not good idea for keys later)
 #returns centers dict where key is tuple of integer ( y,x ) representing cluster center and value is list of all points (integer list of [y,x]) belonging to that center
