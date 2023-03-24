@@ -1,0 +1,9 @@
+https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD
+https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD
+https://github.com/FIWARE/tutorials.IoT-Agent-JSON/tree/NGSI-LD maybeeee??
+
+
+register greenhouse, merge contexts from Device and AgriGreenhouse with merger https://smartdatamodels.org/index.php/generate-a-local-context-based-on-smart-data-models-iris/
+(make a temp git repo, paste in a json the 2 lines referring to the contexts you want from https://github.com/smart-data-models/dataModel.Agrifood/blob/12aba07d6491e25ce26569a8600da03e7e7a6125/context.jsonld and https://github.com/smart-data-models/dataModel.Device/blob/master/context.jsonld)
+but paste the raw json (see your test repo)
+resolve conflicts by removing 
