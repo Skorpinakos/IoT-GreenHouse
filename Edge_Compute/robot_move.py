@@ -1,5 +1,6 @@
 ### import section and error handling regarding directory and packets
 try:
+    import traceback
     from prototype_for_plant_finder import process_image 
     from simulation import Simulation
     from mapper import figure_out_position
@@ -12,6 +13,7 @@ try:
     import time
 except:
     print("Either Edge AI misses important packets (check project requirements and dependencies for edge controller's Python installation at 'https://github.com/Skorpinakos/IoT-2022') or controller.mjs was not run in correct sub-directory: Edge_Compute")
+    print(traceback.format_exc())
     exit(1)
 
 ###
